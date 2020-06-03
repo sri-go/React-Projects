@@ -1,0 +1,29 @@
+body {
+  background-color: #98ACAF;
+}
+
+form {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input {
+  margin-right: 10px;
+}
+
+.list-wrapper {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.frame{
+  padding: 1em;
+}
