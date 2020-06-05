@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ColorList from "./ColorList";
+import Header from "./Header";
 import randomColor from "randomcolor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlusCircle, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +12,7 @@ class App extends React.Component {
     super();
     this.state = {
       hue: "",
-      numColors: null,
+      numColors: 1,
       colorList: [],
     };
     this.handleClick = this.handleClick.bind(this);
@@ -30,12 +31,24 @@ class App extends React.Component {
   handleClick(event) {
     const newColor = randomColor({
       hue: this.state.hue,
+      count: this.state.numColors,
       format: "hex",
     });
-    this.state.colorList.length < 5 &&
+
+    if (this.state.colorList.length + newColor.length <= 5) {
+      let colors = [...this.state.colorList, newColor];
+      colors = colors.flat();
       this.setState({
-        colorList: [...this.state.colorList, newColor],
+        colorList: colors,
       });
+    } else {
+      let colors = [...this.state.colorList, newColor];
+      colors = colors.flat();
+      colors = colors.slice(0, 5);
+      this.setState({
+        colorList: colors,
+      });
+    }
   }
 
   //This resets state to an empty array
@@ -49,28 +62,47 @@ class App extends React.Component {
   render() {
     return (
       <div className="appContainer" style={{ backgroundColor: "whitesmoke" }}>
-        {/* Generate Colors */}
+        <Header />
         <div>
-          <ColorList data={this.state.colorList} />
+          <ColorList data={this.state} />
         </div>
-        <div className="input-container">
-          <input
-            type="text"
-            value={this.state.hue}
-            onChange={this.handleChange}
-            name="hue"
-            placeholder="Enter Hue Here"
-            className="input button-group"
-          ></input>
-          <button className="button button-group" onClick={this.handleClick}>
-            <span>Add Color</span>
-            <FontAwesomeIcon icon={faPlusCircle} />
-          </button>
-          {/* Restart Color Gen */}
-          <button className="button button-group" onClick={this.handleRefresh}>
-            <span>Reset Color</span>
-            <FontAwesomeIcon icon={faRedoAlt} />
-          </button>
+        <div className="control-container">
+          <label className="hue input-group">
+            Enter Hue (Eg. Red or #e84643)
+            <input
+              type="text"
+              value={this.state.hue}
+              onChange={this.handleChange}
+              name="hue"
+              placeholder="Enter Hue Here"
+              className="input"
+            />
+          </label>
+          <label className="num-colors input-group">
+            Enter Number Colors (1-5)
+            <input
+              type="number"
+              name="numColors"
+              value={this.state.numColors}
+              placeholder="1"
+              min="1"
+              max="5"
+              onChange={this.handleChange}
+              className="input"
+            />
+          </label>
+          <label className="button-group">
+            Add Color
+            <button className="button button-group" onClick={this.handleClick}>
+              <FontAwesomeIcon icon={faPlusCircle} />
+            </button>
+          </label>
+          <label className="button-group">
+            Reset Colors
+            <button className="button" onClick={this.handleRefresh}>
+              <FontAwesomeIcon icon={faRedoAlt} />
+            </button>
+          </label>
         </div>
       </div>
     );

@@ -43,9 +43,22 @@
   background-color: white;
 }
 
-.input-container {
+.control-container {
   display: flex;
 }
+
+.num-colors {
+  max-width: 50%;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.5em;
+}
 .button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 0 0.5em;
 }
