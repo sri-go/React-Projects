@@ -19,7 +19,9 @@ function ColorCard(props) {
       </div>
       <div className="color-information">
         {/* Color Information */}
-        <p> {props.colorData}</p>
+        <p>{props.namesData}</p>
+        <p>{props.colorData}</p>
+        <p></p>
       </div>
     </div>
   );
