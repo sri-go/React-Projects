@@ -1,13 +1,14 @@
 import React from 'react';
+require('dotenv').config();
 
 export default function WeekDetails(props) {
-//   console.log(props);
+  //   console.log(props);
   const { data } = props;
   const weather_array = ['partly_cloudy', 'mostly_clear', 'clear'];
   let img_src;
   img_src = weather_array.includes(data.weather_code.value)
-    ? (img_src = `/Assets/color/${data.weather_code.value}_day.svg`)
-    : (img_src = `/Assets/color/${data.weather_code.value}.svg`);
+    ? (img_src = `${process.env.REACT_APP_PUBLIC_URL}${data.weather_code.value}_day.svg`)
+    : (img_src = `${process.env.REACT_APP_PUBLIC_URL}${data.weather_code.value}.svg`);
   let dateObject = new Date(Date.parse(data.observation_time.value));
   let dateReadable = dateObject.toDateString().split(' ')[0];
   return (

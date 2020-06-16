@@ -1,4 +1,5 @@
 import React from 'react';
+require('dotenv').config();
 
 export default function Main(props) {
   const { weather, date } = props;
@@ -13,8 +14,8 @@ export default function Main(props) {
   if (!loading) {
     let img_src;
     img_src = weather_array.includes(weather.weather_code.value)
-      ? (img_src = `/Assets/color/${weather.weather_code.value}${day}.svg`)
-      : (img_src = `/Assets/color/${weather.weather_code.value}.svg`);
+      ? (img_src = `${process.env.REACT_APP_PUBLIC_URL}${weather.weather_code.value}${day}.svg`)
+      : (img_src = `${process.env.REACT_APP_PUBLIC_URL}${weather.weather_code.value}.svg`);
 
     console.log(img_src);
     return (
