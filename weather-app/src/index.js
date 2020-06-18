@@ -4,6 +4,7 @@ import './Styles/index.css';
 import App from './Components/App';
 import * as serviceWorker from './serviceWorker';
 
+console.log('public url: ', process.env.PUBLIC_URL);
 ReactDOM.render(
   <React.StrictMode>
     <App />
