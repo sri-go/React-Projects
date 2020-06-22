@@ -17,7 +17,7 @@ export default function Main(props) {
       ? (img_src = `${process.env.PUBLIC_URL}/${weather.weather_code.value}${day}.svg`)
       : (img_src = `${process.env.PUBLIC_URL}/${weather.weather_code.value}.svg`);
 
-    console.log(img_src);
+    // console.log(img_src);
     return (
       <div className="center">
         <div className="title">

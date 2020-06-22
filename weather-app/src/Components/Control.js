@@ -7,11 +7,21 @@ export default function Control(props) {
     props.onChange(event);
   }
   function handleClick() {
-    props.onClick();
+    //1st function in array
+    props.onClick[0]();
   }
 
   return (
     <div className="control">
+      <button
+        className="button"
+        onClick={() => {
+          //2nd function in array
+          props.onClick[1]();
+        }}
+      >
+        <FontAwesomeIcon icon={['fas', 'location-arrow']} />
+      </button>
       <input
         style={{ width: '50%' }}
         className="input"

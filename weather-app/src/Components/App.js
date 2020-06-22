@@ -10,7 +10,6 @@ import '../Styles/App.css';
 import 'bulma/css/bulma.css';
 library.add(fas);
 
-
 export default function App() {
   const [done, setDone] = useState(undefined);
   const [location, setLocation] = useState('');
@@ -81,12 +80,23 @@ export default function App() {
       .catch((error) => console.log(error));
   }
 
+  function getLocation() {
+    setDone(false);
+    const geo = navigator.geolocation;
+    geo.getCurrentPosition((position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      setCoordinates([latitude, longitude]);
+      console.log(latitude, longitude);
+    });
+  }
+
   return (
     <div className="App">
       <Control
         location={location}
         onChange={handleChange}
-        onClick={handleClick}
+        onClick={[handleClick, getLocation]}
       />
       {!done ? (
         <div
