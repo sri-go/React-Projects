@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Lottie from 'react-lottie';
+import FadeIn from 'react-fade-in';
 import Control from './Control';
 import Details from './Details';
 import Main from './Main';
@@ -10,10 +11,12 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import '../Styles/App.css';
 import 'bulma/css/bulma.css';
 import animationData from '../lotties/9825-loading-screen-loader-spinning-circle.json';
+import animationData2 from '../lotties/24847-confirmation.json';
 library.add(fas);
 
 export default function App() {
   const [done, setDone] = useState(undefined);
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState('');
   const [weather, setWeather] = useState(undefined);
   const [coordinates, setCoordinates] = useState([
@@ -61,7 +64,10 @@ export default function App() {
         week: week_weather,
       };
       setWeather(combined);
-      setDone(true);
+      setLoading(true);
+      setTimeout(() => {
+        setDone(true);
+      }, 1500);
     };
 
     fetchData();
@@ -73,6 +79,7 @@ export default function App() {
 
   function handleClick() {
     setDone(false);
+    // setLoading(true);
     //Gets location inputted and fetches geocoded location data
     //Sends geocode to getWeather function to return weather data and then sets it to state
     fetch(
@@ -90,12 +97,14 @@ export default function App() {
 
   function getLocation() {
     setDone(false);
+    setLoading(false);
     const geo = navigator.geolocation;
     geo.getCurrentPosition((position) => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
       setCoordinates([latitude, longitude]);
-      console.log(latitude, longitude);
+      // console.log(latitude, longitude);
+      console.log(`loading: ${loading} done: ${done}`);
     });
   }
 
@@ -103,6 +112,15 @@ export default function App() {
     loop: true,
     autoplay: true,
     animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice',
+    },
+  };
+
+  const defaultOptions2 = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData2,
     rendererSettings: {
       preserveAspectRatio: 'xMidYMid slice',
     },
@@ -116,28 +134,52 @@ export default function App() {
         onClick={[handleClick, getLocation]}
       />
       {!done ? (
-        <Lottie
-          options={defaultOptions}
-          height={400}
-          width={400}
-          style={{ position: 'absolute' }}
-        ></Lottie>
+        <FadeIn>
+          <div
+            style={{
+              height: '90vh',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {!loading ? (
+              <Lottie
+                options={defaultOptions}
+                height={400}
+                width={400}
+              ></Lottie>
+            ) : (
+              <Lottie
+                options={defaultOptions2}
+                height={400}
+                width={400}
+              ></Lottie>
+            )}
+          </div>
+        </FadeIn>
       ) : (
         <div>
-          <div className="main-info">
-            <Details weather={weather.day} />
-            <Main
-              weather={weather.day}
-              date={date}
-              hourly_weather={weather.hourly}
-            />
-          </div>
-          <div className="map">
-            <Map location={coordinates} />
-          </div>
-          <div className="week-info">
-            <Week weather={weather.week} />
-          </div>
+          <FadeIn>
+            <div className="main-info">
+              <Details weather={weather.day} />
+              <Main
+                weather={weather.day}
+                date={date}
+                hourly_weather={weather.hourly}
+              />
+            </div>
+          </FadeIn>
+          <FadeIn>
+            <div className="map">
+              <Map location={coordinates} />
+            </div>
+          </FadeIn>
+          <FadeIn>
+            <div className="week-info">
+              <Week weather={weather.week} />
+            </div>
+          </FadeIn>
         </div>
       )}
     </div>
