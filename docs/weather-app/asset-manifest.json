@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "Assets/color/static/css/main.ed4e2ce9.chunk.css",
-    "main.js": "Assets/color/static/js/main.ab75b61b.chunk.js",
-    "main.js.map": "Assets/color/static/js/main.ab75b61b.chunk.js.map",
-    "runtime-main.js": "Assets/color/static/js/runtime-main.5f0b2c53.js",
-    "runtime-main.js.map": "Assets/color/static/js/runtime-main.5f0b2c53.js.map",
-    "static/css/2.0c0672e5.chunk.css": "Assets/color/static/css/2.0c0672e5.chunk.css",
-    "static/js/2.fc1e95a3.chunk.js": "Assets/color/static/js/2.fc1e95a3.chunk.js",
-    "static/js/2.fc1e95a3.chunk.js.map": "Assets/color/static/js/2.fc1e95a3.chunk.js.map",
-    "index.html": "Assets/color/index.html",
-    "precache-manifest.f622f72749094b818c3f0d8b10cd821e.js": "Assets/color/precache-manifest.f622f72749094b818c3f0d8b10cd821e.js",
-    "service-worker.js": "Assets/color/service-worker.js",
-    "static/css/2.0c0672e5.chunk.css.map": "Assets/color/static/css/2.0c0672e5.chunk.css.map",
-    "static/css/main.ed4e2ce9.chunk.css.map": "Assets/color/static/css/main.ed4e2ce9.chunk.css.map",
-    "static/js/2.fc1e95a3.chunk.js.LICENSE.txt": "Assets/color/static/js/2.fc1e95a3.chunk.js.LICENSE.txt"
+    "main.css": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/main.ed4e2ce9.chunk.css",
+    "main.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/main.d57c4382.chunk.js",
+    "main.js.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/main.d57c4382.chunk.js.map",
+    "runtime-main.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/runtime-main.5546d9e8.js",
+    "runtime-main.js.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/runtime-main.5546d9e8.js.map",
+    "static/css/2.0c0672e5.chunk.css": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/2.0c0672e5.chunk.css",
+    "static/js/2.fc1e95a3.chunk.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/2.fc1e95a3.chunk.js",
+    "static/js/2.fc1e95a3.chunk.js.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/2.fc1e95a3.chunk.js.map",
+    "index.html": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/index.html",
+    "precache-manifest.e050961b16bdd3d9b55a8c94956f75dd.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/precache-manifest.e050961b16bdd3d9b55a8c94956f75dd.js",
+    "service-worker.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/service-worker.js",
+    "static/css/2.0c0672e5.chunk.css.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/2.0c0672e5.chunk.css.map",
+    "static/css/main.ed4e2ce9.chunk.css.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/main.ed4e2ce9.chunk.css.map",
+    "static/js/2.fc1e95a3.chunk.js.LICENSE.txt": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/2.fc1e95a3.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.5f0b2c53.js",
+    "static/js/runtime-main.5546d9e8.js",
     "static/css/2.0c0672e5.chunk.css",
     "static/js/2.fc1e95a3.chunk.js",
     "static/css/main.ed4e2ce9.chunk.css",
-    "static/js/main.ab75b61b.chunk.js"
+    "static/js/main.d57c4382.chunk.js"
   ]
 }
