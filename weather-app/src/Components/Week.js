@@ -5,8 +5,7 @@ export default function Week(props) {
   // console.log(props);
   const { weather } = props;
   const week_details = weather.map((day, index) => {
-    // console.log(day);
-    return (
+     return (
       <WeekDetails data={day} key={index} id={index}></WeekDetails>
     );
   });

@@ -29,19 +29,20 @@ export default function Main(props) {
               <span className="summary">
                 <span className="label">Temperature:</span>
                 <span>
-                  {weather.temp.value} &deg;{weather.temp.units}
+                  {weather.temp.value}&deg;{weather.temp.units}
                 </span>
               </span>
               <span className="summary-high-low">
-                <span className="label">Feels Like:</span>
+                <span className="label">Feels Like:&nbsp;</span>
                 <span>
-                  {weather.feels_like.value} &deg;
+                  {weather.feels_like.value}&deg;
                   {weather.feels_like.units}
                 </span>
               </span>
             </span>
           </span>
         </div>
+        <div className="timeline"></div>
       </div>
     );
   }

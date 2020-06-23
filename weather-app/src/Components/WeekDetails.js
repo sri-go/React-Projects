@@ -26,10 +26,13 @@ export default function WeekDetails(props) {
           <img src={img_src} alt="product" />
         </span>
       </div>
-      <div>
-        Min: {data.temp[0].min.value} &deg;{data.temp[0].min.units}
-        <br />
-        Max: {data.temp[1].max.value} &deg;{data.temp[1].max.units}
+      <div style={{ display: 'flex' }}>
+        <p style={{ margin: '0 .5em' }}>
+          Min: {data.temp[0].min.value} &deg;{data.temp[0].min.units}
+        </p>
+        <p>
+          Max: {data.temp[1].max.value} &deg;{data.temp[1].max.units}
+        </p>
       </div>
     </div>
   );

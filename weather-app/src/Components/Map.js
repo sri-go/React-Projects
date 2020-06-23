@@ -9,11 +9,11 @@ const styles = {
 export default function Map(props) {
   console.log('x', props.location[1]);
   console.log('y', props.location[0]);
-  
+
   return (
     <DarkskyMap
-      lat={props.location[1]}
-      lng={props.location[0]}
+      lat={props.location[0]}
+      lng={props.location[1]}
       zoom={10}
       mapField="precip"
     ></DarkskyMap>

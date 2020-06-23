@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Lottie from 'react-lottie';
 import Control from './Control';
 import Details from './Details';
 import Main from './Main';
@@ -8,6 +9,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import '../Styles/App.css';
 import 'bulma/css/bulma.css';
+import animationData from '../lotties/9825-loading-screen-loader-spinning-circle.json';
 library.add(fas);
 
 export default function App() {
@@ -30,8 +32,10 @@ export default function App() {
     const fetchData = async function () {
       let date = new Date();
       setDate(date);
-      date.setDate(date.getDate() + 7);
-      date = date.toISOString();
+      let hourly_date = date.setDate(date.getDate() + 1);
+      hourly_date = date.toISOString();
+      let weekly_date = date.setDate(date.getDate() + 7);
+      weekly_date = date.toISOString();
 
       const day_weather = await fetch(
         `https://api.climacell.co/v3/weather/realtime?lat=${lat}&lon=${long}&unit_system=us&fields%5B%5D=temp&fields%5B%5D=feels_like&fields%5B%5D=baro_pressure&fields%5B%5D=wind_speed&fields%5B%5D=dewpoint&fields%5B%5D=humidity&fields%5B%5D=weather_code&apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d`,
@@ -39,19 +43,23 @@ export default function App() {
         .then((response) => response.json())
         .catch((error) => console.log(error));
 
-      const week_weather = await fetch(
-        `https://api.climacell.co/v3/weather/forecast/daily?lat=${lat}&lon=${long}&end_time=${date}&fields%5B%5D=temp&fields%5B%5D=weather_code&unit_system=us&apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d`,
+      const hourly_weather = await fetch(
+        `https://api.climacell.co/v3/weather/forecast/hourly?unit_system=us&start_time=now&end_time=${hourly_date}&lat=${lat}&lon=${long}&apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d`,
       )
         .then((response) => response.json())
         .catch((error) => console.log(error));
 
-      // const weather_tiles = await fetch(`https://api.climacell.co/v3/weather/layers/temperature/now/10/1/0.png?apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d
-      // `)
-      //   .then((response) => response.json())
-      //   .then((response) => console.log(response))
-      //   .catch((error) => console.log(error));
+      const week_weather = await fetch(
+        `https://api.climacell.co/v3/weather/forecast/daily?lat=${lat}&lon=${long}&end_time=${weekly_date}&fields%5B%5D=temp&fields%5B%5D=weather_code&unit_system=us&apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d`,
+      )
+        .then((response) => response.json())
+        .catch((error) => console.log(error));
 
-      const combined = { day: day_weather, week: week_weather };
+      const combined = {
+        day: day_weather,
+        hourly: hourly_weather,
+        week: week_weather,
+      };
       setWeather(combined);
       setDone(true);
     };
@@ -91,6 +99,15 @@ export default function App() {
     });
   }
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice',
+    },
+  };
+
   return (
     <div className="App">
       <Control
@@ -99,22 +116,21 @@ export default function App() {
         onClick={[handleClick, getLocation]}
       />
       {!done ? (
-        <div
-          div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          Loading
-        </div>
+        <Lottie
+          options={defaultOptions}
+          height={400}
+          width={400}
+          style={{ position: 'absolute' }}
+        ></Lottie>
       ) : (
         <div>
           <div className="main-info">
             <Details weather={weather.day} />
-            <Main weather={weather.day} date={date} />
+            <Main
+              weather={weather.day}
+              date={date}
+              hourly_weather={weather.hourly}
+            />
           </div>
           <div className="map">
             <Map location={coordinates} />
