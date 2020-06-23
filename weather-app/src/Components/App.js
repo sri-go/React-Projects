@@ -79,6 +79,7 @@ export default function App() {
 
   function handleClick() {
     setDone(false);
+    setLoading(false);
     // setLoading(true);
     //Gets location inputted and fetches geocoded location data
     //Sends geocode to getWeather function to return weather data and then sets it to state
@@ -104,7 +105,7 @@ export default function App() {
       const longitude = position.coords.longitude;
       setCoordinates([latitude, longitude]);
       // console.log(latitude, longitude);
-      console.log(`loading: ${loading} done: ${done}`);
+      // console.log(`loading: ${loading} done: ${done}`);
     });
   }
 
