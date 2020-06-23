@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/main.ed4e2ce9.chunk.css",
-    "main.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/main.d57c4382.chunk.js",
-    "main.js.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/main.d57c4382.chunk.js.map",
-    "runtime-main.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/runtime-main.5546d9e8.js",
-    "runtime-main.js.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/runtime-main.5546d9e8.js.map",
-    "static/css/2.0c0672e5.chunk.css": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/2.0c0672e5.chunk.css",
-    "static/js/2.fc1e95a3.chunk.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/2.fc1e95a3.chunk.js",
-    "static/js/2.fc1e95a3.chunk.js.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/2.fc1e95a3.chunk.js.map",
-    "index.html": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/index.html",
-    "precache-manifest.e050961b16bdd3d9b55a8c94956f75dd.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/precache-manifest.e050961b16bdd3d9b55a8c94956f75dd.js",
-    "service-worker.js": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/service-worker.js",
-    "static/css/2.0c0672e5.chunk.css.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/2.0c0672e5.chunk.css.map",
-    "static/css/main.ed4e2ce9.chunk.css.map": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/css/main.ed4e2ce9.chunk.css.map",
-    "static/js/2.fc1e95a3.chunk.js.LICENSE.txt": "https://sri-go.github.io/react-projects/weather-app/public/Assets/color/static/js/2.fc1e95a3.chunk.js.LICENSE.txt"
+    "main.css": "./static/css/main.ed4e2ce9.chunk.css",
+    "main.js": "./static/js/main.7243bdb7.chunk.js",
+    "main.js.map": "./static/js/main.7243bdb7.chunk.js.map",
+    "runtime-main.js": "./static/js/runtime-main.43621841.js",
+    "runtime-main.js.map": "./static/js/runtime-main.43621841.js.map",
+    "static/css/2.0c0672e5.chunk.css": "./static/css/2.0c0672e5.chunk.css",
+    "static/js/2.fc1e95a3.chunk.js": "./static/js/2.fc1e95a3.chunk.js",
+    "static/js/2.fc1e95a3.chunk.js.map": "./static/js/2.fc1e95a3.chunk.js.map",
+    "index.html": "./index.html",
+    "precache-manifest.403dfc6828afdd1fafe347e09bc1ad8a.js": "./precache-manifest.403dfc6828afdd1fafe347e09bc1ad8a.js",
+    "service-worker.js": "./service-worker.js",
+    "static/css/2.0c0672e5.chunk.css.map": "./static/css/2.0c0672e5.chunk.css.map",
+    "static/css/main.ed4e2ce9.chunk.css.map": "./static/css/main.ed4e2ce9.chunk.css.map",
+    "static/js/2.fc1e95a3.chunk.js.LICENSE.txt": "./static/js/2.fc1e95a3.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.5546d9e8.js",
+    "static/js/runtime-main.43621841.js",
     "static/css/2.0c0672e5.chunk.css",
     "static/js/2.fc1e95a3.chunk.js",
     "static/css/main.ed4e2ce9.chunk.css",
-    "static/js/main.d57c4382.chunk.js"
+    "static/js/main.7243bdb7.chunk.js"
   ]
 }
