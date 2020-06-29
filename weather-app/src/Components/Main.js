@@ -10,7 +10,6 @@ export default function Main(props) {
   time > 18 ? (day = '_night') : (day = '_day');
   const weather_array = ['partly_cloudy', 'mostly_clear', 'clear'];
 
-  // public url:  /Assets/color/
   if (!loading) {
     let img_src;
     img_src = weather_array.includes(weather.weather_code.value)

@@ -41,19 +41,19 @@ export default function App() {
       weekly_date = date.toISOString();
 
       const day_weather = await fetch(
-        `https://api.climacell.co/v3/weather/realtime?lat=${lat}&lon=${long}&unit_system=us&fields%5B%5D=temp&fields%5B%5D=feels_like&fields%5B%5D=baro_pressure&fields%5B%5D=wind_speed&fields%5B%5D=dewpoint&fields%5B%5D=humidity&fields%5B%5D=weather_code&apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d`,
+        `https://api.climacell.co/v3/weather/realtime?lat=${lat}&lon=${long}&unit_system=us&fields%5B%5D=temp&fields%5B%5D=feels_like&fields%5B%5D=baro_pressure&fields%5B%5D=wind_speed&fields%5B%5D=dewpoint&fields%5B%5D=humidity&fields%5B%5D=weather_code&apikey=GT9RlI6sr2OjyLvlGOdOF4RX0qLgkFxH`,
       )
         .then((response) => response.json())
         .catch((error) => console.log(error));
 
       const hourly_weather = await fetch(
-        `https://api.climacell.co/v3/weather/forecast/hourly?unit_system=us&start_time=now&end_time=${hourly_date}&lat=${lat}&lon=${long}&apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d`,
+        `https://api.climacell.co/v3/weather/forecast/hourly?unit_system=us&start_time=now&end_time=${hourly_date}&lat=${lat}&lon=${long}&apikey=GT9RlI6sr2OjyLvlGOdOF4RX0qLgkFxH`,
       )
         .then((response) => response.json())
         .catch((error) => console.log(error));
 
       const week_weather = await fetch(
-        `https://api.climacell.co/v3/weather/forecast/daily?lat=${lat}&lon=${long}&end_time=${weekly_date}&fields%5B%5D=temp&fields%5B%5D=weather_code&unit_system=us&apikey=WgGx8VA8VQUANapmJ6AkIEmObMfbWt9d`,
+        `https://api.climacell.co/v3/weather/forecast/daily?lat=${lat}&lon=${long}&end_time=${weekly_date}&fields%5B%5D=temp&fields%5B%5D=weather_code&unit_system=us&apikey=GT9RlI6sr2OjyLvlGOdOF4RX0qLgkFxH`,
       )
         .then((response) => response.json())
         .catch((error) => console.log(error));
@@ -177,7 +177,14 @@ export default function App() {
             </div>
           </FadeIn>
           <FadeIn>
-            <div className="week-info">
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '830px',
+                margin: '0 auto',
+              }}
+              className="week-info"
+            >
               <Week weather={weather.week} />
             </div>
           </FadeIn>

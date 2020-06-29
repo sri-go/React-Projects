@@ -1,9 +1,9 @@
 import React from 'react';
+import Bar from './Bar';
 
 export default function WeekDetails(props) {
   //   console.log(props);
-  console.log(process.env.PUBLIC_URL);
-  const { data } = props;
+  const { max, min, data } = props;
   const weather_array = ['partly_cloudy', 'mostly_clear', 'clear'];
   let img_src;
   img_src = weather_array.includes(data.weather_code.value)
@@ -11,29 +11,27 @@ export default function WeekDetails(props) {
     : (img_src = `${process.env.PUBLIC_URL}//Assets/color/${data.weather_code.value}.svg`);
   let dateObject = new Date(Date.parse(data.observation_time.value));
   let dateReadable = dateObject.toDateString().split(' ')[0];
+
   return (
     <div
       style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        margin: '.5em 0em',
+        margin: '1em 0.5em',
       }}
     >
-      <div>{dateReadable}</div>
+      <div style={{ margin: '0em 1em 1em' }}>{dateReadable}</div>
       <div>
-        <span className="icon">
+        <span style={{ margin: '0em 1em 1em' }} className="icon">
           <img src={img_src} alt="product" />
         </span>
       </div>
-      <div style={{ display: 'flex' }}>
-        <p style={{ margin: '0 .5em' }}>
-          Min: {data.temp[0].min.value} &deg;{data.temp[0].min.units}
-        </p>
-        <p>
-          Max: {data.temp[1].max.value} &deg;{data.temp[1].max.units}
-        </p>
-      </div>
+      <Bar
+        max={max}
+        min={min}
+        data={[data.temp[0].min.value, data.temp[1].max.value]}
+      />
     </div>
   );
 }
