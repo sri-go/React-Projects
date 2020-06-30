@@ -16,7 +16,6 @@ export default function WeekDetails(props) {
     <div
       style={{
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
         margin: '1em 0.5em',
       }}
