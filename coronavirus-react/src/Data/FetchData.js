@@ -135,6 +135,7 @@ var combined_county = function (data_totals) {
 
   //adding the sorted and cleaned data to the counties geojson file
   //looping through the geojson file for each county
+  let id = 0;
   var combined = _.map(CountyBoundaries.features, function (county_feature) {
     var county = county_feature.properties.fips;
     var nyc_confirmed_levels = data_totals["confirmed_county_total"]["36061"];
@@ -153,11 +154,13 @@ var combined_county = function (data_totals) {
       ) {
         county_feature.properties.Confirmed = nyc_confirmed_levels;
         county_feature.properties.Deaths = nyc_deaths_levels;
+        county_feature.id = id;
       }
       //for counties that have no prior data, assume 0
       else {
         county_feature.properties.Confirmed = 0;
         county_feature.properties.Deaths = 0;
+        county_feature.id = id;
       }
     }
     //otherwise add the totals calculated earlier back to the geojson file
@@ -169,7 +172,9 @@ var combined_county = function (data_totals) {
       // console.log(data_totals["death_county_total"][county]);
       county_feature.properties.Deaths =
         data_totals["death_county_total"][county];
+      county_feature.id = id;
     }
+    id++;
     return county_feature;
   });
   // console.log(combined);
