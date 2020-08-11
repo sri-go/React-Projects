@@ -79,59 +79,30 @@ export default function Plot(props) {
       "iso2",
       "iso3",
     ];
-    let obj = {};
-    let top10 = {};
-    let twoWeekData = [];
-    // Returns 7-Day Data for each county, Top 10 Counties, and Sum of all cases per state
-
-    array.map((element) => {
-      const countyName = element.Admin2;
-      obj[countyName] = {};
-      let lastTwoWeeks = [];
-      let totalCases = 0;
-      const tempObj = {};
-      const tempData = [];
-
-      //[{Franklin: [data for 2 weeks], Adams: []....etc}]
-
-      for (let key in element) {
-        const value = {};
-        // total cases for county is the last value in array
-        if (key === datesArray[datesArray.length - 1]) {
-          totalCases = totalCases + parseInt(element[key]);
-        }
+    const state = feature.properties.name;
+    const obj = {};
+    obj[state] = [];
+    for (let key in array[0]) {
+      let value = {};
+      if (excludeKeys.indexOf(key) < 0) {
+        value.x = new Date(key);
+        value.y = 0;
+        obj[state].push(value);
+      }
+    }
+    array.map((county) => {
+      let addV = [];
+      for (let key in county) {
         if (excludeKeys.indexOf(key) < 0) {
-          value.x = new Date(key);
-          value.y = element[key];
-          lastTwoWeeks.push(value);
-        }
-        // this is to retrieve the values of each day in the past 14 days
-        if (datesArray.indexOf(key) >= 0) {
-          //this is for plot of total cases over time
-          // value.x = new Date(key);
-          // value.y = element[key];
-          // lastTwoWeeks.push(value);
-          tempData.push(element[key]); //this is for total cases over the past 2 weeks
+          addV.push(parseInt(county[key]));
         }
       }
-      tempObj[countyName] = tempData;
-      twoWeekData.push(tempObj);
-
-      // This is figuring out the difference between each days reported total cases
-      //Will return the difference between each day in 2 week period
-      const diff = tempObj[countyName]
-        .slice(1)
-        .map((value, index) => value - tempObj[countyName][index]);
-
-      obj[countyName].totalCases = totalCases;
-      obj[countyName].lastTwoWeeks = lastTwoWeeks;
+      obj[state].map((value, index) => {
+        value.y = value.y + addV[index];
+      });
     });
-
-    console.log(obj);
-
-    // on click use the states feature to display the plot for the state
-    setRealData(obj["Franklin"].lastTwoWeeks);
-    return obj;
+    setRealData(obj[state]);
+    console.log(obj[state]);
   };
 
   const filterData = (array) => {
@@ -145,7 +116,6 @@ export default function Plot(props) {
     if (feature) {
       const x = filterData(plotData);
       console.log(x);
-      // setRealData(x["Franklin,OH,US"].lastTwoWeeks);
     } else {
       return null;
     }
