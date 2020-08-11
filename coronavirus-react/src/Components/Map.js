@@ -1,41 +1,50 @@
 import React, { useRef, useState, useEffect } from "react";
-import MapGL, { Source, Layer } from "react-map-gl";
+import MapGL, {
+  Source,
+  Layer,
+  LinearInterpolator,
+  WebMercatorViewport,
+} from "react-map-gl";
+import bbox from "@turf/bbox";
 import {
   StateDeathStyle,
   CountyOutlineStyle,
   CountyDeathStyle,
 } from "../Styling/MapStyle";
+
 import StatesBoundaries from "../Data/StateBoundaries.json";
 import CountyBoundaries from "../Data/CountyBoundaries.json";
-import { get_states_data, get_counties_data } from "../Data/FetchData";
+import {
+  get_states_data,
+  get_counties_data,
+  get_time_series,
+} from "../Data/FetchData";
+import Plot from "./plot";
 
+//Initalize Viewport
 const initialViewport = {
   width: "100vw",
   height: "100vh",
   latitude: 39.5,
   longitude: -98.35,
-  zoom: 5,
+  zoom: 3,
 };
 
+//Mapbox Access Token -> to do: move to env file later
 const ACCESS_TOKEN =
   "pk.eyJ1Ijoic3JpLWdvIiwiYSI6ImNrODUyeHp1YjAyb2wzZXA4b21veGhqdjgifQ.wprAUOeXWkoWy1-nbUd1NQ";
 
-export default function Map() {
-  const [viewport, setViewport] = useState({ ...initialViewport });
-  const [StatesData, setStateData] = useState(null);
-  const [CountyData, setCountyData] = useState(null);
-  const [hoveredFeature, setHoveredFeature] = useState();
-  const [hover, setHover] = useState(0.5);
+export const Map = () => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [localViewState, setLocalViewState] = useState({ ...initialViewport });
+  const [hoveredFeature, setHoveredFeature] = useState();
+  const [StatesData, setStateData] = useState(null);
+  const [CountyData, setCountyData] = useState(null);
+  const [TempFeature, setTempFeature] = useState(null);
+  const [plotData, setPlotData] = useState(null);
 
-  const handleMapLoad = () => setMapLoaded(true);
-
-  const handleViewStateChange = ({ viewState }) => {
-    setViewport(viewState);
-  };
-
-  //loads map on page load
+  //Fetch data on load
   useEffect(() => {
     //gets latest data -> returns a promise
     const states_data = get_states_data(
@@ -51,111 +60,167 @@ export default function Map() {
     );
     //set the fetched data into state
     county_data.then((response) => {
-      console.log(response);
       setCountyData(CountyBoundaries);
-      console.log(CountyBoundaries);
+      // console.log(CountyBoundaries);
     });
+  }, []);
 
-    if (mapLoaded) {
-      const map = mapRef.current.getMap();
-      const visibleFeatures = map.queryRenderedFeatures();
-      console.log("visible features: ", visibleFeatures);
-    }
-  }, [mapLoaded, mapRef]);
-
-  function onHover(event) {
-    // console.log(event);
-    // const temp = getMap();
+  //Handle hover features
+  const onHover = (event) => {
     const {
       features,
+      point,
       srcEvent: { offsetX, offsetY },
     } = event;
 
+    //This is for the Hover Label
     const feature =
       features &&
       features.find((f) => {
-        if (f.layer.id === "data") {
+        if (f.layer.id === "data" || f.layer.id === "county-data") {
+          // console.log(f);
           return f;
         }
       });
-    // console.log(hover);
-
     setHoveredFeature({ feature, x: offsetX, y: offsetY });
-  }
 
-  function renderTooltip() {
+    //This is to return the data within the layer and change the hover opacity
+    const map = mapRef.current.getMap();
+    const featured = map.queryRenderedFeatures(point, {
+      layers: ["data", "county-data"],
+    })[0];
+    if (featured) {
+      map.setFeatureState(
+        {
+          source: "county-data",
+          id: featured.id,
+        },
+        {
+          hover: true,
+        }
+      );
+      map.setFeatureState(
+        {
+          source: "states-data",
+          id: featured.id,
+        },
+        {
+          hover: true,
+        }
+      );
+      setTempFeature(featured);
+    }
+  };
+
+  //Handle when user leaves hovered state or county
+  const onMouseMove = (event) => {
+    const map = mapRef.current.getMap();
+    if (TempFeature) {
+      map.setFeatureState(
+        {
+          source: "county-data",
+          id: TempFeature.id,
+        },
+        {
+          hover: false,
+        }
+      );
+      map.setFeatureState(
+        {
+          source: "states-data",
+          id: TempFeature.id,
+        },
+        {
+          hover: false,
+        }
+      );
+      setTempFeature(null);
+    }
+  };
+
+  //Handle click of state or county -> Zooms in
+  const onClick = (event) => {
+    const feature = event.features[0];
+    if (feature) {
+      // calculate the bounding box of the feature
+      const [minLng, minLat, maxLng, maxLat] = bbox(feature);
+      // construct a viewport instance from the current state
+      const viewport = new WebMercatorViewport(localViewState);
+      const { longitude, latitude, zoom } = viewport.fitBounds(
+        [
+          [minLng, minLat],
+          [maxLng, maxLat],
+        ],
+        {
+          padding: 100,
+        }
+      );
+      setLocalViewState({
+        ...initialViewport,
+        longitude,
+        latitude,
+        zoom: 6.5,
+        transitionInterpolator: new LinearInterpolator({
+          around: [event.offsetCenter.x, event.offsetCenter.y],
+        }),
+        transitionDuration: 1000,
+      });
+
+      //To Do
+      //On Click Send State/County feature data to Plot
+      setPlotData(feature);
+    }
+  };
+
+  const handleMapLoad = () => setMapLoaded(true);
+
+  const handleViewStateChange = ({ viewState }) => {
+    setLocalViewState(viewState);
+  };
+
+  const renderTooltip = () => {
     const { feature, x, y } = hoveredFeature;
-    return (
-      feature && (
+    if (feature) {
+      const stateTag = (
         <div className="tooltip" style={{ left: x, top: y }}>
           <div>State: {feature.properties.name}</div>
         </div>
-      )
-    );
-  }
+      );
 
-  //recieves a pointer event
-  function onMouseMove(event) {
-    const { point, lngLat, type, srcEvent } = event;
-    // console.log(event);
-    // if (features.length > 0) {
-    //   console.log(event);
-    //   // console.log(`mousemove, ${1}`);
-    // }
-    // console.log(event.target);
-    // InteractiveMap.queryRenderedFeatures(point);
-  }
+      const countyTag = (
+        <div className="tooltip" style={{ left: x, top: y }}>
+          <div>County: {feature.properties.NAME}</div>
+        </div>
+      );
 
-  //recieves a pointer event
-  function onMouseLeave(event) {
-    const { features } = event;
-    // if (features.length > 0) {
-    //   console.log(event);
-    //   // console.log(`mousemove, ${1}`);
-    // }
-    // mapRef.current.queryRenderedFeatures();
-  }
+      const tag = feature.source === "states-data" ? stateTag : countyTag;
+
+      return tag;
+    }
+  };
 
   return (
     <MapGL
+      {...localViewState}
       mapboxApiAccessToken={ACCESS_TOKEN}
       mapStyle="mapbox://styles/mapbox/dark-v10"
-      {...viewport}
       ref={mapRef}
       onLoad={handleMapLoad}
-      onViewportChange={handleViewStateChange}
-      // onHover={onHover}
-      // onMouseMove={onMouseMove}
-      // onMouseLeave={onMouseLeave}
-      // interactiveLayerIds={["data", "county-data"]}
+      onViewStateChange={handleViewStateChange}
+      onHover={onHover}
+      onMouseMove={onMouseMove}
+      onClick={onClick}
+      interactiveLayerIds={["data", "county-data"]}
     >
       <Source id="states-data" type="geojson" data={StatesData}>
-        <Layer key={0} {...StateDeathStyle} />
+        <Layer key={"state"} {...StateDeathStyle} />
       </Source>
       <Source id="county-data" type="geojson" data={CountyData}>
-        <Layer
-          key={1}
-          {...CountyDeathStyle}
-          paint={{
-            "fill-color": {
-              property: "Deaths",
-              stops: [
-                [0, "#fff5f0"],
-                [50, "#fee0d2"],
-                [100, "#fcbba1"],
-                [500, "#fc9272"],
-                [1000, "#fb6a4a"],
-                [1500, "#ef3b2c"],
-                [2500, "#cb181d"],
-                [5000, "#99000d"],
-              ],
-            },
-            "fill-opacity": hover,
-          }}
-        />
-        <Layer key={2} {...CountyOutlineStyle} />
+        <Layer key={"county"} {...CountyDeathStyle} />
+        <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
       </Source>
+      <Plot style={{}} feature={plotData} data={CountyBoundaries} />
       {!!hoveredFeature && renderTooltip()}
     </MapGL>
   );
-}
+};

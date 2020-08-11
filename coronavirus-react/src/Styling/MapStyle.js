@@ -1,3 +1,4 @@
+//State Styling
 export const StateDeathStyle = {
   id: "data",
   type: "fill",
@@ -78,21 +79,3 @@ export const CountyDeathStyle = {
   },
   minzoom: 5.5,
 };
-
-//paint = {{...paint, fill-opacity: variable}}
-
-// paint: {
-//   "fill-color": {
-//     property: "Deaths",
-//     //red colors
-//     stops: [
-//       [0, "#fff5f0"],
-//       [50, "#fee0d2"],
-//       [100, "#fcbba1"],
-//       [500, "#fc9272"],
-//       [1000, "#fb6a4a"],
-//       [1500, "#ef3b2c"],
-//       [2500, "#cb181d"],
-//       [5000, "#99000d"],
-//     ],
-//   },

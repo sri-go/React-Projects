@@ -1,4 +1,4 @@
-import csv2geojson from "csv2geojson";
+import csv2geojson, { csv } from "csv2geojson";
 import * as _ from "underscore";
 import StatesBoundaries from "./StateBoundaries.json";
 import CountyBoundaries from "./CountyBoundaries.json";
@@ -15,7 +15,7 @@ export const get_states_data = async function (url) {
           var us_subsect = filter_us_data(data);
           var calc_total = calc_totals(us_subsect);
           var combined_data = combine_files(calc_total);
-          console.log(combined_data);
+          // console.log(combined_data);
         });
       }
     });
@@ -33,11 +33,23 @@ export const get_counties_data = async function (url) {
           var us_only_counties = filter_counties(data);
           var calc_county_totals = county_totals(us_only_counties);
           var combined_data = combined_county(calc_county_totals);
-          console.log(combined_data);
+          // console.log(combined_data);
         });
       }
     });
   return countyData;
+};
+
+// Data for 2-week
+export const get_time_series = async function (url) {
+  const timeSeries = await fetch(url)
+    .then((response) => {
+      return response.text();
+    })
+    .then((response) => {
+      return csv(response);
+    });
+  return timeSeries;
 };
 
 //County Level Data
