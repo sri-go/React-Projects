@@ -20,14 +20,15 @@ import {
   get_time_series,
 } from "../Data/FetchData";
 import Plot from "./plot";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 //Initalize Viewport
 const initialViewport = {
-  width: "100vw",
-  height: "100vh",
   latitude: 39.5,
   longitude: -98.35,
   zoom: 3,
+  width: "100vw",
+  height: "100vh",
 };
 
 //Mapbox Access Token -> to do: move to env file later
@@ -78,7 +79,6 @@ export const Map = () => {
       features &&
       features.find((f) => {
         if (f.layer.id === "data" || f.layer.id === "county-data") {
-          // console.log(f);
           return f;
         }
       });
@@ -182,14 +182,27 @@ export const Map = () => {
     const { feature, x, y } = hoveredFeature;
     if (feature) {
       const stateTag = (
-        <div className="tooltip" style={{ left: x, top: y }}>
-          <div>State: {feature.properties.name}</div>
+        <div className="tooltip" style={{ padding: "10px", left: x, top: y }}>
+          <div>{feature.properties.name}</div>
+          <div style={{ marginTop: "5px" }}>
+            Total Confirmed Cases: {feature.properties.Confirmed}
+          </div>
         </div>
       );
 
       const countyTag = (
-        <div className="tooltip" style={{ left: x, top: y }}>
-          <div>County: {feature.properties.NAME}</div>
+        <div
+          className="tooltip"
+          style={{
+            padding: "10px",
+            left: x,
+            top: y,
+          }}
+        >
+          <div>{feature.properties.NAME} County</div>
+          <div style={{ marginTop: "5px" }}>
+            Total Number of Cases: {feature.properties.Confirmed}
+          </div>
         </div>
       );
 
@@ -200,27 +213,35 @@ export const Map = () => {
   };
 
   return (
-    <MapGL
-      {...localViewState}
-      mapboxApiAccessToken={ACCESS_TOKEN}
-      mapStyle="mapbox://styles/mapbox/dark-v10"
-      ref={mapRef}
-      onLoad={handleMapLoad}
-      onViewStateChange={handleViewStateChange}
-      onHover={onHover}
-      onMouseMove={onMouseMove}
-      onClick={onClick}
-      interactiveLayerIds={["data", "county-data"]}
-    >
-      <Source id="states-data" type="geojson" data={StatesData}>
-        <Layer key={"state"} {...StateDeathStyle} />
-      </Source>
-      <Source id="county-data" type="geojson" data={CountyData}>
-        <Layer key={"county"} {...CountyDeathStyle} />
-        <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
-      </Source>
-      <Plot style={{}} feature={plotData} data={CountyBoundaries} />
-      {!!hoveredFeature && renderTooltip()}
-    </MapGL>
+    <div style={{ display: "flex" }}>
+      <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+        <MapGL
+          {...localViewState}
+          width="100%"
+          height="100%"
+          mapboxApiAccessToken={ACCESS_TOKEN}
+          mapStyle="mapbox://styles/mapbox/dark-v10"
+          ref={mapRef}
+          onLoad={handleMapLoad}
+          onViewStateChange={handleViewStateChange}
+          onHover={onHover}
+          onMouseMove={onMouseMove}
+          onClick={onClick}
+          interactiveLayerIds={["data", "county-data"]}
+        >
+          <Source id="states-data" type="geojson" data={StatesData}>
+            <Layer key={"state"} {...StateDeathStyle} />
+          </Source>
+          <Source id="county-data" type="geojson" data={CountyData}>
+            <Layer key={"county"} {...CountyDeathStyle} />
+            <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
+          </Source>
+          {!!hoveredFeature && renderTooltip()}
+        </MapGL>
+      </div>
+      <div style={{ marginLeft: "20px" }}>
+        <Plot feature={plotData}></Plot>
+      </div>
+    </div>
   );
 };
