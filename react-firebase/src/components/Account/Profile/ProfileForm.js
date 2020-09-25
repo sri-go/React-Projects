@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
-import { Form, Input, InputNumber, Button, message } from "antd";
+import { Form, Input, InputNumber, Button, Typography, message } from "antd";
 
 import { ProfileImage } from "./profileImage";
 
@@ -20,6 +20,8 @@ const INITIAL_STATE = {
   introduction: "",
   profileURL: "",
 };
+
+const { Title } = Typography;
 
 const ProfileForm = (props) => {
   const [form] = Form.useForm();
@@ -232,36 +234,31 @@ const ProfileForm = (props) => {
       initialValues={{ ...profileData }}
       validateMessages={validateMessages}
     >
+      {/* Profile Picture */}
       <ProfileImage
         style={{ width: "100vw", height: "100%" }}
         firebase={firebase}
         authUser={authUser}
         returnData={uploadPic}
       />
+      <Title level={5} className="site-description-item-profile-p">
+        Personal Information
+      </Title>
       <Form.Item name="name" label="Name">
         <Input type="text" />
       </Form.Item>
+      <Form.Item name="introduction" label="Introduction">
+        <Input.TextArea placeholder="Tell other alumni about yourself" />
+      </Form.Item>
+
+      <Title level={5} className="site-description-item-profile-p">
+        Contact Information
+      </Title>
       <Form.Item name="email" label="Email">
         <Input rules={[{ required: true, type: "email" }]} />
       </Form.Item>
-      <Form.Item
-        name="graduationYear"
-        label="Graduation Year"
-        rules={[{ required: true, type: "number", min: 2014, max: 3000 }]}
-      >
-        <InputNumber />
-      </Form.Item>
-      <Form.Item
-        name="initiationClass"
-        label="Initation Class"
-        rules={[
-          {
-            required: true,
-            message: "Please input your initiation class!",
-          },
-        ]}
-      >
-        <Input placeholder="What Initiation Class Are You (Alpha, Beta...)" />
+      <Form.Item name="phoneNumber" label="Phone Number">
+        <Input placeholder="Phone Number" type="tel" />
       </Form.Item>
       <Form.Item
         name="portfolioLink"
@@ -277,18 +274,58 @@ const ProfileForm = (props) => {
       >
         <Input placeholder="https://www.linkedin.com/" type="url" />
       </Form.Item>
+      <Form.Item
+        name="githubLink"
+        label="GitHub Link"
+        rules={[{ type: "url" }]}
+      >
+        <Input placeholder="https://www.github.com/" type="url" />
+      </Form.Item>
       <Form.Item name="igLink" label="Instagram Handle">
         <Input
           placeholder="What's your IG Profile (ex: kingjames)"
           type="text"
         />
       </Form.Item>
-      <Form.Item name="phoneNumber" label="Phone Number">
-        <Input placeholder="Phone Number" type="tel" />
+
+      {/* Academic Information */}
+      <Title level={5} className="site-description-item-profile-p">
+        Academic Information
+      </Title>
+      <Form.Item
+        name="graduationYear"
+        label="Graduation Year"
+        rules={[{ required: true, type: "number", min: 2014, max: 3000 }]}
+      >
+        <InputNumber />
       </Form.Item>
-      <Form.Item name="introduction" label="Introduction">
-        <Input.TextArea placeholder="Tell other alumni about yourself" />
+      <Form.Item name="degree" label="Degree">
+        <Input />
       </Form.Item>
+      <Form.Item name="major" label="Major">
+        <Input />
+      </Form.Item>
+      <Form.Item name="highSchoolName" label="High School Name">
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="initiationClass"
+        label="Initation Class"
+        rules={[
+          {
+            required: true,
+            message: "Please input your initiation class!",
+          },
+        ]}
+      >
+        <Input placeholder="What Initiation Class Are You (Alpha, Beta...)" />
+      </Form.Item>
+
+      {/* Work Experience Section */}
+      <Title level={5} className="site-description-item-profile-p">
+        Work Experience
+      </Title>
+
       <Form.Item>
         <Button type="primary" htmlType="submit">
           Update Profile
