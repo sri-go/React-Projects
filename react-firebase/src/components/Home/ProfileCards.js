@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import { compose } from "recompose";
 import { withFirebase } from "../Firebase";
 
-import { Row, Col, Divider, Card, Drawer, Image, Typography } from "antd";
+import { Row, Col, Divider, Card, Drawer, Avatar, Space } from "antd";
 import {
   InstagramOutlined,
   LinkedinOutlined,
   MailOutlined,
   UserOutlined,
+  GithubOutlined,
+  LinkOutlined,
+  PhoneOutlined,
 } from "@ant-design/icons";
-import Avatar from "antd/lib/avatar/avatar";
 
 const { Meta } = Card;
-const { Title, Text, Paragraph } = Typography;
 
 const ProfileCards = (props) => {
   const [profileData, setProfileData] = useState(null);
@@ -44,23 +45,6 @@ const ProfileCards = (props) => {
 };
 
 /*
-    fetch data
-    -> firebase userProfiles
-    -> firebase storage
-    
-    process data
-    -> 
-    
-    display data
-    -> antd Card 
-    -> maybe use the drawer to display more information about themselves
-    -> resume upload?
-    
-    scenarios:
-     -> no users -> display empty page/no users added page
-*/
-
-/*
 email: "lebron@gmail.com"
 graduationYear: 2020
 igLink: "kingJames"
@@ -71,41 +55,69 @@ name: "Lebron James"
 phoneNumber: "6143520445"
 portfolioLink: "https://www.google.com"
 profileURL: "https://firebasestorage.googleapis.com/v0/b/react-firebase-tutorial-2c3b8.appspot.com/o/profileImages%2FeiwVgqRMgsZrSKIjZu5M950j0gq1%2FDSC_9055.jpg?alt=;
+
+
+<Paragraph style={{fontSize: 14px}}>{title}</Paragraph>
+<Paragraph style={{fontSize: 16px}}>{content}</Paragraph>
 */
+
 const DescriptionItem = ({ title, content }) => (
-  <div className="site-description-item-profile-wrapper">
-    <Paragraph className="site-description-item-profile-p-label">
-      {title}: {content}
-    </Paragraph>
+  <div
+    style={{
+      display: "flex",
+      marginBottom: "7px",
+      fontSize: "16px",
+      lineHeight: "1.5715",
+    }}
+  >
+    <p
+      style={{
+        display: "inline",
+        marginRight: "5px",
+        color: "rgb(255 255 255 / 44%)",
+      }}
+    >
+      {title}:
+    </p>
+    <p
+      style={{
+        color: "rgb(255 255 255 / 85%)",
+      }}
+    >
+      {content}
+    </p>
   </div>
 );
 
 const ProfileCard = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const {
+    profileURL,
     name,
+    tagline,
+    introduction,
+    birthday,
+    currentLocation,
     email,
-    graduationYear,
-    initiationClass,
+    phoneNumber,
+    hometown,
     igLink,
     linkedInLink,
-    phoneNumber,
     portfolioLink,
-    profileURL,
+    graduationYear,
+    initiationClass,
+    degree,
+    major,
+    highschool,
   } = props.user;
-  // console.log(props.user);
 
   const onClick = (e) => {
-    console.log(e);
     setShowDrawer(true);
   };
 
   const onClose = (e) => {
-    console.log(e);
     setShowDrawer(false);
   };
-
-  //style={{ height: "240px", width: "240px" }}
 
   return (
     <Col span={8} style={{ margin: "50px 0" }}>
@@ -150,105 +162,116 @@ const ProfileCard = (props) => {
         />
       </Card>
       <Drawer
-        width={1000}
+        width={600}
         placement="right"
         closable={false}
         onClose={onClose}
         visible={showDrawer}
       >
-        {/* <p
-          className="site-description-item-profile-p"
-          style={{ marginBottom: 24 }}
+        {/* Top Info */}
+        <Row align="middle" justify="center">
+          <Col span={24} style={{ fontSize: "18px", textAlign: "center" }}>
+            <Avatar shape="circle" size="large" src={profileURL} />
+            <p style={{ margin: "10px 0px" }}>{tagline}</p>
+            <p style={{ fontSize: "14px" }}>{introduction}</p>
+          </Col>
+        </Row>
+        {/* Personal Info */}
+        <Divider
+          style={{ fontSize: "24px", color: "rgb(255 255 255 / 44%)" }}
+          type="horizontal"
+          orientation="center"
         >
-          User Profile
-        </p> */}
-        <Title level={3} className="site-description-item-profile-p">
-          Personal
-        </Title>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Full Name" content={name} />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Account" content="AntDesign@example.com" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="City" content="HangZhou" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Country" content="China🇨🇳" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Birthday" content="February 2,1900" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Website" content="-" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Message"
-              content="Make things:simple as possible but no simpler."
-            />
-          </Col>
-        </Row>
-        <Divider />
-        <Title level={3} className="site-description-item-profile-p">
-          Academic information
-        </Title>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Position" content="Programmer" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Responsibilities" content="Coding" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Department" content="XTech" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Supervisor" content={<a>Lin</a>} />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Skills"
-              content="C / C + +, data structures, software engineering, operating systems, computer networks, databases, compiler theory, computer architecture, Microcomputer Principle and Interface Technology, Computer English, Java, ASP, etc."
-            />
-          </Col>
-        </Row>
-        <Divider />
-        <Title level={3} className="site-description-item-profile-p">
-          Contacts
-        </Title>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Email" content={email} />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Phone Number" content="+86 181 0000 0000" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Github"
-              content={
-                <a href="http://github.com/ant-design/ant-design/">
-                  github.com/ant-design/ant-design/
-                </a>
-              }
-            />
-          </Col>
-        </Row>
+          Personal Information{" "}
+        </Divider>
+        <Space direction="vertical">
+          <Row>
+            <Col span={24}>
+              <DescriptionItem title="Full Name" content={name} />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <DescriptionItem
+                title="Current Location"
+                content={currentLocation}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <DescriptionItem title="Birthday" content="February 2,1900" />
+            </Col>
+          </Row>
+        </Space>
+        {/* Academic Information */}
+        <Divider
+          style={{ fontSize: "24px", color: "rgb(255 255 255 / 44%)" }}
+          type="horizontal"
+          orientation="center"
+        >
+          Academic Information
+        </Divider>
+        <Space direction="vertical">
+          <Row>
+            <Col span={24}>
+              <DescriptionItem title="Degree" content={degree} />
+            </Col>
+            <Col span={24}>
+              <DescriptionItem title="Major" content={major} />
+            </Col>
+            <Col span={24}>
+              <DescriptionItem
+                title="Graduation Year"
+                content={graduationYear}
+              />
+            </Col>
+            <Col span={24}>
+              <DescriptionItem title="High School" content={highschool} />
+            </Col>
+          </Row>
+        </Space>
+        {/* Contact Infromation */}
+        <Divider
+          style={{ fontSize: "24px", color: "rgb(255 255 255 / 44%)" }}
+          type="horizontal"
+          orientation="center"
+        >
+          Contact Information
+        </Divider>
+        <Space direction="vertical">
+          <Row>
+            <Col span={24}>
+              <DescriptionItem
+                title=<MailOutlined />
+                content={<a href={`mailto:${email}`}>{email}</a>}
+              />
+            </Col>
+            <Col span={24}>
+              <DescriptionItem title=<PhoneOutlined /> content={phoneNumber} />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <DescriptionItem
+                title=<LinkedinOutlined />
+                content={<a href={linkedInLink}>{linkedInLink}</a>}
+              />
+            </Col>
+            <Col span={24}>
+              <DescriptionItem
+                title=<LinkOutlined />
+                content={<a href={portfolioLink}>{portfolioLink}</a>}
+              />
+            </Col>
+            <Col span={24}>
+              <DescriptionItem
+                title=<GithubOutlined />
+                content={<a href={portfolioLink}>{portfolioLink}</a>}
+              />
+            </Col>
+          </Row>
+        </Space>
       </Drawer>
     </Col>
   );

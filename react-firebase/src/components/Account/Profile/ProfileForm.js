@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { compose } from "recompose";
-import { Form, Input, InputNumber, Button, Typography, message } from "antd";
+import { Form, Input, Button, Typography, DatePicker, message } from "antd";
 
 import { ProfileImage } from "./profileImage";
 
@@ -9,16 +9,22 @@ import * as ROUTES from "../../../constants/routes";
 import { withFirebase } from "../../Firebase";
 
 const INITIAL_STATE = {
-  email: "",
   name: "",
-  graduationYear: null,
-  initiationClass: "",
-  portfolioLink: "",
+  tagline: "",
+  introduction: "",
+  birthday: null,
+  currentLocation: "",
+  email: "",
+  phoneNumber: "",
+  hometown: "",
   igLink: "",
   linkedInLink: "",
-  phoneNumber: "",
-  introduction: "",
-  profileURL: "",
+  portfolioLink: "",
+  graduationYear: "",
+  initiationClass: "",
+  degree: "",
+  major: "",
+  highschool: "",
 };
 
 const { Title } = Typography;
@@ -36,18 +42,23 @@ const ProfileForm = (props) => {
     props.firebase.userProfile(authUser.uid).on("value", (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        console.log(data);
         form.setFieldsValue({
           name: data.name,
+          tagline: data.tagline,
+          introduction: data.introduction,
+          birthday: data.birthday,
+          currentLocation: data.currentLocation,
           email: data.email,
-          graduationYear: data.graduationYear,
-          initiationClass: data.initiationClass,
-          portfolioLink: data.portfolioLink,
+          phoneNumber: data.phoneNumber,
+          hometown: data.hometown,
           igLink: data.igLink,
           linkedInLink: data.linkedInLink,
-          phoneNumber: data.phoneNumber,
-          introduction: data.introduction,
-          profileURL: data.profileURL,
+          portfolioLink: data.portfolioLink,
+          graduationYear: data.graduationYear,
+          initiationClass: data.initiationClass,
+          degree: data.degree,
+          major: data.major,
+          highschool: data.highschool,
         });
         setProfileData({ ...data });
       } else {
@@ -143,7 +154,6 @@ const ProfileForm = (props) => {
           .update(stringifyData)
           .then(() => {
             onSuccess();
-            // message.success("Successfully updated profile!", 3);
           })
           .then(() => {
             history.push(ROUTES.HOME);
@@ -163,30 +173,47 @@ const ProfileForm = (props) => {
 
   //on form change
   const onChange = (changedValues, allValues) => {
+    console.log(allValues);
     const {
       name,
+      tagline,
+      introduction,
+      birthday,
+      currentLocation,
       email,
-      graduationYear,
-      initiationClass,
+      phoneNumber,
+      hometown,
       igLink,
       linkedInLink,
       portfolioLink,
-      phoneNumber,
-      introduction,
+      initiationClass,
+      degree,
+      major,
+      highschool,
     } = allValues;
 
     setProfileData({
       ...profileData,
       name: name,
+      tagline: tagline,
+      introduction: introduction,
+      birthday: birthday,
+      currentLocation: currentLocation,
       email: email,
-      graduationYear: graduationYear,
-      initiationClass: initiationClass,
+      phoneNumber: phoneNumber,
+      hometown: hometown,
       igLink: igLink,
       linkedInLink: linkedInLink,
       portfolioLink: portfolioLink,
-      phoneNumber: phoneNumber,
-      introduction: introduction,
+      initiationClass: initiationClass,
+      degree: degree,
+      major: major,
+      highschool: highschool,
     });
+  };
+
+  const onChangeDate = (value, dateString) => {
+    console.log(value, dateString);
   };
 
   //on form failure
@@ -198,7 +225,7 @@ const ProfileForm = (props) => {
   const uploadPic = (filelist, deleteStatus) => {
     setFileList(filelist);
     setDeleteStatus(deleteStatus);
-    console.log("post filelist", fileList);
+    // console.log("post filelist", fileList);
   };
 
   //form layout
@@ -241,91 +268,104 @@ const ProfileForm = (props) => {
         authUser={authUser}
         returnData={uploadPic}
       />
-      <Title level={5} className="site-description-item-profile-p">
-        Personal Information
-      </Title>
-      <Form.Item name="name" label="Name">
-        <Input type="text" />
-      </Form.Item>
-      <Form.Item name="introduction" label="Introduction">
-        <Input.TextArea placeholder="Tell other alumni about yourself" />
-      </Form.Item>
-
-      <Title level={5} className="site-description-item-profile-p">
-        Contact Information
-      </Title>
-      <Form.Item name="email" label="Email">
-        <Input rules={[{ required: true, type: "email" }]} />
-      </Form.Item>
-      <Form.Item name="phoneNumber" label="Phone Number">
-        <Input placeholder="Phone Number" type="tel" />
-      </Form.Item>
-      <Form.Item
-        name="portfolioLink"
-        label="Personal Website URL"
-        rules={[{ type: "url" }]}
-      >
-        <Input placeholder="URL of your website" type="url" autoComplete="" />
-      </Form.Item>
-      <Form.Item
-        name="linkedInLink"
-        label="LinkedIn URL"
-        rules={[{ type: "url" }]}
-      >
-        <Input placeholder="https://www.linkedin.com/" type="url" />
-      </Form.Item>
-      <Form.Item
-        name="githubLink"
-        label="GitHub Link"
-        rules={[{ type: "url" }]}
-      >
-        <Input placeholder="https://www.github.com/" type="url" />
-      </Form.Item>
-      <Form.Item name="igLink" label="Instagram Handle">
-        <Input
-          placeholder="What's your IG Profile (ex: kingjames)"
-          type="text"
-        />
-      </Form.Item>
-
+      {/* Personal Information */}
+      <>
+        <Title level={5} className="site-description-item-profile-p">
+          Personal Information
+        </Title>
+        <Form.Item name="name" label="Name">
+          <Input type="text" />
+        </Form.Item>
+        <Form.Item name="tagline" label="Tag Line" required>
+          <Input placeholder="Describe yourself in 10 words or less" />
+        </Form.Item>
+        <Form.Item name="introduction" label="Introduction">
+          <Input.TextArea placeholder="Tell other alumni about yourself" />
+        </Form.Item>
+        <Form.Item name="birthday" label="Birthday">
+          {/* <DatePicker picker="date" onChange={onChangeDate} /> */}
+        </Form.Item>
+        <Form.Item name="currentLocation" label="Current Location">
+          <Input placeholder="Cleveland, OH" />
+        </Form.Item>
+      </>
+      {/* Contact Information */}
+      <>
+        <Title level={5} className="site-description-item-profile-p">
+          Contact Information
+        </Title>
+        <Form.Item name="email" label="Email">
+          <Input rules={[{ required: true, type: "email" }]} />
+        </Form.Item>
+        <Form.Item name="phoneNumber" label="Phone Number">
+          <Input placeholder="Phone Number" type="tel" />
+        </Form.Item>
+        <Form.Item name="hometown" label="Hometown">
+          <Input placeholder="Cleveland, OH" />
+        </Form.Item>
+        <Form.Item
+          name="portfolioLink"
+          label="Personal Website URL"
+          rules={[{ type: "url" }]}
+        >
+          <Input placeholder="URL of your website" type="url" autoComplete="" />
+        </Form.Item>
+        <Form.Item
+          name="linkedInLink"
+          label="LinkedIn URL"
+          rules={[{ type: "url" }]}
+        >
+          <Input placeholder="https://www.linkedin.com/" type="url" />
+        </Form.Item>
+        <Form.Item
+          name="githubLink"
+          label="GitHub Link"
+          rules={[{ type: "url" }]}
+        >
+          <Input placeholder="https://www.github.com/" type="url" />
+        </Form.Item>
+        <Form.Item name="igLink" label="Instagram Handle">
+          <Input
+            placeholder="What's your IG Profile (ex: kingjames)"
+            type="text"
+          />
+        </Form.Item>
+      </>
       {/* Academic Information */}
-      <Title level={5} className="site-description-item-profile-p">
-        Academic Information
-      </Title>
-      <Form.Item
-        name="graduationYear"
-        label="Graduation Year"
-        rules={[{ required: true, type: "number", min: 2014, max: 3000 }]}
-      >
-        <InputNumber />
-      </Form.Item>
-      <Form.Item name="degree" label="Degree">
-        <Input />
-      </Form.Item>
-      <Form.Item name="major" label="Major">
-        <Input />
-      </Form.Item>
-      <Form.Item name="highSchoolName" label="High School Name">
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="initiationClass"
-        label="Initation Class"
-        rules={[
-          {
-            required: true,
-            message: "Please input your initiation class!",
-          },
-        ]}
-      >
-        <Input placeholder="What Initiation Class Are You (Alpha, Beta...)" />
-      </Form.Item>
-
-      {/* Work Experience Section */}
-      <Title level={5} className="site-description-item-profile-p">
-        Work Experience
-      </Title>
-
+      <>
+        <Title level={5} className="site-description-item-profile-p">
+          Academic Information
+        </Title>
+        <Form.Item
+          name="graduationYear"
+          label="Graduation Year"
+          rules={[{ required: true, type: "number", min: 2014, max: 3000 }]}
+        >
+          {/* <DatePicker picker="year" onChange={onChangeDate} /> */}
+        </Form.Item>
+        <Form.Item
+          name="initiationClass"
+          label="Initation Class"
+          rules={[
+            {
+              required: true,
+              message: "Please input your initiation class!",
+            },
+          ]}
+        >
+          <Input placeholder="What Initiation Class Are You (Alpha, Beta...)" />
+        </Form.Item>
+        <Form.Item name="degree" label="Degree">
+          <Input />
+        </Form.Item>
+        <Form.Item name="major" label="Major">
+          <Input />
+        </Form.Item>
+        <Form.Item name="highschool" label="High School Name">
+          <Input />
+        </Form.Item>
+      </>
+      {/* Submit */}
       <Form.Item>
         <Button type="primary" htmlType="submit">
           Update Profile
@@ -336,64 +376,3 @@ const ProfileForm = (props) => {
 };
 
 export default compose(withRouter, withFirebase)(ProfileForm);
-
-/*
-<form onSubmit={onSubmit}>
-      <input name="profilePic" ref={fileInput} type="file" accept="image/*" />
-      <input
-        name="email"
-        value={email}
-        onChange={onChange}
-        type="text"
-        placeholder="Email Address"
-      />
-      <input
-        name="graduationYear"
-        value={graduationYear}
-        onChange={onChange}
-        type="number"
-        min={1000}
-        max={9999}
-        placeholder="Graduation Year"
-        required={true}
-      />
-      <input
-        name="initiationClass"
-        value={initiationClass}
-        onChange={onChange}
-        type="text"
-        placeholder="Initiation Class"
-        required={true}
-      />
-      <input
-        name="aboutYourself"
-        value={aboutYourself}
-        type="text"
-        onChange={onChange}
-        placeholder="Briefly introduce yourself to fellow DSPs"
-        required={true}
-      />
-      <input
-        name="linkedInLink"
-        value={linkedInLink}
-        onChange={onChange}
-        type="text"
-        placeholder="LinkedIn Profile"
-      />
-      <input
-        name="igLink"
-        value={igLink}
-        onChange={onChange}
-        type="text"
-        placeholder="IG Username"
-      />
-      <input
-        name="portfolioLink"
-        value={portfolioLink}
-        onChange={onChange}
-        type="text"
-        placeholder="Portfolio URL"
-      />
-      <button type="submit">Update Profile</button>
-    </form>
-*/

@@ -9,8 +9,6 @@ import { withFirebase } from "../Firebase";
 const HomePage = () => (
   <Row align="center">
     <Col align="center">
-      <h1>Home Page</h1>
-      <p>The Home Page is accessible by every signed in user.</p>
       <Row gutter={16}>
         <ProfileCards />
       </Row>

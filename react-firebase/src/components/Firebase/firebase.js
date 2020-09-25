@@ -41,7 +41,9 @@ class Firebase {
   doSignInWithFacebook = () => this.auth.signInWithPopup(this.facebookProvider);
 
   doSignOut = () => {
-    this.auth.signOut();
+    this.auth
+      .signOut()
+      .catch((error) => console.log(error));
   };
 
   doPasswordReset = (email) => this.auth.sendPasswordResetEmail(email);
