@@ -28,6 +28,7 @@ const ProfileCards = (props) => {
         const data = snapshot.val();
         //iterate over data and push each object to an array
         for (let key in data) {
+          data[key].graduationYear = data[key].graduationYear.split("-")[0];
           userData.push(data[key]);
         }
       }
@@ -38,8 +39,8 @@ const ProfileCards = (props) => {
 
   return (
     profileData &&
-    profileData.map((data) => {
-      return <ProfileCard user={data} />;
+    profileData.map((data, index) => {
+      return <ProfileCard key={index} user={data} />;
     })
   );
 };
@@ -91,6 +92,7 @@ const DescriptionItem = ({ title, content }) => (
 
 const ProfileCard = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
+
   const {
     profileURL,
     name,
@@ -110,6 +112,8 @@ const ProfileCard = (props) => {
     major,
     highschool,
   } = props.user;
+
+  // console.log(graduationYear);
 
   const onClick = (e) => {
     setShowDrawer(true);
@@ -143,15 +147,24 @@ const ProfileCard = (props) => {
         actions={[
           <InstagramOutlined
             key="instagram"
-            onClick={() => window.open(`https://www.instagram.com/${igLink}`)}
+            onClick={() => {
+              return igLink
+                ? window.open(`https://www.instagram.com/${igLink}`)
+                : null;
+            }}
           />,
           <LinkedinOutlined
             key="linkedin"
-            onClick={() => window.open(linkedInLink)}
+            onClick={() => {
+              console.log(linkedInLink);
+              return linkedInLink ? window.open(linkedInLink) : null;
+            }}
           />,
           <MailOutlined
             key="mail"
-            onClick={() => window.open(`mailto:${email}`)}
+            onClick={() => {
+              return email ? window.open(`mailto:${email}`) : null;
+            }}
           />,
         ]}
       >
@@ -200,7 +213,7 @@ const ProfileCard = (props) => {
           </Row>
           <Row>
             <Col span={24}>
-              <DescriptionItem title="Birthday" content="February 2,1900" />
+              <DescriptionItem title="Birthday" content={birthday} />
             </Col>
           </Row>
         </Space>

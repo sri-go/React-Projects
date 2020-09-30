@@ -53,7 +53,7 @@ const SignUpFormBase = (props) => {
       .then(() => {
         setUserInfo(INITIAL_STATE);
         setError(null);
-        props.history.push(ROUTES.PROFILE);
+        props.history.push(ROUTES.ACCOUNT);
       })
       .catch((error) => {
         if (error.code === ERROR_CODE_ACCOUNT_EXISTS) {
@@ -66,11 +66,6 @@ const SignUpFormBase = (props) => {
 
   const onChange = (changedValues, allValues) => {
     setUserInfo(allValues);
-  };
-
-  const onChangeCheckbox = (event) => {
-    const { name, checked } = event.target;
-    setUserInfo({ ...userInfo, [name]: checked });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -94,19 +89,7 @@ const SignUpFormBase = (props) => {
 
   return (
     <>
-      {/* {error && (
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <Alert
-            message="Error"
-            description={error.message}
-            type="error"
-            showIcon
-            closable
-            afterClose={handleClose}
-          />
-        </Row>
-      )} */}
-      <Row justify="center">
+      <Row className={props.className} justify="center">
         <Col align="center">
           <Title level={3}>Sign Up Here</Title>
           <Form
@@ -208,50 +191,3 @@ const SignUpLink = () => <Link to={ROUTES.SIGN_UP}>Sign Up</Link>;
 const SignUpForm = compose(withRouter, withFirebase)(SignUpFormBase);
 
 export { SignUpForm, SignUpLink };
-
-/*
-<form onSubmit={onSubmit}>
-      <input
-        name="name"
-        value={name}
-        onChange={onChange}
-        type="text"
-        placeholder="Full Name"
-      />
-      <input
-        name="email"
-        value={email}
-        onChange={onChange}
-        type="text"
-        placeholder="Email Address"
-      />
-      <input
-        name="passwordOne"
-        value={passwordOne}
-        onChange={onChange}
-        type="password"
-        placeholder="Password"
-      />
-      <input
-        name="passwordTwo"
-        value={passwordTwo}
-        onChange={onChange}
-        type="password"
-        placeholder="Confirm Password"
-      />
-      <label>
-        Admin:
-        <input
-          name="isAdmin"
-          type="checkbox"
-          checked={isAdmin}
-          onChange={onChangeCheckbox}
-        />
-      </label>
-      <button disabled={isInvalid} type="submit">
-        Sign Up
-      </button>
-      {error && <p>{error.message}</p>}
-    </form>
-
-*/

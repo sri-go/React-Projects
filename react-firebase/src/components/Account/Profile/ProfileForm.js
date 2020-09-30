@@ -4,21 +4,24 @@ import { compose } from "recompose";
 import { Form, Input, Button, Typography, DatePicker, message } from "antd";
 
 import { ProfileImage } from "./profileImage";
+import moment from "moment";
 
 import * as ROUTES from "../../../constants/routes";
 import { withFirebase } from "../../Firebase";
 
 const INITIAL_STATE = {
+  profileURL: "",
   name: "",
   tagline: "",
   introduction: "",
-  birthday: null,
+  birthday: "",
   currentLocation: "",
   email: "",
   phoneNumber: "",
   hometown: "",
   igLink: "",
   linkedInLink: "",
+  githubLink: "",
   portfolioLink: "",
   graduationYear: "",
   initiationClass: "",
@@ -32,37 +35,45 @@ const { Title } = Typography;
 const ProfileForm = (props) => {
   const [form] = Form.useForm();
   const [profileData, setProfileData] = useState(INITIAL_STATE);
+  const [imageURL, setImageURL] = useState("");
   const [error, setError] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [deleteStatus, setDeleteStatus] = useState(false);
-
   const { authUser, firebase, history } = props;
 
+  const dateFormat = "MM/DD/YYYY";
+
   useEffect(() => {
+    // ON LOAD GET THE DATA FROM DB
     props.firebase.userProfile(authUser.uid).on("value", (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
+        console.log(data);
         form.setFieldsValue({
           name: data.name,
           tagline: data.tagline,
           introduction: data.introduction,
-          birthday: data.birthday,
+          birthday: moment(data.birthday),
           currentLocation: data.currentLocation,
           email: data.email,
           phoneNumber: data.phoneNumber,
           hometown: data.hometown,
           igLink: data.igLink,
           linkedInLink: data.linkedInLink,
+          githubLink: data.githubLink,
           portfolioLink: data.portfolioLink,
-          graduationYear: data.graduationYear,
+          graduationYear: moment(data.graduationYear),
           initiationClass: data.initiationClass,
           degree: data.degree,
           major: data.major,
           highschool: data.highschool,
         });
         setProfileData({ ...data });
+        setImageURL(data.profileURL);
       } else {
-        //on new profile submit or unsubmitted form
+        /*
+      ON NEW USER CREATED, GET NAME + EMAIL FROM AUTH DB
+      */
         props.firebase.user(authUser.uid).on("value", (snapshot) => {
           const data = snapshot.val();
           const { email, name } = data;
@@ -83,16 +94,13 @@ const ProfileForm = (props) => {
   // on form submit
   const onSubmit = (values) => {
     let stringifyData = JSON.parse(JSON.stringify(profileData));
-    console.log("on submit data", stringifyData);
-
-    //if file is added
+    //if a new picture file is uploaded
     if (fileList.length > 0) {
-      console.log(fileList[0]);
+      //upload the picture to storage and retrieve the download url for the image
       firebase
         .profileImage(authUser.uid, fileList[0].name)
         .put(fileList[0].originFileObj)
         .then((snapshot) => {
-          console.log(snapshot);
           let link = snapshot.ref.getDownloadURL();
           return link;
         })
@@ -100,6 +108,7 @@ const ProfileForm = (props) => {
           stringifyData = { ...stringifyData, profileURL: downloadURL };
         })
         .then(() => {
+          //upload the rest of the data to the realtime database
           firebase
             .userProfile(authUser.uid)
             .update(stringifyData)
@@ -110,8 +119,8 @@ const ProfileForm = (props) => {
             });
         })
         .then(() => {
-          onSuccess();
-          // message.success("Successfully created profile!", 3);
+          //message of created message
+          onProfileSuccess();
         })
         .then(() => {
           history.push(ROUTES.HOME);
@@ -124,19 +133,15 @@ const ProfileForm = (props) => {
     }
     //if no pic is uploded
     if (fileList.length === 0) {
-      console.log("url", stringifyData.profileURL);
-
-      //if file exists -> remove from storage, and remove from db
+      //if picture was deleted from storage, remove it from db as well
       if (!!stringifyData.profileURL && deleteStatus) {
-        console.log("pre-removal", stringifyData.profileURL);
         firebase.deleteFromStorage(stringifyData.profileURL);
         stringifyData = { ...stringifyData, profileURL: "" };
         firebase
           .userProfile(authUser.uid)
           .update(stringifyData)
           .then(() => {
-            onSuccess();
-            // message.success("Successfully updated profile!", 3);
+            onUpdatedProfile();
           })
           .then(() => {
             history.push(ROUTES.HOME);
@@ -147,13 +152,13 @@ const ProfileForm = (props) => {
             console.log(error);
           });
       }
-      //else
+      //only profile was updated
       else {
         firebase
           .userProfile(authUser.uid)
           .update(stringifyData)
           .then(() => {
-            onSuccess();
+            onUpdatedProfile();
           })
           .then(() => {
             history.push(ROUTES.HOME);
@@ -167,13 +172,16 @@ const ProfileForm = (props) => {
     }
   };
 
-  const onSuccess = () => {
+  const onProfileSuccess = () => {
     message.success("Successfully created profile!", 3);
+  };
+
+  const onUpdatedProfile = () => {
+    message.success("Successfully updated profile!", 3);
   };
 
   //on form change
   const onChange = (changedValues, allValues) => {
-    console.log(allValues);
     const {
       name,
       tagline,
@@ -185,13 +193,14 @@ const ProfileForm = (props) => {
       hometown,
       igLink,
       linkedInLink,
+      githubLink,
       portfolioLink,
+      graduationYear,
       initiationClass,
       degree,
       major,
       highschool,
     } = allValues;
-
     setProfileData({
       ...profileData,
       name: name,
@@ -205,15 +214,13 @@ const ProfileForm = (props) => {
       igLink: igLink,
       linkedInLink: linkedInLink,
       portfolioLink: portfolioLink,
+      githubLink: githubLink,
+      graduationYear: graduationYear,
       initiationClass: initiationClass,
       degree: degree,
       major: major,
       highschool: highschool,
     });
-  };
-
-  const onChangeDate = (value, dateString) => {
-    console.log(value, dateString);
   };
 
   //on form failure
@@ -225,7 +232,6 @@ const ProfileForm = (props) => {
   const uploadPic = (filelist, deleteStatus) => {
     setFileList(filelist);
     setDeleteStatus(deleteStatus);
-    // console.log("post filelist", fileList);
   };
 
   //form layout
@@ -249,6 +255,10 @@ const ProfileForm = (props) => {
     },
   };
 
+  /*
+    {aboutYourself: "test", birthday: "2020-09-24", currentLocation: "New York, NY", degree: "B.S Engineering", 
+  */
+
   return (
     <Form
       // {...layout}
@@ -263,10 +273,9 @@ const ProfileForm = (props) => {
     >
       {/* Profile Picture */}
       <ProfileImage
-        style={{ width: "100vw", height: "100%" }}
-        firebase={firebase}
         authUser={authUser}
         returnData={uploadPic}
+        snapshot={imageURL}
       />
       {/* Personal Information */}
       <>
@@ -283,7 +292,7 @@ const ProfileForm = (props) => {
           <Input.TextArea placeholder="Tell other alumni about yourself" />
         </Form.Item>
         <Form.Item name="birthday" label="Birthday">
-          {/* <DatePicker picker="date" onChange={onChangeDate} /> */}
+          <DatePicker format={dateFormat} />
         </Form.Item>
         <Form.Item name="currentLocation" label="Current Location">
           <Input placeholder="Cleveland, OH" />
@@ -339,10 +348,16 @@ const ProfileForm = (props) => {
         <Form.Item
           name="graduationYear"
           label="Graduation Year"
-          rules={[{ required: true, type: "number", min: 2014, max: 3000 }]}
+          rules={[
+            {
+              required: true,
+              message: "Please input your graduation year!",
+            },
+          ]}
         >
-          {/* <DatePicker picker="year" onChange={onChangeDate} /> */}
+          <DatePicker picker="year" />
         </Form.Item>
+
         <Form.Item
           name="initiationClass"
           label="Initation Class"

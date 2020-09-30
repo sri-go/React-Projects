@@ -24,46 +24,44 @@ const Navigation = () => {
   );
 };
 
-const NavigationAuth = ({ authUser }) => {
-  return (
-    <Header>
-      <Row justify="end">
-        <Col align="center">
+const NavigationAuth = ({ authUser }) => (
+  <Header>
+    <Row justify="end">
+      <Col align="center">
+        <Button type="link" shape="round" size="middle">
+          <Link
+            style={{ fontSize: "16px" }}
+            to={ROUTES.HOME}
+            component={Typography.Link}
+          >
+            Home
+          </Link>
+        </Button>
+        <Button type="link" shape="round" size="middle">
+          <Link
+            style={{ fontSize: "16px" }}
+            to={ROUTES.ACCOUNT}
+            component={Typography.Link}
+          >
+            Account
+          </Link>
+        </Button>
+        {!!authUser.roles[ROLES.ADMIN] && (
           <Button type="link" shape="round" size="middle">
             <Link
               style={{ fontSize: "16px" }}
-              to={ROUTES.HOME}
+              to={ROUTES.ADMIN}
               component={Typography.Link}
             >
-              Home
+              Admin
             </Link>
           </Button>
-          <Button type="link" shape="round" size="middle">
-            <Link
-              style={{ fontSize: "16px" }}
-              to={ROUTES.ACCOUNT}
-              component={Typography.Link}
-            >
-              Account
-            </Link>
-          </Button>
-          {authUser.roles[ROLES.ADMIN] && (
-            <Button type="link" shape="round" size="middle">
-              <Link
-                style={{ fontSize: "16px" }}
-                to={ROUTES.ADMIN}
-                component={Typography.Link}
-              >
-                Admin
-              </Link>
-            </Button>
-          )}
-          <SignOutButton />
-        </Col>
-      </Row>
-    </Header>
-  );
-};
+        )}
+        <SignOutButton />
+      </Col>
+    </Row>
+  </Header>
+);
 
 const NavigationNonAuth = () => {
   return (

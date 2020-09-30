@@ -1,45 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Switch, Route } from "react-router-dom";
 import { compose } from "recompose";
+import { Row, Col, Typography } from "antd";
 
-import UserList from "./Users/UserList";
-import UserItem from "./Users/UserItem";
-import { withAuthorization } from "../Session";
+import { UserList, UserItem } from "./Users";
+import { AuthUserContext, withAuthorization } from "../Session";
 import * as ROLES from "../../constants/roles";
 import * as ROUTES from "../../constants/routes";
 
-const AdminPage = (props) => {
-  const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
+const { Title } = Typography;
 
-  useEffect(() => {
-    setLoading(true);
-
-    props.firebase.users().on("value", (snapshot) => {
-      const usersObject = snapshot.val(); //retrieves an object of all users
-
-      //restructuring object to make a list of all users
-      const usersList = Object.keys(usersObject).map((key) => ({
-        ...usersObject[key],
-        uid: key,
-      }));
-
-      setUsers(usersList);
-      setLoading(false);
-    });
-
-    return () => props.firebase.users().off(); //cleanup
-  }, []);
-
+const AdminPage = () => {
   return (
-    <div>
-      <h1>Admin</h1>
-      <p>The Admin Page is accessible by every signed in admin user.</p>
-      <Switch>
-        <Route path={ROUTES.ADMIN_DETAILS} component={UserItem} />
-        <Route path={ROUTES.ADMIN} component={UserList} />
-      </Switch>
-    </div>
+    <Row justify="center" align="middle">
+      <Col span={24}>
+        <Title level={3} style={{ margin: "20px 0", textAlign: "center" }}>
+          Admin Page
+        </Title>
+        <Switch>
+          <Route exact path={ROUTES.ADMIN_DETAILS} component={UserItem} />
+          <Route exact path={ROUTES.ADMIN} component={UserList} />
+        </Switch>
+      </Col>
+    </Row>
   );
 };
 

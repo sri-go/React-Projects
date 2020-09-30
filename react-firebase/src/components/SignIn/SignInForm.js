@@ -138,16 +138,19 @@ const SignInGoogleBase = (props) => {
     props.firebase
       .doSignInWithGoogle()
       .then((socialAuthUser) => {
-        // Create a user in your Firebase Realtime Database too
-        return props.firebase.user(socialAuthUser.user.uid).set({
-          username: socialAuthUser.user.displayName,
-          email: socialAuthUser.user.email,
-          roles: {},
-        });
-      })
-      .then(() => {
         setError(null);
-        props.history.push(ROUTES.HOME);
+        // Create a user in your Firebase Realtime Database if new login w google
+        if (socialAuthUser.additionalUserInfo.isNewUser) {
+          props.firebase.user(socialAuthUser.user.uid).set({
+            name: socialAuthUser.user.displayName,
+            email: socialAuthUser.user.email,
+            roles: {
+              ADMIN: false,
+            },
+          });
+          return props.history.push(ROUTES.ACCOUNT);
+        }
+        return props.history.push(ROUTES.HOME);
       })
       .catch((error) => {
         if (error.code === ERROR_CODE_ACCOUNT_EXISTS) {
@@ -174,30 +177,3 @@ const SignInGoogle = compose(withRouter, withFirebase)(SignInGoogleBase);
 const SignInForm = compose(withRouter, withFirebase)(SignInFormBase);
 
 export { SignInForm, SignInGoogle };
-
-/*
-<form onSubmit={onSubmit}>
-      <input
-        name="email"
-        value={email}
-        onChange={onChange}
-        type="text"
-        placeholder="Email Address"
-      />
-      <input
-        name="password"
-        value={password}
-        onChange={onChange}
-        type="password"
-        placeholder="Password"
-      />
-      <button disabled={isInvalid} type="submit">
-        Sign In
-      </button>
-      // if error evaluates to TRUE display the error message
-      {error && <p>{error.message}</p>}
-    </form>
-    <form onSubmit={onSubmit}>
-      <button type="submit">Sign In with Google</button>
-    </form> 
-*/

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { withFirebase } from "../Firebase";
 
-import { Form, Input, Button, Typography, message } from "antd";
+import { Row, Col, Form, Input, Button, Typography, message } from "antd";
 
 const { Title } = Typography;
 
@@ -51,71 +51,73 @@ function PasswordChangeForm(props) {
   };
 
   return (
-    <>
-      <Title level={4}>Password Change Form</Title>
-      <Form
-        form={form}
-        layout="vertical"
-        name="passwordResetForm"
-        initialValues={INITIAL_STATE}
-        validateMessages={validateMessages}
-        onFinish={onSubmit}
-        onFinishFailed={onFinishFailed}
-        onValuesChange={onChange}
-      >
-        <Form.Item
-          required
-          name="passwordOne"
-          label="New Password"
-          // validateStatus
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (!value) {
-                  return Promise.resolve();
-                } else if (getFieldValue("passwordOne").length <= 7) {
+    <Row justify="center" style={{ marginLeft: 200, width: "100%" }}>
+      <Col>
+        <Title level={4}>Password Change Form</Title>
+        <Form
+          form={form}
+          layout="vertical"
+          name="passwordResetForm"
+          initialValues={INITIAL_STATE}
+          validateMessages={validateMessages}
+          onFinish={onSubmit}
+          onFinishFailed={onFinishFailed}
+          onValuesChange={onChange}
+        >
+          <Form.Item
+            required
+            name="passwordOne"
+            label="New Password"
+            // validateStatus
+            rules={[
+              { required: true },
+              ({ getFieldValue }) => ({
+                validator(rule, value) {
+                  if (!value) {
+                    return Promise.resolve();
+                  } else if (getFieldValue("passwordOne").length <= 7) {
+                    return Promise.reject(
+                      "The password must be at least 7 characters long"
+                    );
+                  } else {
+                    return Promise.resolve();
+                  }
+                },
+              }),
+            ]}
+            hasFeedback
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            required
+            name="passwordTwo"
+            label="Confirm New Password"
+            rules={[
+              { required: true },
+              ({ getFieldValue }) => ({
+                validator(rule, value) {
+                  if (!value || getFieldValue("passwordOne") === value) {
+                    return Promise.resolve();
+                  }
                   return Promise.reject(
-                    "The password must be at least 7 characters long"
+                    "The two passwords that you entered do not match!"
                   );
-                } else {
-                  return Promise.resolve();
-                }
-              },
-            }),
-          ]}
-          hasFeedback
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          required
-          name="passwordTwo"
-          label="Confirm New Password"
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (!value || getFieldValue("passwordOne") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  "The two passwords that you entered do not match!"
-                );
-              },
-            }),
-          ]}
-          hasFeedback
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Reset Password
-          </Button>
-        </Form.Item>
-      </Form>
-    </>
+                },
+              }),
+            ]}
+            hasFeedback
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Reset Password
+            </Button>
+          </Form.Item>
+        </Form>
+      </Col>
+    </Row>
   );
 }
 

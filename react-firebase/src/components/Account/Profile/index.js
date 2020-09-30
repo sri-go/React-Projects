@@ -11,9 +11,11 @@ const ProfilePage = () => {
   return (
     <AuthUserContext.Consumer>
       {(authUser) => (
-        <Row justify="center">
-          <Col justify="center" align="center" style={{ width: "50vw" }}>
-            <Title level={3}>Profile</Title>
+        <Row style={{ width: "100%", marginLeft: "200px" }} justify="center">
+          <Col align="">
+            <Title level={3} style={{ textAlign: "center" }}>
+              Profile
+            </Title>
             <ProfileForm authUser={authUser} />
           </Col>
         </Row>

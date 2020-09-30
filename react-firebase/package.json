@@ -12,7 +12,6 @@
     "antd-img-crop": "^3.10.0",
     "craco-less": "^1.17.0",
     "firebase": "^7.15.5",
-    "firebase-tools": "^8.10.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
@@ -39,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "firebase-tools": "^8.11.2"
   }
 }

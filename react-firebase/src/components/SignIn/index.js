@@ -9,9 +9,11 @@ export default function SignInPage() {
   const { Title } = Typography;
 
   return (
-    <Row justify="center">
+    <Row className="signInForm" justify="center">
       <Col justify="center">
-        <Title level={3}>Sign In</Title>
+        <Title style={{ textAlign: "center" }} level={3}>
+          Sign In
+        </Title>
         <SignInForm />
         <Row justify="center">
           <Space horizontal>

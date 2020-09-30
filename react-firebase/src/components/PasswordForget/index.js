@@ -8,7 +8,7 @@ const { Title } = Typography;
 
 function PasswordForgetPage() {
   return (
-    <Row justify="center">
+    <Row className="passwordForgetForm" justify="center">
       <Col justify="center" align="center">
         <Title level={1}>Password Forget</Title>
         <PasswordForgetForm />

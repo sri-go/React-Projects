@@ -41,9 +41,7 @@ class Firebase {
   doSignInWithFacebook = () => this.auth.signInWithPopup(this.facebookProvider);
 
   doSignOut = () => {
-    this.auth
-      .signOut()
-      .catch((error) => console.log(error));
+    this.auth.signOut().catch((error) => console.log(error));
   };
 
   doPasswordReset = (email) => this.auth.sendPasswordResetEmail(email);
@@ -56,7 +54,12 @@ class Firebase {
   doPasswordUpdate = (password) =>
     this.auth.currentUser.updatePassword(password);
 
-  // *** Merge Auth and DB User API *** //
+  // doAuthUser = (authUser) =>
+  //   this.auth.onAuthStateChanged((authUser) => {
+  //     return authUser
+  //   }
+
+  // *** Merge Auth and DB User API *** //~
   onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged((authUser) => {
       if (authUser) {
@@ -66,8 +69,11 @@ class Firebase {
             const dbUser = snapshot.val();
 
             // default empty roles
+            // console.log(dbUser);
             if (!dbUser.roles) {
-              dbUser.roles = {};
+              dbUser.roles = {
+                ADMIN: false
+              };
             }
 
             // merge auth and db user
