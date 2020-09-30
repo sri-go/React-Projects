@@ -26,8 +26,8 @@ const Navigation = () => {
 
 const NavigationAuth = ({ authUser }) => (
   <Header>
-    <Row justify="end">
-      <Col align="center">
+    <Row justify="end" align="middle">
+      <Col>
         <Button type="link" shape="round" size="middle">
           <Link
             style={{ fontSize: "16px" }}
@@ -68,15 +68,13 @@ const NavigationNonAuth = () => {
     <Header>
       <Row justify="end">
         <Col align="center">
-          <Button>
-            <Link
-              style={{ fontSize: "16px" }}
-              to={ROUTES.SIGN_IN}
-              component={Typography.Link}
-            >
-              Sign In
-            </Link>
-          </Button>
+          <Link
+            style={{ fontSize: "16px" }}
+            to={ROUTES.SIGN_IN}
+            component={Typography.Link}
+          >
+            Sign In
+          </Link>
         </Col>
       </Row>
     </Header>

@@ -124,10 +124,10 @@ const ProfileCard = (props) => {
   };
 
   return (
-    <Col span={8} style={{ margin: "50px 0" }}>
+    <Col span={8} style={{ margin: "25px 0" }}>
       <Card
         hoverable
-        style={{ width: 240 }}
+        style={{ width: 300 }}
         cover={
           profileURL === "" || null || undefined ? (
             <div>
@@ -170,8 +170,16 @@ const ProfileCard = (props) => {
       >
         <Meta
           title={name}
-          description={`Graduation Year: ${graduationYear} 
-          Initation Class: ${initiationClass}`}
+          description={
+            <Space direction="vertical">
+              <Row style={{ textAlign: "center" }}>
+                Graduation Year: {graduationYear}
+              </Row>
+              <Row style={{ textAlign: "center" }}>
+                Initation Class: {initiationClass}
+              </Row>
+            </Space>
+          }
         />
       </Card>
       <Drawer

@@ -65,69 +65,71 @@ const SignInFormBase = (props) => {
   };
 
   return (
-    <Row
-      gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
-      direction="vertical"
-      align="center"
+    <Form
+      {...layout}
+      name="login-form"
+      initialValues={INITIAL_STATE}
+      onFinish={onSubmit}
+      onFinishFailed={onFinishFailed}
+      onValuesChange={onChange}
     >
-      <Col>
-        <Form
-          {...layout}
-          name="signIn"
-          initialValues={INITIAL_STATE}
-          onFinish={onSubmit}
-          onFinishFailed={onFinishFailed}
-          onValuesChange={onChange}
-        >
-          <Form.Item
-            name="email"
-            rules={[
-              {
-                required: true,
-                type: "email",
-                message: "Enter your user email",
-              },
-            ]}
-            hasFeedback
-          >
-            <Input
-              prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Username"
-            />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your password!",
-              },
-            ]}
-            hasFeedback
-          >
-            <Input
-              prefix={<LockOutlined className="site-form-item-icon" />}
-              type="password"
-              placeholder="Password"
-            />
-          </Form.Item>
-          <Row justify="center">
-            <Space align="center">
-              <Col flex="auto">
-                <SignInGoogle />
-              </Col>
-              <Col flex="auto">
-                <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                    Log In
-                  </Button>
-                </Form.Item>
-              </Col>
-            </Space>
-          </Row>
-        </Form>
+      <Form.Item
+        name="email"
+        rules={[
+          {
+            required: true,
+            type: "email",
+            message: "Enter your user email",
+          },
+        ]}
+        hasFeedback
+      >
+        <Input
+          prefix={<UserOutlined className="site-form-item-icon" />}
+          placeholder="Username"
+        />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: "Please input your password!",
+          },
+        ]}
+        hasFeedback
+      >
+        <Input
+          prefix={<LockOutlined className="site-form-item-icon" />}
+          type="password"
+          placeholder="Password"
+        />
+      </Form.Item>
+      <Row justify="center" align="middle">
+        <Space align="center">
+          <Col flex="auto">
+            <SignInGoogle />
+          </Col>
+          <Col flex="auto">
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Log In
+              </Button>
+            </Form.Item>
+          </Col>
+        </Space>
+      </Row>
+    </Form>
+    /* <Row
+    // gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+    // direction="vertical"
+    // align="center"
+    // className="login-page"
+    >
+      <Col className="login-box">
+        
       </Col>
-    </Row>
+    </Row> */
   );
 };
 
@@ -167,7 +169,7 @@ const SignInGoogleBase = (props) => {
           Sign In with Google
         </Button>
       </Form.Item>
-      {error && <p>{error.message}</p>}
+      {/* {error && <p>{error.message}</p>} */}
     </Form>
   );
 };

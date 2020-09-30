@@ -56,7 +56,12 @@ const ProfileImage = ({ style, snapshot, authUser, returnData }) => {
   };
 
   return (
-    <Form.Item style={style} name="profilePic" label="Profile Picture" noStyle>
+    <Form.Item
+      style={style}
+      name="profilePic"
+      label="Profile Picture"
+      noStyle
+    >
       <ImgCrop rotate>
         <Upload
           listType="picture-card"

@@ -1,0 +1,65 @@
+.login-page {
+  min-height: 100vh;
+  min-width: 100%;
+  overflow: hidden;
+}
+
+.login-box {
+  //   display: flex;
+  //   justify-content: space-between;
+  //   align-items: center;
+  //   flex-direction: row-reverse;
+  //   box-shadow: 0 0 40px rgba(0, 0, 0, 0.16);
+  //   overflow: hidden;
+  //   margin: 0 auto;
+  //   border-radius: 12px;
+  padding: 50px;
+  background: #1f1f1f;
+  max-width: 500px;
+  width: 100%;
+  border-radius: 10px;
+}
+
+#login-form {
+  flex: 1 0 100%;
+  max-width: 480px;
+  width: 100%;
+  padding: 30px 30px 0px;
+}
+
+#login-form .ant-form-item-label > label.ant-form-item-required::before {
+  display: none;
+}
+.ant-form-item-control-input-content {
+  text-align: left;
+}
+#login-form .ant-input-affix-wrapper {
+  padding: 12px 15px;
+  //   border: 3px solid red;
+}
+#login-form_email,
+#login-form_password {
+  height: 24px;
+}
+#login-form .ant-btn {
+  height: 42px;
+  letter-spacing: 1px;
+  border-radius: 6px;
+}
+.login-form-button {
+  width: 100%;
+}
+
+@media screen and (max-width: 1023px) {
+  .login-box {
+    flex-direction: column;
+    box-shadow: none;
+  }
+  .illustration-wrapper {
+    max-width: 100%;
+    min-height: auto;
+  }
+  #login-form {
+    max-width: 100%;
+  }
+}

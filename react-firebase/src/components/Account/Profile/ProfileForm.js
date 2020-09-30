@@ -226,6 +226,7 @@ const ProfileForm = (props) => {
   //on form failure
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+    message.error(errorInfo.errorFields[0].errors[0], 3);
     setError(errorInfo);
   };
 
@@ -255,10 +256,6 @@ const ProfileForm = (props) => {
     },
   };
 
-  /*
-    {aboutYourself: "test", birthday: "2020-09-24", currentLocation: "New York, NY", degree: "B.S Engineering", 
-  */
-
   return (
     <Form
       // {...layout}
@@ -285,7 +282,15 @@ const ProfileForm = (props) => {
         <Form.Item name="name" label="Name">
           <Input type="text" />
         </Form.Item>
-        <Form.Item name="tagline" label="Tag Line" required>
+        <Form.Item
+          name="tagline"
+          label="Tag Line"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
           <Input placeholder="Describe yourself in 10 words or less" />
         </Form.Item>
         <Form.Item name="introduction" label="Introduction">
@@ -303,8 +308,12 @@ const ProfileForm = (props) => {
         <Title level={5} className="site-description-item-profile-p">
           Contact Information
         </Title>
-        <Form.Item name="email" label="Email">
-          <Input rules={[{ required: true, type: "email" }]} />
+        <Form.Item
+          name="email"
+          label="Email"
+          rules={[{ required: true, type: "email" }]}
+        >
+          <Input />
         </Form.Item>
         <Form.Item name="phoneNumber" label="Phone Number">
           <Input placeholder="Phone Number" type="tel" />
