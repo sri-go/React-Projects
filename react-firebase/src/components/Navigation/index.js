@@ -74,6 +74,7 @@ const NavigationNonAuth = () => {
             component={Typography.Link}
           >
             Sign In
+            
           </Link>
         </Col>
       </Row>
