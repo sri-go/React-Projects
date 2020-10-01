@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import { compose } from "recompose";
 import { withFirebase } from "../Firebase";
 
-import { Row, Col, Divider, Card, Drawer, Avatar, Space } from "antd";
+import {
+  Row,
+  Col,
+  Divider,
+  Card,
+  Drawer,
+  Avatar,
+  Space,
+  Typography,
+} from "antd";
 import {
   InstagramOutlined,
   LinkedinOutlined,
@@ -14,6 +23,7 @@ import {
 } from "@ant-design/icons";
 
 const { Meta } = Card;
+const { Text } = Typography;
 
 const ProfileCards = (props) => {
   const [profileData, setProfileData] = useState(null);
@@ -22,6 +32,12 @@ const ProfileCards = (props) => {
 
   useEffect(() => {
     const userData = [];
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+
     props.firebase.userProfiles().on("value", (snapshot) => {
       //download user data from database
       if (snapshot.exists()) {
@@ -29,6 +45,15 @@ const ProfileCards = (props) => {
         //iterate over data and push each object to an array
         for (let key in data) {
           data[key].graduationYear = data[key].graduationYear.split("-")[0];
+
+          const formattedBday = (birthday) => {
+            const d = new Date(data[key].birthday);
+            return d.toLocaleDateString("en-us", options);
+          };
+          const birthday =
+            data[key].birthday !== ""
+              ? (data[key].birthday = formattedBday(data[key].birthday))
+              : "";
           userData.push(data[key]);
         }
       }
@@ -171,13 +196,9 @@ const ProfileCard = (props) => {
         <Meta
           title={name}
           description={
-            <Space direction="vertical">
-              <Row style={{ textAlign: "center" }}>
-                Graduation Year: {graduationYear}
-              </Row>
-              <Row style={{ textAlign: "center" }}>
-                Initation Class: {initiationClass}
-              </Row>
+            <Space direction="vertical" align="center">
+              <Text>Initation Class: {initiationClass}</Text>
+              <Text>Graduation Year: {graduationYear}</Text>
             </Space>
           }
         />
