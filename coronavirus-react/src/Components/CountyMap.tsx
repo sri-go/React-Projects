@@ -6,7 +6,7 @@ import {
   StateDeathStyle,
   CountyOutlineStyle,
   CountyDeathStyle,
-} from "../Styling/MapStyle";
+} from "../Map Styling/MapStyle";
 import ReactMapGL, { Source, Layer, Popup } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 

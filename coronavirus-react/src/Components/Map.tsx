@@ -1,3 +1,4 @@
+// Library and Package Imports
 import React, { useRef, useState, useEffect } from "react";
 import MapGL, {
   Source,
@@ -6,24 +7,40 @@ import MapGL, {
   WebMercatorViewport,
 } from "react-map-gl";
 import bbox from "@turf/bbox";
+import "mapbox-gl/dist/mapbox-gl.css";
+import "../Styles/map.css";
+
+// Map Styles Imports
 import {
   StateDeathStyle,
   CountyOutlineStyle,
   CountyDeathStyle,
-} from "../Styling/MapStyle";
+} from "../Map Styling/MapStyle";
 
+// Map Boundary Data Import
 import StatesBoundaries from "../Data/StateBoundaries.json";
 import CountyBoundaries from "../Data/CountyBoundaries.json";
+
+// Fetch Data Importrs
 import {
   get_states_data,
   get_counties_data,
   get_time_series,
 } from "../Data/FetchData";
+
+// Plot Data Import
 import Plot from "./plot";
-import "mapbox-gl/dist/mapbox-gl.css";
+
+interface viewport {
+  latitude: number;
+  longitude: number;
+  zoom: number;
+  width: string;
+  height: string;
+}
 
 //Initalize Viewport
-const initialViewport = {
+const initialViewport: viewport = {
   latitude: 39.5,
   longitude: -98.35,
   zoom: 3,
@@ -35,7 +52,7 @@ const initialViewport = {
 const ACCESS_TOKEN =
   "pk.eyJ1Ijoic3JpLWdvIiwiYSI6ImNrODUyeHp1YjAyb2wzZXA4b21veGhqdjgifQ.wprAUOeXWkoWy1-nbUd1NQ";
 
-export const Map = () => {
+const Map = () => {
   const mapRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [localViewState, setLocalViewState] = useState({ ...initialViewport });
@@ -51,7 +68,7 @@ export const Map = () => {
     const states_data = get_states_data(
       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv"
     );
-    //set the fetched data into state
+    //set the fetched data into statewhyh
     states_data.then(() => {
       setStateData(StatesBoundaries);
     });
@@ -245,3 +262,5 @@ export const Map = () => {
     </div>
   );
 };
+
+export default Map;

@@ -4,7 +4,7 @@ import StatesBoundaries from "./StateBoundaries.json";
 import CountyBoundaries from "./CountyBoundaries.json";
 
 //This function downloads the CSV File data, adds it to GEOJSON file, and then Filters it for the US State Subsect,
-export const get_states_data = async function (url) {
+export const get_states_data = async (url: string) => {
   const statesData = await fetch(url)
     .then((response) => {
       return response.text();
