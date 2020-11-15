@@ -1,11 +1,14 @@
 // State Death Styles
 export const StateDeathStyle = {
-  id: "data",
+  id: "states-data",
   type: "fill",
   source: "StatesBoundaries",
+  layout: {
+    // make layer visible by default
+    visibility: "visible",
+  },
   paint: {
     "fill-color": {
-      property: "Deaths",
       //red colors
       stops: [
         [0, "#fff5f0"],
@@ -17,6 +20,7 @@ export const StateDeathStyle = {
         [10000, "#cb181d"],
         [20000, "#99000d"],
       ],
+      property: "Deaths",
     },
     //change opacity on hover, default to 50% opacity
     "fill-opacity": [
@@ -25,10 +29,6 @@ export const StateDeathStyle = {
       1,
       0.5,
     ],
-  },
-  layout: {
-    // make layer visible by default
-    visibility: "visible",
   },
   maxzoom: 5.5,
 };

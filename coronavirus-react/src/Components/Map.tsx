@@ -11,7 +11,8 @@ import { bbox } from "@turf/turf";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-import { get_states_data } from "../Data/FetchData";
+import { getStatesData } from "../Data/FetchStateData";
+import { getCountiesData } from "../Data/FetchCountyData";
 
 import StateBoundaries from "../Data/StateBoundaries.json";
 import CountyBoundaries from "../Data/CountyBoundaries.json";
@@ -30,7 +31,7 @@ const Map = () => {
   const initialViewport = {
     latitude: 39.5,
     longitude: -98.35,
-    zoom: 5,
+    zoom: 4.5,
     bearing: 0,
     pitch: 0,
   };
@@ -41,18 +42,26 @@ const Map = () => {
   });
   const [hoveredFeature, setHoveredFeature] = useState<any>();
   const [tempFeature, setTempFeature] = useState<any>();
-  const [statesData, setStatesData] = useState<any>();
+  const [statesData, setStatesData] = useState<any>(null);
+  const [countiesData, setCountiesData] = useState<any>(null);
 
   useEffect(() => {
-    const states_data = get_states_data(
+    // Fetch states data
+    const statesData = getStatesData(
       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv"
     );
-    //set the fetched data into statewhyh
-    states_data.then(() => {
+    statesData.then(() => {
       setStatesData(StateBoundaries);
     });
+    // Fetch counties data
+    const countyData = getCountiesData(
+      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv"
+    );
+    countyData.then(() => {
+      setCountiesData(CountyBoundaries);
+    });
   }, []);
-
+ 
   const onViewportChange = (nextViewport: ViewportProps) => {
     setViewport(nextViewport);
   };
@@ -68,17 +77,16 @@ const Map = () => {
     const feature =
       features &&
       features.find((f) => {
-        if (f.layer.id === "data" || f.layer.id === "county-data") {
+        if (f.layer.id === "states-data" || f.layer.id === "county-data") {
           return f;
         }
       });
-
     setHoveredFeature({ feature, x: offsetX, y: offsetY });
     //This is to return the data within the layer and change the hover opacity
     if (null !== mapRef.current) {
       const map = mapRef.current.getMap();
       const featured = map.queryRenderedFeatures(point, {
-        layers: ["data", "county-data"],
+        layers: ["states-data", "county-data"],
       })[0];
       if (featured) {
         map.setFeatureState(
@@ -107,12 +115,34 @@ const Map = () => {
   const onMouseMove = (event: PointerEvent) => {
     if (null !== mapRef.current) {
       const map = mapRef.current.getMap();
+      if (tempFeature) {
+        map.setFeatureState(
+          {
+            source: "county-data",
+            id: tempFeature.id,
+          },
+          {
+            hover: false,
+          }
+        );
+        map.setFeatureState(
+          {
+            source: "states-data",
+            id: tempFeature.id,
+          },
+          {
+            hover: false,
+          }
+        );
+        setTempFeature(null);
+      }
     }
   };
 
   const onClick = (event: any) => {
     const feature = event.features[0];
     if (feature) {
+      // calculate the bounding box of the feature
       const [minLng, minLat, maxLng, maxLat] = bbox(feature);
       // construct a viewport instance from the current state
       const newViewport = new WebMercatorViewport(viewport);
@@ -121,15 +151,14 @@ const Map = () => {
           [minLng, minLat],
           [maxLng, maxLat],
         ],
-        {
-          padding: 40,
-        }
+        { padding: 40 }
       );
+      console.log(zoom);
       setViewport({
         ...viewport,
         longitude,
         latitude,
-        zoom: 6.5,
+        zoom,
         transitionInterpolator: new LinearInterpolator({
           around: [event.offsetCenter.x, event.offsetCenter.y],
         }),
@@ -182,7 +211,17 @@ const Map = () => {
       onHover={onHover}
       onMouseMove={onMouseMove}
       onClick={onClick}
+      interactiveLayerIds={["states-data", "county-data"]}
     >
+      <Source id="states-data" type="geojson" data={statesData}>
+        {/* @ts-ignore */}
+        <Layer key={"state"} {...StateDeathStyle} />
+      </Source>
+      <Source id="county-data" type="geojson" data={countiesData}>
+        {/* @ts-ignore */}
+        <Layer key={"county"} {...CountyDeathStyle} />
+        <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
+      </Source>
       {!!hoveredFeature && renderTooltip()}
     </MapGL>
   );

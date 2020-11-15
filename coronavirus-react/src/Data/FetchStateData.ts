@@ -4,7 +4,7 @@ import StatesBoundaries from "./StateBoundaries.json";
 import CountyBoundaries from "./CountyBoundaries.json";
 
 //This function downloads the CSV File data, adds it to GEOJSON file, and then Filters it for the US State Subsect,
-export const get_states_data = async (url: string): Promise<void> => {
+export const getStatesData = async (url: string): Promise<void> => {
   const statesData = await fetch(url)
     .then((response: Response) => {
       return response.text();
@@ -12,10 +12,10 @@ export const get_states_data = async (url: string): Promise<void> => {
     .then((response: String) => {
       if (!!response) {
         csv2geojson.csv2geojson(response, function (err: any, data: any) {
-          console.log(err);
-          let us_subsect = filter_us_data(data);
-          let calc_total = calc_totals(us_subsect);
-          let combined_data = combine_files(calc_total);
+          // console.log(err); to do: add data of state values w/o fips to correct state
+          let us_subsect = filterUSData(data);
+          let calc_total = calcTotals(us_subsect);
+          let combined_data = combineFiles(calc_total);
         });
       }
     });
@@ -25,7 +25,7 @@ export const get_states_data = async (url: string): Promise<void> => {
 //State Level Data Filtering
 //filtering for only usa data at state level
 //also removing some misc data that has USA listed as its country
-const filter_us_data = function (data: any) {
+const filterUSData = function (data: any) {
   let us_subsect: any = [];
   data.features.map(function (feature) {
     if (feature.properties["Country_Region"] === "US") {
@@ -38,39 +38,31 @@ const filter_us_data = function (data: any) {
 
 //reduce function boils list down to one number for each state
 //utilizing it here to get one total for each state
-const calc_totals = (us_subsect_data: any) => {
-  //calculate totals for each state;  
-  const confirmed_state_total = us_subsect_data.reduce(
-    function (memo, item) {
-      memo[item.properties.Province_State] =
-        (memo[item.properties.Province_State] || 0) +
-        parseInt(item.properties.Confirmed);
-      return memo;
-    },
-    {}
-  );
-  console.log(confirmed_state_total);
+const calcTotals = (us_subsect_data: any) => {
+  //calculate totals for each state;
+  const confirmed_state_total = us_subsect_data.reduce(function (memo, item) {
+    memo[item.properties.Province_State] =
+      (memo[item.properties.Province_State] || 0) +
+      parseInt(item.properties.Confirmed);
+    return memo;
+  }, {});
 
-  const death_state_total = us_subsect_data.reduce(
-    function (memo, item) {
-      memo[item.properties.Province_State] =
-        (memo[item.properties.Province_State] || 0) +
-        parseInt(item.properties.Deaths);
-      return memo;
-    },
-    {}
-  );
-  console.log(death_state_total);
+  const death_state_total = us_subsect_data.reduce(function (memo, item) {
+    memo[item.properties.Province_State] =
+      (memo[item.properties.Province_State] || 0) +
+      parseInt(item.properties.Deaths);
+    return memo;
+  }, {});
 
   let us_death_total = 0;
-  for(const state in death_state_total){
-    us_death_total += death_state_total[state]
+  for (const state in death_state_total) {
+    us_death_total += death_state_total[state];
   }
 
   let us_confirmed_total = 0;
-  for(const state in confirmed_state_total){
-    us_confirmed_total += confirmed_state_total[state]
-  }  
+  for (const state in confirmed_state_total) {
+    us_confirmed_total += confirmed_state_total[state];
+  }
 
   return {
     confirmed_state_total: confirmed_state_total,
@@ -82,7 +74,7 @@ const calc_totals = (us_subsect_data: any) => {
 };
 
 //combining data back to one file
-const combine_files = function (data_totals: any) {
+const combineFiles = function (data_totals: any) {
   //add COVID-19 data to the states.js file
   StatesBoundaries.us_death_total = data_totals.us_death_total;
   StatesBoundaries.us_confirmed_total = data_totals.us_confirmed_total;
@@ -94,7 +86,6 @@ const combine_files = function (data_totals: any) {
     state_feature.properties.Deaths = data_totals["death_state_total"][state];
 
     // recovered totals on hold for now, data is not being reported
-    
     delete state_feature.properties.density;
   });
   //  console.log(state_boundaries);
