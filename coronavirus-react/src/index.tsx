@@ -4,6 +4,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 import './index.css';
+import "../node_modules/react-vis/dist/style.css";
 
 
 ReactDOM.render(

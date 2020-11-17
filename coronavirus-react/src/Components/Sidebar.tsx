@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
+  FlexibleWidthXYPlot,
   HorizontalGridLines,
   LineSeries,
-  VerticalGridLines,
   XAxis,
   XYPlot,
   YAxis,
@@ -23,9 +23,9 @@ const Sidebar = (props: SidebarProps) => {
 
   const [plotData, setPlotData] = useState(); // to do: rename variables to timeSeriesData, setTimeSeriesData
 
-  const [selectedState, setSelectedState] = useState();
-  const [filteredData, setFilteredData] = useState<any>();
+  // const [selectedState, setSelectedState] = useState();
   const [TotalUSData, setTotalUSData] = useState<any>(null);
+  const [filteredData, setFilteredData] = useState<any>();
 
   const [totalCases, setTotalCases] = useState();
   const [totalNewCases, setTotalNewCases] = useState();
@@ -41,17 +41,20 @@ const Sidebar = (props: SidebarProps) => {
     });
   }, []);
 
-  // set TotalUSData after fetching
+  // set TotalUSData after fetching timeseries data
   useEffect(() => {
     setTotalUSData(totalData);
   }, [totalData]);
 
   // filter the fetched data once the state has been clicked
   useEffect(() => {
+    let result;
+    console.log(data);
     if (!!data) {
-      const result = filterData(plotData, data); // on click, filter the fetched data for the selected state
-      setFilteredData(result);
+      result = filterData(plotData, data);
+      console.log(result);
     }
+    return setFilteredData(result);
   }, [data]);
 
   return (
@@ -66,18 +69,25 @@ const Sidebar = (props: SidebarProps) => {
       )}
       {/* Per State Clicked */}
       {filteredData && (
-        <XYPlot xType="time" height={300} width={500}>
-          <HorizontalGridLines />
-          <VerticalGridLines />
-          <XAxis title="X Axis" />
-          <YAxis title="Y Axis" />
-          <LineSeries
-            data={
-              filteredData.filterCounty[data.properties.name].TotalCasesOverTime
-            }
-          />
-          {/* <LineSeries data={totalCases} /> */}
-        </XYPlot>
+        <>
+          <FlexibleWidthXYPlot xType="time" height={300}>
+            <XAxis title="X Axis" />
+            <YAxis title="Y Axis" />
+            <LineSeries
+              data={
+                filteredData.filterCounty[data.properties.name].TotalNewCases
+              }
+            />
+          </FlexibleWidthXYPlot>
+          {/* <FlexibleWidthXYPlot xType="time" height={100}>
+            <LineSeries
+              data={
+                filteredData.filterCounty[data.properties.name]
+                  .TotalCasesOverTime
+              }
+            />
+          </FlexibleWidthXYPlot> */}
+        </>
       )}
     </>
   );
