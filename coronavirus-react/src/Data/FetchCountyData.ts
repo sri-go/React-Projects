@@ -1,5 +1,5 @@
 // @ts-nocheck
-import csv2geojson, { csv } from "csv2geojson";
+import csv2geojson from "csv2geojson";
 import CountyBoundaries from "./CountyBoundaries.json";
 
 export const getCountiesData = async function (url: string): Promise<void> {

@@ -24,6 +24,7 @@ import {
 } from "../Map Styles/MapStyles";
 
 import "../Styles/map.css";
+import Sidebar from "./Sidebar";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -42,17 +43,24 @@ const Map = () => {
   });
   const [hoveredFeature, setHoveredFeature] = useState<any>();
   const [tempFeature, setTempFeature] = useState<any>();
+  const [clickedFeature, setClickedFeature] = useState(null);
   const [statesData, setStatesData] = useState<any>(null);
   const [countiesData, setCountiesData] = useState<any>(null);
+  const [usTotalData, setUSTotalData] = useState<any>();
+
+  const setUSTotals = (returnData: any) => {
+    setUSTotalData(returnData);
+  }
 
   useEffect(() => {
     // Fetch states data
     const statesData = getStatesData(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv"
+      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv", setUSTotals
     );
-    statesData.then(() => {
+    statesData.then((response) => {
       setStatesData(StateBoundaries);
     });
+
     // Fetch counties data
     const countyData = getCountiesData(
       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv"
@@ -153,7 +161,6 @@ const Map = () => {
         ],
         { padding: 40 }
       );
-      console.log(zoom);
       setViewport({
         ...viewport,
         longitude,
@@ -164,6 +171,7 @@ const Map = () => {
         }),
         transitionDuration: 1000,
       });
+      setClickedFeature(feature);
     }
   };
 
@@ -200,30 +208,37 @@ const Map = () => {
   };
 
   return (
-    <MapGL
-      {...viewport}
-      mapboxApiAccessToken={ACCESS_TOKEN}
-      width="100vw"
-      height="100vh"
-      mapStyle="mapbox://styles/mapbox/dark-v10"
-      ref={mapRef}
-      onViewportChange={onViewportChange}
-      onHover={onHover}
-      onMouseMove={onMouseMove}
-      onClick={onClick}
-      interactiveLayerIds={["states-data", "county-data"]}
-    >
-      <Source id="states-data" type="geojson" data={statesData}>
-        {/* @ts-ignore */}
-        <Layer key={"state"} {...StateDeathStyle} />
-      </Source>
-      <Source id="county-data" type="geojson" data={countiesData}>
-        {/* @ts-ignore */}
-        <Layer key={"county"} {...CountyDeathStyle} />
-        <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
-      </Source>
-      {!!hoveredFeature && renderTooltip()}
-    </MapGL>
+    <div style={{ display: "flex" }}>
+      <div style={{ width: "70%" }}>
+        <MapGL
+          {...viewport}
+          mapboxApiAccessToken={ACCESS_TOKEN}
+          width="100%"
+          height="100vh"
+          mapStyle="mapbox://styles/mapbox/dark-v10"
+          ref={mapRef}
+          onViewportChange={onViewportChange}
+          onHover={onHover}
+          onMouseMove={onMouseMove}
+          onClick={onClick}
+          interactiveLayerIds={["states-data", "county-data"]}
+        >
+          <Source id="states-data" type="geojson" data={statesData}>
+            {/* @ts-ignore */}
+            <Layer key={"state"} {...StateDeathStyle} />
+          </Source>
+          <Source id="county-data" type="geojson" data={countiesData}>
+            {/* @ts-ignore */}
+            <Layer key={"county"} {...CountyDeathStyle} />
+            <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
+          </Source>
+          {!!hoveredFeature && renderTooltip()}
+        </MapGL>
+      </div>
+      <div style={{ width: "30%" }}>
+        <Sidebar data={clickedFeature} totalData={usTotalData}   />
+      </div>
+    </div>
   );
 };
 

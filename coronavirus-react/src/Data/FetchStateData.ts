@@ -1,23 +1,32 @@
 // @ts-nocheck
-import csv2geojson, { csv } from "csv2geojson";
+import csv2geojson from "csv2geojson";
 import StatesBoundaries from "./StateBoundaries.json";
-import CountyBoundaries from "./CountyBoundaries.json";
 
 //This function downloads the CSV File data, adds it to GEOJSON file, and then Filters it for the US State Subsect,
-export const getStatesData = async (url: string): Promise<void> => {
+export const getStatesData = async (
+  url: string,
+  callback: any
+): Promise<void> => {
   const statesData = await fetch(url)
     .then((response: Response) => {
       return response.text();
     })
     .then((response: String) => {
       if (!!response) {
-        csv2geojson.csv2geojson(response, function (err: any, data: any) {
-          // console.log(err); to do: add data of state values w/o fips to correct state
+        csv2geojson.csv2geojson(response, function (
+          err: any,
+          data: any
+        ) {
+          // to do: add data of state values w/o fips to correct state
           let us_subsect = filterUSData(data);
           let calc_total = calcTotals(us_subsect);
           let combined_data = combineFiles(calc_total);
+          callback(combined_data); // execute callback function (returns us total data)
         });
       }
+    })
+    .catch((error) => {
+      console.log(error);
     });
   return statesData;
 };
@@ -75,11 +84,12 @@ const calcTotals = (us_subsect_data: any) => {
 
 //combining data back to one file
 const combineFiles = function (data_totals: any) {
-  //add COVID-19 data to the states.js file
-  StatesBoundaries.us_death_total = data_totals.us_death_total;
-  StatesBoundaries.us_confirmed_total = data_totals.us_confirmed_total;
+  //add COVID-19 data to the states.json file
+  // StatesBoundaries.us_death_total = data_totals.us_death_total;
+  // StatesBoundaries.us_confirmed_total = data_totals.us_confirmed_total;
+
   const featuresArr = StatesBoundaries.features;
-  let combined = featuresArr.map(function (state_feature) {
+  let combined = featuresArr.forEach(function (state_feature) {
     let state = state_feature.properties.name;
     state_feature.properties.Confirmed =
       data_totals["confirmed_state_total"][state];
@@ -88,6 +98,9 @@ const combineFiles = function (data_totals: any) {
     // recovered totals on hold for now, data is not being reported
     delete state_feature.properties.density;
   });
-  //  console.log(state_boundaries);
-  return combined;
+  const us_totals = {
+    us_death_total: data_totals.us_death_total,
+    us_confirmed_total: data_totals.us_confirmed_total,
+  };
+  return us_totals;
 };
