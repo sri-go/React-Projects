@@ -41,9 +41,11 @@ const Map = () => {
   const [viewport, setViewport] = useState<any>({
     ...initialViewport,
   });
+  
   const [hoveredFeature, setHoveredFeature] = useState<any>();
   const [tempFeature, setTempFeature] = useState<any>();
   const [clickedFeature, setClickedFeature] = useState(null);
+  
   const [statesData, setStatesData] = useState<any>(null);
   const [countiesData, setCountiesData] = useState<any>(null);
   const [usTotalData, setUSTotalData] = useState<any>();
@@ -235,8 +237,8 @@ const Map = () => {
           {!!hoveredFeature && renderTooltip()}
         </MapGL>
       </div>
-      <div style={{ width: "30%" }}>
-        <Sidebar data={clickedFeature} totalData={usTotalData}   />
+      <div style={{ width: "30%", background: "rgb(42 42 42)" }}>
+        <Sidebar feature={clickedFeature} totalData={usTotalData} />
       </div>
     </div>
   );

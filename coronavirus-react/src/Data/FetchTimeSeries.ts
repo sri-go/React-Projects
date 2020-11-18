@@ -200,7 +200,7 @@ const filterTop10 = (obj: any, feature?: any) => {
   return top10Counties;
 };
 
-export const filterData = (array: any, feature: any) => {
+export const filterData = (array: any, feature: any): any => {
   if (!!array) {
     const dates = filterDates();
     const filterState = filterForState(array, feature);
