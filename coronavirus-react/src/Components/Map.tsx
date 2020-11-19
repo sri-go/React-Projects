@@ -25,6 +25,7 @@ import {
 
 import "../Styles/map.css";
 import Sidebar from "./Sidebar";
+import Legend from "./Legend";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -236,6 +237,7 @@ const Map = () => {
           </Source>
           {!!hoveredFeature && renderTooltip()}
         </MapGL>
+        <Legend></Legend>
       </div>
       <div style={{ width: "30%", background: "rgb(42 42 42)" }}>
         <Sidebar feature={clickedFeature} totalData={usTotalData} />

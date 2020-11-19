@@ -9,6 +9,7 @@ import {
   XAxis,
   XYPlot,
   YAxis,
+  Treemap,
 } from "react-vis";
 import { transform } from "typescript";
 import {
@@ -66,18 +67,23 @@ const Sidebar = (props: SidebarProps) => {
       setTotalNewCases(
         result.filterCounty[feature.properties.name].TotalNewCases
       );
-      setFilteredData(result);
     }
-    // console.log("previous-filtered", filteredData);
-    return console.log(result);
-    // return 
+    return setFilteredData(result);
   }, [feature]);
+  
+  console.log(filteredData);
 
   const top10Table = () => {
     const counties = Object.keys(filteredData.top10);
     console.log(counties)
-    return counties.map((county, index) => {
-      return <h4 key={index}>{filteredData.top10[county]}</h4>;
+    return counties.map((county: string, index: number) => {
+      return (
+        <h4 key={index}>
+          {county}
+          <br />
+          {filteredData.top10[county]}
+        </h4>
+      );
     });
   } 
 
@@ -121,7 +127,7 @@ const Sidebar = (props: SidebarProps) => {
                 includeMargin={false}
                 xPercent={0.4}
                 yPercent={0.1}
-                style={{fontSize: '30px'}}
+                style={{ fontSize: "30px" }}
               />
               <XAxis
                 // @ts-ignore
@@ -167,12 +173,24 @@ const Sidebar = (props: SidebarProps) => {
             </FlexibleWidthXYPlot>
           </div>
           <div>
-            {top10Table()}
+            <h2 style={{
+              fontFamily: 'sans-serif',
+              fontSize: '20px',
+              fontWeight: 'normal',
+              margin: '10px 20px',
+              textAlign: 'center',
+              color: 'white',
+            }}>Top 10 counties in {feature.properties.name}</h2>
+            {!!filteredData && <Table  />}
           </div>
         </>
       )}
     </>
   );
+};
+
+const Table = () => {
+  return <div style={{ height:'100px', margin:'0 20px', border: "3px solid white" }}></div>;
 };
 
 export default Sidebar;
