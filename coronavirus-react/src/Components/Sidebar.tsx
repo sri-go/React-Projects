@@ -1,17 +1,12 @@
-import { featureOf } from "@turf/turf";
 import React, { useState, useEffect } from "react";
 import {
   ChartLabel,
   FlexibleWidthXYPlot,
-  FlexibleXYPlot,
-  HorizontalGridLines,
   LineSeries,
   XAxis,
-  XYPlot,
   YAxis,
-  Treemap,
 } from "react-vis";
-import { transform } from "typescript";
+
 import {
   getTimeSeries,
   filterData,
@@ -56,11 +51,9 @@ const Sidebar = (props: SidebarProps) => {
   // to do: distinguish between county clicks and state clicks
   useEffect(() => {
     let result;
-    console.log(feature);
     // do not filter unless there is a feature
     if (!!feature) {
       result = filterData(plotData, feature);
-      console.log("current-filtered", result);
       setTotalCases(
         result.filterCounty[feature.properties.name].TotalCasesOverTime
       );
@@ -70,22 +63,6 @@ const Sidebar = (props: SidebarProps) => {
     }
     return setFilteredData(result);
   }, [feature]);
-  
-  console.log(filteredData);
-
-  const top10Table = () => {
-    const counties = Object.keys(filteredData.top10);
-    console.log(counties)
-    return counties.map((county: string, index: number) => {
-      return (
-        <h4 key={index}>
-          {county}
-          <br />
-          {filteredData.top10[county]}
-        </h4>
-      );
-    });
-  } 
 
   return (
     <>
@@ -173,15 +150,19 @@ const Sidebar = (props: SidebarProps) => {
             </FlexibleWidthXYPlot>
           </div>
           <div>
-            <h2 style={{
-              fontFamily: 'sans-serif',
-              fontSize: '20px',
-              fontWeight: 'normal',
-              margin: '10px 20px',
-              textAlign: 'center',
-              color: 'white',
-            }}>Top 10 counties in {feature.properties.name}</h2>
-            {!!filteredData && <Table  />}
+            <h2
+              style={{
+                fontFamily: "sans-serif",
+                fontSize: "20px",
+                fontWeight: "normal",
+                margin: "10px 20px",
+                textAlign: "center",
+                color: "white",
+              }}
+            >
+              Top 10 counties in {feature.properties.name}
+            </h2>
+            {!!filteredData && <Table data={filteredData.top10}  />}
           </div>
         </>
       )}
@@ -189,8 +170,56 @@ const Sidebar = (props: SidebarProps) => {
   );
 };
 
-const Table = () => {
-  return <div style={{ height:'100px', margin:'0 20px', border: "3px solid white" }}></div>;
+interface TableProps {
+  data?: any;
+}
+
+const Table = (props: TableProps) => {
+  const { data } = props;
+  const counties = Object.keys(data);
+  // console.log(data);
+  return (
+    <div
+      style={{ margin: "0 20px"}}
+    >
+      {counties.map((county, index) => {
+        let backgroundColor;
+        if (index % 2 === 0) {
+          backgroundColor = "lightgrey";
+        }
+        else {
+          backgroundColor = 'white';
+        }
+        return (
+          <div
+            key={index}
+            style={{
+              display: "flex",
+              justifyContent: "space-evenly",
+              margin:'5px 0',
+              backgroundColor: backgroundColor,
+              borderRadius:'10px'
+              // borderLeft: "2px solid",
+            }}
+          >
+            <p
+              style={{
+                margin: "0",
+                width: "200px",
+                textAlign: "left",
+                // borderRight: "2px solid",
+              }}
+            >
+              {county}
+            </p>
+            <p style={{ margin: "0", width: "100px", textAlign: "center" }}>
+              {data[county]}
+            </p>
+          </div>
+        );
+     })}
+    </div>
+  );
 };
 
 export default Sidebar;

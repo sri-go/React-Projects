@@ -237,7 +237,7 @@ const Map = () => {
           </Source>
           {!!hoveredFeature && renderTooltip()}
         </MapGL>
-        <Legend></Legend>
+        <Legend zoom={viewport.zoom}></Legend>
       </div>
       <div style={{ width: "30%", background: "rgb(42 42 42)" }}>
         <Sidebar feature={clickedFeature} totalData={usTotalData} />
