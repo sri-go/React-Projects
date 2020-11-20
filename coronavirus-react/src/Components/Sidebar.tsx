@@ -73,18 +73,18 @@ const Sidebar = (props: SidebarProps) => {
             display: "flex",
             justifyContent: "space-evenly",
             textAlign: "center",
-            margin: "10px 0 0 0",
+            margin: "5px 0 0 0",
           }}
         >
           <div style={{ border: "3px solid", borderRadius: "15px" }}>
-            <h5 style={{ padding: "10px" }}>
-              US Total Confirmed Cases: <br />
+            <h5 style={{ padding: "10px", margin: "0px" }}>
+              Total Confirmed Cases: <br />
               {TotalUSData.us_confirmed_total}
             </h5>
           </div>
           <div style={{ border: "3px solid", borderRadius: "15px" }}>
-            <h5 style={{ padding: "10px" }}>
-              US Total Deaths: <br />
+            <h5 style={{ padding: "10px", margin: "0px" }}>
+              Total Deaths: <br />
               {TotalUSData.us_death_total}
             </h5>
           </div>
@@ -93,6 +93,7 @@ const Sidebar = (props: SidebarProps) => {
       {/* Per State Clicked */}
       {!!feature && (
         <>
+          <hr />
           <div>
             <FlexibleWidthXYPlot
               xType="time"
@@ -149,7 +150,8 @@ const Sidebar = (props: SidebarProps) => {
               />
             </FlexibleWidthXYPlot>
           </div>
-          <div>
+          <hr />
+          <div style={{ backgroundColor: "#202020", overflow:'scroll' }}>
             <h2
               style={{
                 fontFamily: "sans-serif",
@@ -162,7 +164,7 @@ const Sidebar = (props: SidebarProps) => {
             >
               Top 10 counties in {feature.properties.name}
             </h2>
-            {!!filteredData && <Table data={filteredData.top10}  />}
+            {!!filteredData && <Table data={filteredData.top10} />}
           </div>
         </>
       )}
@@ -179,16 +181,13 @@ const Table = (props: TableProps) => {
   const counties = Object.keys(data);
   // console.log(data);
   return (
-    <div
-      style={{ margin: "0 20px"}}
-    >
+    <div style={{ margin: "0 20px"}}>
       {counties.map((county, index) => {
         let backgroundColor;
         if (index % 2 === 0) {
           backgroundColor = "lightgrey";
-        }
-        else {
-          backgroundColor = 'white';
+        } else {
+          backgroundColor = "white";
         }
         return (
           <div
@@ -196,10 +195,13 @@ const Table = (props: TableProps) => {
             style={{
               display: "flex",
               justifyContent: "space-evenly",
-              margin:'5px 0',
+              margin: "5px auto",
+              padding:'5px',
               backgroundColor: backgroundColor,
-              borderRadius:'10px'
-              // borderLeft: "2px solid",
+              borderRadius: "10px",
+              width: '65%',
+              maxWidth: '600px'
+              
             }}
           >
             <p
@@ -217,7 +219,7 @@ const Table = (props: TableProps) => {
             </p>
           </div>
         );
-     })}
+      })}
     </div>
   );
 };

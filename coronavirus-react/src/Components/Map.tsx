@@ -29,6 +29,34 @@ import Legend from "./Legend";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
+// URL function for data fetching
+const createURL = () => {
+  const today = new Date();
+  const priorDate = new Date().setDate(today.getDate() - 1);
+  const priorDateTs = new Date(priorDate);
+
+  let day = priorDateTs.getDate();
+  let month = priorDateTs.getMonth() + 1;
+  let year = priorDateTs.getFullYear();
+
+  let monthStr, dayStr;
+
+  if (month <= 9) {
+    monthStr = "0" + month.toString();
+  } else {
+    monthStr = month.toString();
+  }
+  if (day < 10) {
+    dayStr = "0" + day.toString();
+  } else {
+    dayStr = day.toString();
+  }
+
+  let url = `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${monthStr}-${dayStr}-${year}.csv`;
+
+  return url;
+};
+
 const Map = () => {
   const initialViewport = {
     latitude: 39.5,
@@ -57,17 +85,13 @@ const Map = () => {
 
   useEffect(() => {
     // Fetch states data
-    const statesData = getStatesData(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv", setUSTotals
-    );
+    const statesData = getStatesData(createURL(), setUSTotals);
     statesData.then((response) => {
       setStatesData(StateBoundaries);
     });
 
     // Fetch counties data
-    const countyData = getCountiesData(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/07-15-2020.csv"
-    );
+    const countyData = getCountiesData(createURL());
     countyData.then(() => {
       setCountiesData(CountyBoundaries);
     });
@@ -239,7 +263,7 @@ const Map = () => {
         </MapGL>
         <Legend zoom={viewport.zoom}></Legend>
       </div>
-      <div style={{ width: "30%", background: "rgb(42 42 42)" }}>
+      <div style={{ width: "30%", background: "rgb(29 29 29)" }}>
         <Sidebar feature={clickedFeature} totalData={usTotalData} />
       </div>
     </div>

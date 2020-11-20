@@ -69,10 +69,10 @@ let colorsState = [
   { "10-20": "#FED976" },
   { "20-50": "#FEB24C" },
   { "50-100": "#FD8D3C" },
-  { "100-200": "#FC4E2A" },
-  { "200-500": "#E31A1C" },
-  { "500-1000": "#BD0026" },
-  { "1000+": "#800026" },
+  { "1000": "#FC4E2A" },
+  { "5000": "#E31A1C" },
+  { "10000": "#BD0026" },
+  { "20000": "#800026" },
 ];
   const legend = colorsState.map((color: any, index: number) => {
     const level = Object.keys(color);
@@ -98,26 +98,3 @@ let colorsState = [
   return legend;
 }
 export default Legend;
-
-
-/**
- * colors.map((color: any, index: number) => {
-        const level = Object.keys(color);
-        return (
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <i
-              key={index}
-              style={{ width: "100px", background: color[level[0]] }}
-            ></i>
-            <span
-              style={{
-                width: "100px",
-                margin: "0 0 0 15px",
-                textAlign: "left",
-                color: "white",
-              }}
-            >
-              {level[0]}
-            </span>
-          </div>
- */
