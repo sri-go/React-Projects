@@ -77,13 +77,13 @@ const Sidebar = (props: SidebarProps) => {
           }}
         >
           <div style={{ border: "3px solid", borderRadius: "15px" }}>
-            <h5 style={{ padding: "10px", margin: "0px" }}>
+            <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
               Total Confirmed Cases: <br />
               {TotalUSData.us_confirmed_total}
             </h5>
           </div>
           <div style={{ border: "3px solid", borderRadius: "15px" }}>
-            <h5 style={{ padding: "10px", margin: "0px" }}>
+            <h5 style={{ padding: "10px", margin: "0px", color:'white' }}>
               Total Deaths: <br />
               {TotalUSData.us_death_total}
             </h5>
@@ -151,7 +151,7 @@ const Sidebar = (props: SidebarProps) => {
             </FlexibleWidthXYPlot>
           </div>
           <hr />
-          <div style={{ backgroundColor: "#202020", overflow:'scroll' }}>
+          <div style={{ backgroundColor: "#202020", overflow: "scroll" }}>
             <h2
               style={{
                 fontFamily: "sans-serif",
@@ -181,45 +181,85 @@ const Table = (props: TableProps) => {
   const counties = Object.keys(data);
   // console.log(data);
   return (
-    <div style={{ margin: "0 20px"}}>
-      {counties.map((county, index) => {
-        let backgroundColor;
-        if (index % 2 === 0) {
-          backgroundColor = "lightgrey";
-        } else {
-          backgroundColor = "white";
-        }
-        return (
-          <div
-            key={index}
-            style={{
-              display: "flex",
-              justifyContent: "space-evenly",
-              margin: "5px auto",
-              padding:'5px',
-              backgroundColor: backgroundColor,
-              borderRadius: "10px",
-              width: '65%',
-              maxWidth: '600px'
-              
-            }}
-          >
-            <p
+    <div style={{ margin: "0 20px", display: "flex" }}>
+      <div>
+        {counties.map((county, index) => {
+          let backgroundColor;
+          if (index % 2 === 0) {
+            backgroundColor = "lightgrey";
+          } else {
+            backgroundColor = "white";
+          }
+          return (
+            <div
+              key={index}
               style={{
-                margin: "0",
-                width: "200px",
-                textAlign: "left",
-                // borderRight: "2px solid",
+                display: "flex",
+                justifyContent: "space-evenly",
+                margin: "5px auto",
+                padding: "5px",
+                backgroundColor: backgroundColor,
+                borderRadius: "10px",
+                width: "65%",
+                maxWidth: "600px",
               }}
             >
-              {county}
-            </p>
-            <p style={{ margin: "0", width: "100px", textAlign: "center" }}>
-              {data[county]}
-            </p>
-          </div>
-        );
-      })}
+              <p
+                style={{
+                  margin: "0",
+                  width: "200px",
+                  textAlign: "left",
+                  // borderRight: "2px solid",
+                }}
+              >
+                {county}
+              </p>
+              <p style={{ margin: "0", width: "100px", textAlign: "center" }}>
+                {data[county]}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+      <div>
+        {counties.map((county, index) => {
+          let backgroundColor;
+          if (index % 2 === 0) {
+            backgroundColor = "lightgrey";
+          } else {
+            backgroundColor = "white";
+          }
+          return (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-evenly",
+                margin: "5px auto",
+                padding: "5px",
+                backgroundColor: backgroundColor,
+                borderRadius: "10px",
+                width: "65%",
+                maxWidth: "600px",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0",
+                  width: "200px",
+                  textAlign: "left",
+                  // borderRight: "2px solid",
+                }}
+              >
+                {county}
+              </p>
+              <p style={{ margin: "0", width: "100px", textAlign: "center" }}>
+                {data[county]}
+              </p>
+            </div>
+          );
+        })} 
+      </div>
     </div>
   );
 };

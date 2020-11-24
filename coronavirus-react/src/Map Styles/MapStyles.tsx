@@ -20,7 +20,9 @@ export const StateDeathStyle = {
         [10000, "#cb181d"],
         [20000, "#99000d"],
       ],
-      property: "Deaths",
+      property: "Confirmed",
+      type: "interval",
+      colorSpace: "rgb",
     },
     //change opacity on hover, default to 50% opacity
     "fill-opacity": [
@@ -52,8 +54,7 @@ export const CountyDeathStyle = {
   source: "CountyBoundaries",
   paint: {
     "fill-color": {
-      property: "Deaths",
-      //red colors
+      //paint colors 
       stops: [
         [0, "#fff5f0"],
         [50, "#fee0d2"],
@@ -64,6 +65,9 @@ export const CountyDeathStyle = {
         [2500, "#cb181d"],
         [5000, "#99000d"],
       ],
+      property: "Confirmed",
+      type: 'interval',
+      colorSpace:'rgb'
     },
     // change opacity on hover, default to 50% opacity
     "fill-opacity": [
