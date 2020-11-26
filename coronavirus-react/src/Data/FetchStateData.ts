@@ -17,11 +17,22 @@ export const getStatesData = async (
           err: any,
           data: any
         ) {
+          console.log(err);
           // to do: add data of state values w/o fips to correct state
           let us_subsect = filterUSData(data);
+          console.log(us_subsect);
           let calc_total = calcTotals(us_subsect);
           let combined_data = combineFiles(calc_total);
           callback(combined_data); // execute callback function (returns us total data)
+
+          // error handling
+          ((err) => {
+            err.map((error, index) => {
+              if (error.row.Country_Region === "US") {
+                console.log(error.row.Confirmed);
+              }
+            });
+          })();
         });
       }
     })

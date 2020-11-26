@@ -18,7 +18,7 @@ const Legend = (props: LegendProps) => {
         background:
           zoom > 5.49 ? "rgb(122 120 119 / 50%)" : "rgb(152 146 143 / 0.5)",
         padding: "10px",
-        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1);",
+        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
       }}
     >
       {/* @ts-ignore */}
@@ -42,9 +42,8 @@ const CountyLegend = () => {
   const legend = colorsCounty.map((color: any, index: number) => {
     const level = Object.keys(color);
     return (
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <i
-          key={index}
+      <div key={index} style={{ display: "flex", justifyContent: "space-between" }}>
+        <i 
           style={{ width: "100px", background: color[level[0]] }}
         ></i>
         <span
@@ -77,11 +76,11 @@ let colorsState = [
   const legend = colorsState.map((color: any, index: number) => {
     const level = Object.keys(color);
     return (
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <i
-          key={index}
-          style={{ width: "100px", background: color[level[0]] }}
-        ></i>
+      <div
+        key={index}
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
+        <i style={{ width: "100px", background: color[level[0]] }}></i>
         <span
           style={{
             width: "100px",

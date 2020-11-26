@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   ChartLabel,
+  Crosshair,
   FlexibleWidthXYPlot,
   LineSeries,
   XAxis,
@@ -23,6 +24,10 @@ const Sidebar = (props: SidebarProps) => {
 
   const [plotData, setPlotData] = useState(); // to do: rename variables to timeSeriesData, setTimeSeriesData
 
+  const [pointsTotal, setPointsTotal] = useState<any>([]);
+  const [pointsTwoWeek, setPointsTwoWeek] = useState<any>([]);
+
+
   // const [selectedState, setSelectedState] = useState();
   const [TotalUSData, setTotalUSData] = useState<any>(null);
   const [filteredData, setFilteredData] = useState<any>(null);
@@ -30,15 +35,23 @@ const Sidebar = (props: SidebarProps) => {
   const [totalCases, setTotalCases] = useState<any>(null);
   const [totalNewCases, setTotalNewCases] = useState<any>(null);
 
+  // To Do: Fetch Time Series Death data
   // fetch data on component load
   useEffect(() => {
-    const getData = getTimeSeries(
+    const getConfirmedData = getTimeSeries(
       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
     );
-    getData.then((response) => {
+    getConfirmedData.then((response) => {
       setPlotData(response); // set the timeseries data after feth
       countryAnalysis(response); // to do: analysis of us as a whole
     });
+
+    const getDeathsData = getTimeSeries(
+      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
+    );
+    getDeathsData.then((reponse) => {
+
+    })
   }, []);
 
   // set TotalUSData after fetching timeseries data
@@ -64,41 +77,102 @@ const Sidebar = (props: SidebarProps) => {
     return setFilteredData(result);
   }, [feature]);
 
+  const date = new Date();
+
   return (
     <>
       {/* US Overview */}
-      {TotalUSData && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-evenly",
-            textAlign: "center",
-            margin: "5px 0 0 0",
-          }}
-        >
-          <div style={{ border: "3px solid", borderRadius: "15px" }}>
-            <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
-              Total Confirmed Cases: <br />
-              {TotalUSData.us_confirmed_total}
-            </h5>
+      {/* To Do: Cleanup nested ternary -> breakout into subcomponent */}
+      {!!feature ? (
+        <>
+          <div>
+            <h1
+              style={{
+                margin: 0,
+                color: "white",
+                textAlign: "center",
+                fontWeight: "normal",
+                fontSize: "30px",
+              }}
+            >
+              Coronavirus Situation for {feature.properties.name} as of
+              {" " + date.toLocaleDateString("default")}
+            </h1>
           </div>
-          <div style={{ border: "3px solid", borderRadius: "15px" }}>
-            <h5 style={{ padding: "10px", margin: "0px", color:'white' }}>
-              Total Deaths: <br />
-              {TotalUSData.us_death_total}
-            </h5>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-evenly",
+              textAlign: "center",
+              margin: "10px 0 0 0",
+            }}
+          >
+            <div style={{ border: "3px solid", borderRadius: "15px" }}>
+              <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
+                Total Confirmed Cases: <br />
+                {feature.properties.Confirmed.toLocaleString()}
+              </h5>
+            </div>
+            <div style={{ border: "3px solid", borderRadius: "15px" }}>
+              <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
+                Total Deaths: <br />
+                {feature.properties.Deaths.toLocaleString()}
+              </h5>
+            </div>
           </div>
-        </div>
+        </>
+      ) : (
+        !!TotalUSData && (
+          <>
+            <div>
+              <h1
+                style={{
+                  margin: 0,
+                  color: "white",
+                  textAlign: "center",
+                  fontWeight: "normal",
+                  fontSize: "30px",
+                }}
+              >
+                USA Coronavirus Situation as of{" "}
+                {date.toLocaleDateString("default")}
+              </h1>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-evenly",
+                textAlign: "center",
+                margin: "10px 0 0 0",
+              }}
+            >
+              <div style={{ border: "3px solid", borderRadius: "15px" }}>
+                <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
+                  Total Confirmed Cases: <br />
+                  {TotalUSData.us_confirmed_total.toLocaleString()}
+                </h5>
+              </div>
+              <div style={{ border: "3px solid", borderRadius: "15px" }}>
+                <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
+                  Total Deaths: <br />
+                  {TotalUSData.us_death_total.toLocaleString()}
+                </h5>
+              </div>
+            </div>
+          </>
+        )
       )}
       {/* Per State Clicked */}
       {!!feature && (
         <>
           <hr />
           <div>
+            {/* To Do Add Time Series Deaths Total to Plot */}
             <FlexibleWidthXYPlot
               xType="time"
               height={300}
               margin={{ top: 20, right: 20, left: 65 }}
+              onMouseLeave={() => setPointsTotal([])}
             >
               <ChartLabel
                 text="Total Number of Cases"
@@ -115,14 +189,27 @@ const Sidebar = (props: SidebarProps) => {
                 }}
               />
               <YAxis title="Number of Cases" />
-              <LineSeries data={totalCases} />
+              <LineSeries
+                data={totalCases}
+                onNearestX={(v) => setPointsTotal([v])}
+              />
+              <Crosshair
+                values={pointsTotal}
+                itemsFormat={(d) => [{ title: "Total Cases", value: d[0].y }]}
+                titleFormat={(d) => ({
+                  title: "Date",
+                  value: new Date(d[0].x).toLocaleDateString(),
+                })}
+              />
             </FlexibleWidthXYPlot>
           </div>
           <div>
+            {/* To Do Add Time Series New Deaths to Plot */}
             <FlexibleWidthXYPlot
               xType="time"
               height={300}
               margin={{ top: 20, right: 20, left: 65 }}
+              onMouseLeave={() => setPointsTwoWeek([])}
             >
               <ChartLabel
                 text="New Cases per Day"
@@ -147,6 +234,15 @@ const Sidebar = (props: SidebarProps) => {
                   strokeLinejoin: "round",
                   strokeWidth: 2,
                 }}
+                onNearestX={(v) => setPointsTwoWeek([v])}
+              />
+              <Crosshair
+                values={pointsTwoWeek}
+                itemsFormat={(d) => [{ title: "New Cases", value: d[0].y }]}
+                titleFormat={(d) => ({
+                  title: "Date",
+                  value: new Date(d[0].x).toLocaleDateString(),
+                })}
               />
             </FlexibleWidthXYPlot>
           </div>
@@ -176,13 +272,17 @@ interface TableProps {
   data?: any;
 }
 
+// To Do: Add Deaths to Table (Top 10 Deaths for County, 2-Week Death Totals for County)
 const Table = (props: TableProps) => {
   const { data } = props;
   const counties = Object.keys(data);
-  // console.log(data);
+
   return (
     <div style={{ margin: "0 20px", display: "flex" }}>
       <div>
+        <div>
+          <p>Top 10 Confirmed Count Total </p>
+        </div>
         {counties.map((county, index) => {
           let backgroundColor;
           if (index % 2 === 0) {
@@ -222,6 +322,9 @@ const Table = (props: TableProps) => {
         })}
       </div>
       <div>
+        <div>
+          <p>Last Two Week Confirmed Count Totals </p>
+        </div>
         {counties.map((county, index) => {
           let backgroundColor;
           if (index % 2 === 0) {
@@ -258,7 +361,7 @@ const Table = (props: TableProps) => {
               </p>
             </div>
           );
-        })} 
+        })}
       </div>
     </div>
   );
