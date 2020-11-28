@@ -17,10 +17,10 @@ export const getStatesData = async (
           err: any,
           data: any
         ) {
-          console.log(err);
+          // console.log(err);
           // to do: add data of state values w/o fips to correct state
           let us_subsect = filterUSData(data);
-          console.log(us_subsect);
+          // console.log(us_subsect);
           let calc_total = calcTotals(us_subsect);
           let combined_data = combineFiles(calc_total);
           callback(combined_data); // execute callback function (returns us total data)
@@ -115,3 +115,4 @@ const combineFiles = function (data_totals: any) {
   };
   return us_totals;
 };
+

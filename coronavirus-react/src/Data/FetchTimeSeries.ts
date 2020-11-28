@@ -1,5 +1,6 @@
 //@ts-ignore
 import { csv } from "csv2geojson";
+import StatesBoundaries from "./StateBoundaries.json";
 
 // Data for 2-week
 export const getTimeSeries = async function (url: string) {
@@ -14,10 +15,10 @@ export const getTimeSeries = async function (url: string) {
 };
 
 export const countryAnalysis = (array: any) => {
-  console.log(array);
+  // console.log(array);
 };
 
-const filterDates = () => {
+export const filterDates = () => {
   //Filtering by date, I want to only get the data for the past 2 weeks
   const date = new Date();
   date.setDate(date.getDate() - 16);
@@ -45,6 +46,7 @@ const filterForState = (array: any, feature: any) => {
       temp.push(element);
     }
   });
+
   return temp;
 };
 
@@ -200,6 +202,51 @@ const filterTop10 = (obj: any, feature?: any) => {
   return top10Counties;
 };
 
+export const StateTwoWeekData = (array: any, datesArray: any) => {
+  const featuresArr = StatesBoundaries.features;
+  const includeKeys = [
+    "Admin2",
+    "Combined_Key",
+    "Country_Region",
+    "FIPS",
+    "Lat",
+    "Long_",
+    "Province_State",
+    "UID",
+    "code3",
+    "iso2",
+    "iso3",
+  ];
+  const twoWeekObj: any = [];
+
+  const firstDate = datesArray[0];
+  const lastDate = datesArray[datesArray.length - 1];
+
+  array.map((feature: any, index: number) => {
+    const tempObj: any = {};
+    const twoWeekTotal = feature[lastDate] - feature[firstDate];
+    tempObj["TwoWeekTotal"] = twoWeekTotal;
+    includeKeys.map((key, index) => {
+      tempObj[key] = feature[key];
+    });
+    twoWeekObj.push(tempObj);
+  });
+
+  console.log(twoWeekObj);
+
+  featuresArr.map((feature: any, index: number) => {
+    const state = feature.properties.name;
+    let stateTotal = 0;
+    twoWeekObj.map((feature: any, index: number) => {
+      if (feature.Province_State === state) {
+        stateTotal += feature.TwoWeekTotal;
+      }
+    });
+    feature.properties["TwoWeekTotal"] = stateTotal;
+  });
+  return StatesBoundaries;
+};
+
 export const filterData = (array: any, feature: any): any => {
   if (!!array) {
     const dates = filterDates();
@@ -213,3 +260,4 @@ export const filterData = (array: any, feature: any): any => {
     };
   }
 };
+

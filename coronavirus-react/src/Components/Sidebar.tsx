@@ -9,18 +9,21 @@ import {
 } from "react-vis";
 
 import {
+  filterDates,
   getTimeSeries,
   filterData,
   countryAnalysis,
+  StateTwoWeekData,
 } from "../Data/FetchTimeSeries";
 
 interface SidebarProps {
   feature: any;
   totalData: { usConfirmedTotal: number; usDeathTotal: number };
+  callback: any;
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { feature, totalData } = props;
+  const { feature, totalData, callback } = props;
 
   const [plotData, setPlotData] = useState(); // to do: rename variables to timeSeriesData, setTimeSeriesData
 
@@ -44,6 +47,9 @@ const Sidebar = (props: SidebarProps) => {
     getConfirmedData.then((response) => {
       setPlotData(response); // set the timeseries data after feth
       countryAnalysis(response); // to do: analysis of us as a whole
+      const dates = filterDates();
+
+      callback(StateTwoWeekData(response, dates));
     });
 
     const getDeathsData = getTimeSeries(
@@ -67,6 +73,7 @@ const Sidebar = (props: SidebarProps) => {
     // do not filter unless there is a feature
     if (!!feature) {
       result = filterData(plotData, feature);
+     console.log(result);
       setTotalCases(
         result.filterCounty[feature.properties.name].TotalCasesOverTime
       );

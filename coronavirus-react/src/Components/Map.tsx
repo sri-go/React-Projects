@@ -21,11 +21,13 @@ import {
   StateDeathStyle,
   CountyDeathStyle,
   CountyOutlineStyle,
+  StateTwoWeekConfirmedStyle,
 } from "../Map Styles/MapStyles";
 
 import "../Styles/map.css";
 import Sidebar from "./Sidebar";
 import Legend from "./Legend";
+import ControlPanel from "./ControlPanel";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -70,19 +72,20 @@ const Map = () => {
   const [viewport, setViewport] = useState<any>({
     ...initialViewport,
   });
-  
+
   const [hoveredFeature, setHoveredFeature] = useState<any>();
   const [tempFeature, setTempFeature] = useState<any>();
   const [clickedFeature, setClickedFeature] = useState(null);
-  
+
   const [statesData, setStatesData] = useState<any>(null);
   const [countiesData, setCountiesData] = useState<any>(null);
   const [usTotalData, setUSTotalData] = useState<any>();
 
   const setUSTotals = (returnData: any) => {
     setUSTotalData(returnData);
-  }
+  };
 
+  // On Component Load
   useEffect(() => {
     // Fetch states data
     const statesData = getStatesData(createURL(), setUSTotals);
@@ -96,7 +99,7 @@ const Map = () => {
       setCountiesData(CountyBoundaries);
     });
   }, []);
- 
+
   const onViewportChange = (nextViewport: ViewportProps) => {
     setViewport(nextViewport);
   };
@@ -112,17 +115,23 @@ const Map = () => {
     const feature =
       features &&
       features.find((f) => {
-        if (f.layer.id === "states-data" || f.layer.id === "county-data") {
+        if (
+          f.layer.id === "states-data" ||
+          f.layer.id === "county-data" ||
+          f.layer.id === "StateTwoWeek-ConfirmedData"
+        ) {
           return f;
         }
       });
+
     setHoveredFeature({ feature, x: offsetX, y: offsetY });
     //This is to return the data within the layer and change the hover opacity
     if (null !== mapRef.current) {
       const map = mapRef.current.getMap();
       const featured = map.queryRenderedFeatures(point, {
-        layers: ["states-data", "county-data"],
+        layers: ["states-data", "county-data", "StateTwoWeek-ConfirmedData"],
       })[0];
+      console.log(featured);;;
       if (featured) {
         map.setFeatureState(
           {
@@ -234,6 +243,11 @@ const Map = () => {
     }
   };
 
+  const testCallback = (data: any) => {
+    console.log(data);
+    setStatesData(StateBoundaries);
+  }
+
   return (
     <div style={{ display: "flex" }}>
       <div style={{ width: "70%" }}>
@@ -253,6 +267,11 @@ const Map = () => {
           <Source id="states-data" type="geojson" data={statesData}>
             {/* @ts-ignore */}
             <Layer key={"state"} {...StateDeathStyle} />
+            {/* @ts-ignore */}
+            <Layer
+              key={"StateTwoWeek-ConfirmedData"}
+              {...StateTwoWeekConfirmedStyle}
+            />
           </Source>
           <Source id="county-data" type="geojson" data={countiesData}>
             {/* @ts-ignore */}
@@ -261,10 +280,15 @@ const Map = () => {
           </Source>
           {!!hoveredFeature && renderTooltip()}
         </MapGL>
-        <Legend zoom={viewport.zoom}></Legend>
+        <Legend zoom={viewport.zoom} />
+        <ControlPanel mapRef={mapRef} />
       </div>
       <div style={{ width: "30%", background: "rgb(29 29 29)" }}>
-        <Sidebar feature={clickedFeature} totalData={usTotalData} />
+        <Sidebar
+          feature={clickedFeature}
+          totalData={usTotalData}
+          callback={testCallback}
+        />
       </div>
     </div>
   );
