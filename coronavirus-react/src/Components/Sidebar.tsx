@@ -8,57 +8,26 @@ import {
   YAxis,
 } from "react-vis";
 
-import {
-  filterDates,
-  getTimeSeries,
-  filterData,
-  countryAnalysis,
-  StateTwoWeekData,
-} from "../Data/FetchTimeSeries";
+import { filterData } from "../Data/FetchTimeSeries";
 
 interface SidebarProps {
+  timeSeriesData: any;
   feature: any;
   totalData: { usConfirmedTotal: number; usDeathTotal: number };
-  callback: any;
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { feature, totalData, callback } = props;
-
-  const [plotData, setPlotData] = useState(); // to do: rename variables to timeSeriesData, setTimeSeriesData
+  const { feature, totalData, timeSeriesData } = props;
 
   const [pointsTotal, setPointsTotal] = useState<any>([]);
   const [pointsTwoWeek, setPointsTwoWeek] = useState<any>([]);
 
-
-  // const [selectedState, setSelectedState] = useState();
   const [TotalUSData, setTotalUSData] = useState<any>(null);
+
   const [filteredData, setFilteredData] = useState<any>(null);
 
   const [totalCases, setTotalCases] = useState<any>(null);
   const [totalNewCases, setTotalNewCases] = useState<any>(null);
-
-  // To Do: Fetch Time Series Death data
-  // fetch data on component load
-  useEffect(() => {
-    const getConfirmedData = getTimeSeries(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
-    );
-    getConfirmedData.then((response) => {
-      setPlotData(response); // set the timeseries data after feth
-      countryAnalysis(response); // to do: analysis of us as a whole
-      const dates = filterDates();
-
-      callback(StateTwoWeekData(response, dates));
-    });
-
-    const getDeathsData = getTimeSeries(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
-    );
-    getDeathsData.then((reponse) => {
-
-    })
-  }, []);
 
   // set TotalUSData after fetching timeseries data
   useEffect(() => {
@@ -72,8 +41,8 @@ const Sidebar = (props: SidebarProps) => {
     let result;
     // do not filter unless there is a feature
     if (!!feature) {
-      result = filterData(plotData, feature);
-     console.log(result);
+      result = filterData(timeSeriesData, feature);
+      console.log(result);
       setTotalCases(
         result.filterCounty[feature.properties.name].TotalCasesOverTime
       );

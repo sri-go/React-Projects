@@ -13,6 +13,12 @@ import "mapbox-gl/dist/mapbox-gl.css";
 
 import { getStatesData } from "../Data/FetchStateData";
 import { getCountiesData } from "../Data/FetchCountyData";
+import {
+  filterDates,
+  getTimeSeries,
+  countryAnalysis,
+  StateTwoWeekData,
+} from "../Data/FetchTimeSeries";
 
 import StateBoundaries from "../Data/StateBoundaries.json";
 import CountyBoundaries from "../Data/CountyBoundaries.json";
@@ -28,6 +34,7 @@ import "../Styles/map.css";
 import Sidebar from "./Sidebar";
 import Legend from "./Legend";
 import ControlPanel from "./ControlPanel";
+import { stat } from "fs";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -80,6 +87,7 @@ const Map = () => {
   const [statesData, setStatesData] = useState<any>(null);
   const [countiesData, setCountiesData] = useState<any>(null);
   const [usTotalData, setUSTotalData] = useState<any>();
+  const [timeSeriesData, setTimeSeriesData] = useState<any>();
 
   const setUSTotals = (returnData: any) => {
     setUSTotalData(returnData);
@@ -87,17 +95,36 @@ const Map = () => {
 
   // On Component Load
   useEffect(() => {
-    // Fetch states data
+    // Fetch States Data
     const statesData = getStatesData(createURL(), setUSTotals);
-    statesData.then((response) => {
-      setStatesData(StateBoundaries);
-    });
+    // statesData.then((response) => {
+    //   setStatesData(StateBoundaries);
+    // });
 
-    // Fetch counties data
+    // Fetch counties Data
     const countyData = getCountiesData(createURL());
     countyData.then(() => {
       setCountiesData(CountyBoundaries);
     });
+
+    // Fetch Time Series Confirmed Data
+    const getConfirmedData = getTimeSeries(
+      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
+    );
+    getConfirmedData.then((response) => {
+      setTimeSeriesData(response); // set the timeseries data after feth
+      countryAnalysis(response); // to do: analysis of us as a whole
+      const dates = filterDates();
+      const withTimeSeries = StateTwoWeekData(response, dates);
+      console.log(withTimeSeries);
+      setStatesData(StateBoundaries);
+    });
+
+    // Fetch Time Series Deaths Data
+    const getDeathsData = getTimeSeries(
+      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
+    );
+    getDeathsData.then((reponse) => {});
   }, []);
 
   const onViewportChange = (nextViewport: ViewportProps) => {
@@ -106,32 +133,17 @@ const Map = () => {
 
   const onHover = (event: PointerEvent) => {
     const {
-      features,
       point,
       srcEvent: { offsetX, offsetY },
     } = event;
 
-    //This is for the Hover Label
-    const feature =
-      features &&
-      features.find((f) => {
-        if (
-          f.layer.id === "states-data" ||
-          f.layer.id === "county-data" ||
-          f.layer.id === "StateTwoWeek-ConfirmedData"
-        ) {
-          return f;
-        }
-      });
-
-    setHoveredFeature({ feature, x: offsetX, y: offsetY });
     //This is to return the data within the layer and change the hover opacity
     if (null !== mapRef.current) {
       const map = mapRef.current.getMap();
       const featured = map.queryRenderedFeatures(point, {
         layers: ["states-data", "county-data", "StateTwoWeek-ConfirmedData"],
       })[0];
-      console.log(featured);;;
+      setHoveredFeature({ featured, x: offsetX, y: offsetY });
       if (featured) {
         map.setFeatureState(
           {
@@ -212,17 +224,17 @@ const Map = () => {
   };
 
   const renderTooltip = () => {
-    const { feature, x, y } = hoveredFeature;
-    if (feature) {
+    const { featured, x, y } = hoveredFeature;
+    // if hovered
+    if (featured) {
       const stateTag = (
         <div className="tooltip" style={{ padding: "10px", left: x, top: y }}>
-          <div>{feature.properties.name}</div>
+          <div>{featured.properties.name}</div>
           <div style={{ marginTop: "5px" }}>
-            Total Confirmed Cases: {feature.properties.Confirmed}
+            Total Confirmed Cases: {featured.properties.Confirmed}
           </div>
         </div>
       );
-
       const countyTag = (
         <div
           className="tooltip"
@@ -232,21 +244,51 @@ const Map = () => {
             top: y,
           }}
         >
-          <div>{feature.properties.NAME} County</div>
+          <div>{featured.properties.NAME} County</div>
           <div style={{ marginTop: "5px" }}>
-            Total Number of Cases: {feature.properties.Confirmed}
+            Total Number of Cases: {featured.properties.Confirmed}
           </div>
         </div>
       );
-      const tag = feature.source === "states-data" ? stateTag : countyTag;
+      const twoWeekTag = (
+        <div
+          className="tooltip"
+          style={{
+            padding: "10px",
+            left: x,
+            top: y,
+          }}
+        >
+          <div>{featured.properties.name}</div>
+          <div style={{ marginTop: "5px" }}>
+            Cases over the last two weeks: {featured.properties.TwoWeekTotal}
+          </div>
+        </div>
+      );
+      const countyTwoWeekTag = (
+        <div
+          className="tooltip"
+          style={{
+            padding: "10px",
+            left: x,
+            top: y,
+          }}
+        >
+          <div>{featured.properties.name}</div>
+          <div style={{ marginTop: "5px" }}>
+            Cases over the last two weeks: {featured.properties.TwoWeekTotal}
+          </div>
+        </div>
+      );
+
+      const tag =
+        featured.source === "states-data"
+          ? featured.layer.id === "states-data" ? stateTag : twoWeekTag
+          : featured.layer.id === "county-data" ? countyTag : countyTwoWeekTag;
+      
       return tag;
     }
   };
-
-  const testCallback = (data: any) => {
-    console.log(data);
-    setStatesData(StateBoundaries);
-  }
 
   return (
     <div style={{ display: "flex" }}>
@@ -269,7 +311,7 @@ const Map = () => {
             <Layer key={"state"} {...StateDeathStyle} />
             {/* @ts-ignore */}
             <Layer
-              key={"StateTwoWeek-ConfirmedData"}
+              key={"state-two-week"}
               {...StateTwoWeekConfirmedStyle}
             />
           </Source>
@@ -287,7 +329,7 @@ const Map = () => {
         <Sidebar
           feature={clickedFeature}
           totalData={usTotalData}
-          callback={testCallback}
+          timeSeriesData={timeSeriesData}
         />
       </div>
     </div>
