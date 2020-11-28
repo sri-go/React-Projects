@@ -34,7 +34,6 @@ import "../Styles/map.css";
 import Sidebar from "./Sidebar";
 import Legend from "./Legend";
 import ControlPanel from "./ControlPanel";
-import { stat } from "fs";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -97,9 +96,6 @@ const Map = () => {
   useEffect(() => {
     // Fetch States Data
     const statesData = getStatesData(createURL(), setUSTotals);
-    // statesData.then((response) => {
-    //   setStatesData(StateBoundaries);
-    // });
 
     // Fetch counties Data
     const countyData = getCountiesData(createURL());
@@ -196,11 +192,15 @@ const Map = () => {
   };
 
   const onClick = (event: any) => {
-    const feature = event.features[0];
-    if (feature) {
-      // calculate the bounding box of the feature
-      const [minLng, minLat, maxLng, maxLat] = bbox(feature);
-      // construct a viewport instance from the current state
+    const { point } = event;
+
+    if (null !== mapRef.current) {
+      const map = mapRef.current.getMap();
+      const featured = map.queryRenderedFeatures(point, {
+        layers: ["states-data", "county-data", "StateTwoWeek-ConfirmedData"],
+      })[0];
+      // @ts-ignore
+      const [minLng, minLat, maxLng, maxLat] = bbox(featured);
       const newViewport = new WebMercatorViewport(viewport);
       const { longitude, latitude, zoom } = newViewport.fitBounds(
         [
@@ -219,7 +219,8 @@ const Map = () => {
         }),
         transitionDuration: 1000,
       });
-      setClickedFeature(feature);
+      // @ts-ignore
+      setClickedFeature(featured);
     }
   };
 
@@ -308,12 +309,9 @@ const Map = () => {
         >
           <Source id="states-data" type="geojson" data={statesData}>
             {/* @ts-ignore */}
-            <Layer key={"state"} {...StateDeathStyle} />
+            <Layer key={"states-data"} {...StateDeathStyle} />
             {/* @ts-ignore */}
-            <Layer
-              key={"state-two-week"}
-              {...StateTwoWeekConfirmedStyle}
-            />
+            <Layer key={"state-two-week"} {...StateTwoWeekConfirmedStyle} />
           </Source>
           <Source id="county-data" type="geojson" data={countiesData}>
             {/* @ts-ignore */}
