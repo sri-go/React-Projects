@@ -10,18 +10,22 @@ export const StateDeathStyle = {
   paint: {
     "fill-color": {
       //red colors
+      // ,,,,,,,,,,
       stops: [
-        [0, "#fff5f0"],
-        [50, "#fee0d2"],
-        [100, "#fcbba1"],
-        [500, "#fc9272"],
-        [1000, "#fb6a4a"],
-        [5000, "#ef3b2c"],
-        [10000, "#cb181d"],
-        [20000, "#99000d"],
+        [0, "#FFE3C5"],
+        [1000, "#F9C6A8"],
+        [5000, "#EFAA8E"],
+        [10000, "#E28F75"],
+        [25000, "#D0765F"],
+        [50000, "#BC5E4B"],
+        [100000, "#A64839"],
+        [250000, "#8E3429"],
+        [500000, "#74221B"],
+        [750000, "#59120F"],
+        [1000000, "#3F0501"],
       ],
       property: "Confirmed",
-      type: "interval",
+      type: "exponential",
       colorSpace: "rgb",
     },
     //change opacity on hover, default to 50% opacity
@@ -97,14 +101,15 @@ export const StateTwoWeekConfirmedStyle = {
     "fill-color": {
       //red colors
       stops: [
-        [0, "#fff5f0"],
-        [50, "#fee0d2"],
-        [100, "#fcbba1"],
-        [500, "#fc9272"],
-        [1000, "#fb6a4a"],
-        [5000, "#ef3b2c"],
-        [10000, "#cb181d"],
-        [20000, "#99000d"],
+        [0, "#FCDDC0"],
+        [1000, "#F2BB9E"],
+        [5000, "#E29A80"],
+        [10000, "#CE7B64"],
+        [25000, "#B65F4C"],
+        [50000, "#9A4536"],
+        [100000, "#7C2E24"],
+        [250000, "#5D1A14"],
+        [500000, "#3D0903"],
       ],
       property: "TwoWeekTotal",
       type: "interval",
@@ -120,3 +125,5 @@ export const StateTwoWeekConfirmedStyle = {
   },
   maxzoom: 5.5,
 };
+
+

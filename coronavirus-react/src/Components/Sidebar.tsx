@@ -51,7 +51,7 @@ const Sidebar = (props: SidebarProps) => {
       );
     }
     return setFilteredData(result);
-  }, [feature]);
+  }, [feature, timeSeriesData]);
 
   const date = new Date();
 

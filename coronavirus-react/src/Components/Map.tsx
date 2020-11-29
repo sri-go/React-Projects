@@ -232,7 +232,8 @@ const Map = () => {
         <div className="tooltip" style={{ padding: "10px", left: x, top: y }}>
           <div>{featured.properties.name}</div>
           <div style={{ marginTop: "5px" }}>
-            Total Confirmed Cases: {featured.properties.Confirmed}
+            Total Confirmed Cases:{" "}
+            {featured.properties.Confirmed.toLocaleString()}
           </div>
         </div>
       );
@@ -247,7 +248,8 @@ const Map = () => {
         >
           <div>{featured.properties.NAME} County</div>
           <div style={{ marginTop: "5px" }}>
-            Total Number of Cases: {featured.properties.Confirmed}
+            Total Number of Cases:{" "}
+            {featured.properties.Confirmed.toLocaleString()}
           </div>
         </div>
       );
@@ -323,7 +325,17 @@ const Map = () => {
         <Legend zoom={viewport.zoom} />
         <ControlPanel mapRef={mapRef} />
       </div>
-      <div style={{ width: "30%", background: "rgb(29 29 29)" }}>
+      <div
+        style={{
+          height: "100%",
+          background: "rgb(29 29 29)",
+          position: "fixed",
+          left: "70%",
+          top: "0",
+          right: "0",
+          overflowY: "scroll",
+        }}
+      >
         <Sidebar
           feature={clickedFeature}
           totalData={usTotalData}
