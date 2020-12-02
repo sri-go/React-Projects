@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 interface ControlPanelProps {
   mapRef: any;
+  updateLegendStyle: any;
 }
 
 const ControlPanel = (props: ControlPanelProps) => {
@@ -9,9 +10,11 @@ const ControlPanel = (props: ControlPanelProps) => {
     "states-data": { visibility: "visible" },
     "county-data": { visibility: "visible" },
   };
-  const { mapRef } = props;
+  const { mapRef, updateLegendStyle } = props;
 
   const onClick = (e: React.SyntheticEvent) => {
+    updateLegendStyle(); //update map legend style callback
+
     const map = mapRef.current.getMap();
     const isVisible = map.getLayoutProperty("states-data", "visibility");
 
@@ -22,9 +25,6 @@ const ControlPanel = (props: ControlPanelProps) => {
           "StateTwoWeek-ConfirmedData",
           "visibility",
           "visible"
-        ) &&
-        console.log(
-          map.getLayoutProperty("StateTwoWeek-ConfirmedData", "visibility")
         )
       : map.setLayoutProperty("states-data", "visibility", "visible") &&
         map.setLayoutProperty("county-data", "visibility", "visible") &&
@@ -32,11 +32,7 @@ const ControlPanel = (props: ControlPanelProps) => {
           "StateTwoWeek-ConfirmedData",
           "visibility",
           "none"
-        ) &&
-        console.log(
-          map.getLayoutProperty("StateTwoWeek-ConfirmedData", "visibility")
         );
-
   };
 
   return (
@@ -49,6 +45,6 @@ const ControlPanel = (props: ControlPanelProps) => {
       </button> */}
     </div>
   );
-};
+};;
 
 export default ControlPanel;

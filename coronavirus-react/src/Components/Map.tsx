@@ -88,6 +88,8 @@ const Map = () => {
   const [usTotalData, setUSTotalData] = useState<any>();
   const [timeSeriesData, setTimeSeriesData] = useState<any>();
 
+  const [legendStyle, setLegendStyle] = useState("visible");
+
   const setUSTotals = (returnData: any) => {
     setUSTotalData(returnData);
   };
@@ -228,46 +230,55 @@ const Map = () => {
     const { featured, x, y } = hoveredFeature;
     // if hovered
     if (featured) {
-      const stateTag = (
-        <div className="tooltip" style={{ padding: "10px", left: x, top: y }}>
-          <div>{featured.properties.name}</div>
-          <div style={{ marginTop: "5px" }}>
-            Total Confirmed Cases:{" "}
-            {featured.properties.Confirmed.toLocaleString()}
+      let source = featured.source;
+      if (source === "states-data") {
+        const stateTag = (
+          <div className="tooltip" style={{ padding: "10px", left: x, top: y }}>
+            <div>{featured.properties.name}</div>
+            <div style={{ marginTop: "5px" }}>
+              Total Confirmed Cases:{" "}
+              {featured.properties.Confirmed.toLocaleString()}
+            </div>
           </div>
-        </div>
-      );
-      const countyTag = (
-        <div
-          className="tooltip"
-          style={{
-            padding: "10px",
-            left: x,
-            top: y,
-          }}
-        >
-          <div>{featured.properties.NAME} County</div>
-          <div style={{ marginTop: "5px" }}>
-            Total Number of Cases:{" "}
-            {featured.properties.Confirmed.toLocaleString()}
+        );
+        const twoWeekTag = (
+          <div
+            className="tooltip"
+            style={{
+              padding: "10px",
+              left: x,
+              top: y,
+            }}
+          >
+            <div>{featured.properties.name}</div>
+            <div style={{ marginTop: "5px" }}>
+              Cases over the last two weeks:{" "}
+              {featured.properties.TwoWeekTotal.toLocaleString()}
+            </div>
           </div>
-        </div>
-      );
-      const twoWeekTag = (
-        <div
-          className="tooltip"
-          style={{
-            padding: "10px",
-            left: x,
-            top: y,
-          }}
-        >
-          <div>{featured.properties.name}</div>
-          <div style={{ marginTop: "5px" }}>
-            Cases over the last two weeks: {featured.properties.TwoWeekTotal}
+        );
+        const tag = featured.layer.id === "states-data" ? stateTag : twoWeekTag;
+        return tag;
+      }
+      if (source === "county-data") {
+        const countyTag = (
+          <div
+            className="tooltip"
+            style={{
+              padding: "10px",
+              left: x,
+              top: y,
+            }}
+          >
+            <div>{featured.properties.NAME} County</div>
+            <div style={{ marginTop: "5px" }}>
+              Total Number of Cases:{" "}
+              {featured.properties.Confirmed.toLocaleString()}
+            </div>
           </div>
-        </div>
-      );
+        );
+        return countyTag;
+      }
       const countyTwoWeekTag = (
         <div
           className="tooltip"
@@ -283,14 +294,15 @@ const Map = () => {
           </div>
         </div>
       );
-
-      const tag =
-        featured.source === "states-data"
-          ? featured.layer.id === "states-data" ? stateTag : twoWeekTag
-          : featured.layer.id === "county-data" ? countyTag : countyTwoWeekTag;
-      
-      return tag;
+      console.log(featured);
     }
+  };
+
+  // Update legend callback function
+  const updateLegend = () => {
+    legendStyle === "visible"
+      ? setLegendStyle("none")
+      : setLegendStyle("visible");
   };
 
   return (
@@ -322,8 +334,8 @@ const Map = () => {
           </Source>
           {!!hoveredFeature && renderTooltip()}
         </MapGL>
-        <Legend zoom={viewport.zoom} />
-        <ControlPanel mapRef={mapRef} />
+        <Legend zoom={viewport.zoom} legendStyle={legendStyle} />
+        <ControlPanel mapRef={mapRef} updateLegendStyle={updateLegend} />
       </div>
       <div
         style={{

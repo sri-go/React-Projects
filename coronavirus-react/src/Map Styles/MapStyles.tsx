@@ -10,7 +10,6 @@ export const StateDeathStyle = {
   paint: {
     "fill-color": {
       //red colors
-      // ,,,,,,,,,,
       stops: [
         [0, "#FFE3C5"],
         [1000, "#F9C6A8"],
@@ -25,7 +24,7 @@ export const StateDeathStyle = {
         [1000000, "#3F0501"],
       ],
       property: "Confirmed",
-      type: "exponential",
+      type: "interval",
       colorSpace: "rgb",
     },
     //change opacity on hover, default to 50% opacity
@@ -33,7 +32,7 @@ export const StateDeathStyle = {
       "case",
       ["boolean", ["feature-state", "hover"], false],
       1,
-      0.5,
+      0.8,
     ],
   },
   maxzoom: 5.5,
@@ -88,7 +87,7 @@ export const CountyDeathStyle = {
   minzoom: 5.5,
 };
 
-//Two-Week Style
+//Two-Week Confirmed Style
 export const StateTwoWeekConfirmedStyle = {
   id: "StateTwoWeek-ConfirmedData",
   type: "fill",

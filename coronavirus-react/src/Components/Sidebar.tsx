@@ -60,7 +60,14 @@ const Sidebar = (props: SidebarProps) => {
       {/* US Overview */}
       {/* To Do: Cleanup nested ternary -> breakout into subcomponent */}
       {!!feature ? (
-        <>
+        <div
+          style={{
+            position: "sticky",
+            top: "0",
+            backgroundColor: "rgb(29 29 29)",
+            zIndex: 5,
+          }}
+        >
           <div>
             <h1
               style={{
@@ -96,10 +103,10 @@ const Sidebar = (props: SidebarProps) => {
               </h5>
             </div>
           </div>
-        </>
+        </div>
       ) : (
         !!TotalUSData && (
-          <>
+          <div>
             <div>
               <h1
                 style={{
@@ -135,7 +142,7 @@ const Sidebar = (props: SidebarProps) => {
                 </h5>
               </div>
             </div>
-          </>
+          </div>
         )
       )}
       {/* Per State Clicked */}

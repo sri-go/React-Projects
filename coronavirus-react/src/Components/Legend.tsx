@@ -1,11 +1,14 @@
 import React from "react";
-
 interface LegendProps {
   zoom: number;
+  legendStyle?: any;
 }
+interface LegendStyleProps {
+  type?: string; //to do: change to required, once county style is figured out
+} 
 
 const Legend = (props: LegendProps) => {
-  const { zoom } = props;
+  const { zoom, legendStyle } = props;
 
   return (
     <div
@@ -14,20 +17,19 @@ const Legend = (props: LegendProps) => {
         bottom: "30px",
         right: "30.5%",
         borderRadius: "5px",
-        width: "200px",
+        width: "250px",
         background:
           zoom > 5.49 ? "rgb(122 120 119 / 50%)" : "rgb(152 146 143 / 0.5)",
         padding: "10px",
         boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
       }}
     >
-      {/* @ts-ignore */}
-      {zoom > 5.49 ? <CountyLegend /> : <StateLegend />}
+      {zoom > 5.49 ? <CountyLegend /> : <StateLegend type={legendStyle} />}
     </div>
   );
 };
 
-const CountyLegend = () => {
+const CountyLegend = (props: LegendStyleProps) => {
   const colorsCounty = [
     { 0: "#fff5f0" },
     { 50: "#fee0d2" },
@@ -39,48 +41,16 @@ const CountyLegend = () => {
     { 5000: "#99000d" },
   ];
 
-  const legend = colorsCounty.map((color: any, index: number) => {
-    const level = Object.keys(color);
-    return (
-      <div key={index} style={{ display: "flex", justifyContent: "space-between" }}>
-        <i 
-          style={{ width: "100px", background: color[level[0]] }}
-        ></i>
-        <span
-          style={{
-            width: "100px",
-            margin: "0 0 0 15px",
-            textAlign: "left",
-            color: "white",
-          }}
-        >
-          {level[0]}
-        </span>
-      </div>
-    )
-  });
-  return legend;
-}
+  const colorsCountyTwoWeek = [];
 
-const StateLegend = () => {
-let colorsState = [
-  { "0-10": "#FFEDA0" },
-  { "10-20": "#FED976" },
-  { "20-50": "#FEB24C" },
-  { "50-100": "#FD8D3C" },
-  { "1000": "#FC4E2A" },
-  { "5000": "#E31A1C" },
-  { "10000": "#BD0026" },
-  { "20000": "#800026" },
-];
-  const legend = colorsState.map((color: any, index: number) => {
+  const legend = colorsCounty.map((color: any, index: number) => {
     const level = Object.keys(color);
     return (
       <div
         key={index}
         style={{ display: "flex", justifyContent: "space-between" }}
       >
-        <i style={{ width: "100px", background: color[level[0]] }}></i>
+        <i style={{ width: "100px", background: color[level[0]] }} />
         <span
           style={{
             width: "100px",
@@ -94,6 +64,83 @@ let colorsState = [
       </div>
     );
   });
-  return legend;
-}
+
+  return <>{legend}</>;
+};
+
+const StateLegend = (props: LegendStyleProps) => {
+  const { type } = props;
+  
+  let colorsStateTotal = [
+    { "0-1000": "#FFE3C5" },
+    { "1000-5000": "#F9C6A8" },
+    { "5000-10000": "#EFAA8E" },
+    { "10000-25000": "#E28F75" },
+    { "25000-50000": "#D0765F" },
+    { "50000-100000": "#BC5E4B" },
+    { "100000-250000": "#A64839" },
+    { "250000-500000": "#8E3429" },
+    { "500000-750000": "#74221B" },
+    { "750000-1000000": "#59120F"  },
+    { "1000000+": "#3F0501" },
+  ];
+
+  let colorsStateTwoWeek = [
+    { "0-1000": "#FCDDC0" },
+    { "1000-5000": "#E29A80" },
+    { "5000-10000": "#CE7B64" },
+    { "10000-25000": "#B65F4C" },
+    { "25000-50000": "#9A4536" },
+    { "50000-100000": "#7C2E24" },
+    { "100000-250000": "#5D1A14" },
+    { "500000+": "#3D0903" },
+  ];
+
+  const legend =
+    type === "visible"
+      ? colorsStateTotal.map((color: any, index: number) => {
+          const level = Object.keys(color);
+          return (
+            <div
+              key={index}
+              style={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <i style={{ width: "100px", background: color[level[0]] }} />
+              <span
+                style={{
+                  width: "200px",
+                  margin: "0 0 0 15px",
+                  textAlign: "left",
+                  color: "white",
+                }}
+              >
+                {level[0]}
+              </span>
+            </div>
+          );
+        })
+      : colorsStateTwoWeek.map((color: any, index: number) => {
+          const level = Object.keys(color);
+          return (
+            <div
+              key={index}
+              style={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <i style={{ width: "100px", background: color[level[0]] }} />
+              <span
+                style={{
+                  width: "200px",
+                  margin: "0 0 0 15px",
+                  textAlign: "left",
+                  color: "white",
+                }}
+              >
+                {level[0]}
+              </span>
+            </div>
+          );
+        });
+  return <>{legend}</>;
+};
+
 export default Legend;
