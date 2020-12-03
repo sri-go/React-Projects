@@ -1,6 +1,8 @@
 //@ts-ignore
 import { csv } from "csv2geojson";
 import StatesBoundaries from "./StateBoundaries.json";
+import CountyBoundaries from "./CountyBoundaries.json";
+import { count } from "console";
 
 // Data for 2-week
 export const getTimeSeries = async function (url: string) {
@@ -232,8 +234,6 @@ export const StateTwoWeekData = (array: any, datesArray: any) => {
     twoWeekObj.push(tempObj);
   });
 
-  console.log(twoWeekObj);
-
   featuresArr.map((feature: any, index: number) => {
     const state = feature.properties.name;
     let stateTotal = 0;
@@ -245,6 +245,79 @@ export const StateTwoWeekData = (array: any, datesArray: any) => {
     feature.properties["TwoWeekTotal"] = stateTotal;
   });
   return StatesBoundaries;
+};
+
+export const CountyTwoWeekData = (array: any, datesArray: any) => {
+  //@ts-ignore
+  const featuresArr = CountyBoundaries.features;
+  const includeKeys = [
+    "Admin2",
+    "Combined_Key",
+    "Country_Region",
+    "FIPS",
+    "Lat",
+    "Long_",
+    "Province_State",
+    "UID",
+    "code3",
+    "iso2",
+    "iso3",
+  ];
+  const twoWeekObj: any = [];
+  const firstDate = datesArray[0];
+  const lastDate = datesArray[datesArray.length - 1];
+
+  array.map((feature: any, index: number) => {
+    const tempObj: any = {};
+    const twoWeekTotal = feature[lastDate] - feature[firstDate];
+    tempObj["TwoWeekTotal"] = twoWeekTotal;
+    includeKeys.map((key, index) => {
+      tempObj[key] = feature[key];
+    });
+    twoWeekObj.push(tempObj);
+  });
+
+  const test = twoWeekObj.filter((feature: any, index: number) => {
+    if (feature.Province_State === "Alaska") {
+      console.log(feature);
+    }
+  });
+
+  console.log(featuresArr);
+  featuresArr.map((countyFeature: any, index: number) => {
+    const county = countyFeature.properties.NAME;
+    const fips = countyFeature.properties.fips;
+    const state = countyFeature.properties.STATE;
+    if (county === "Wade Hampton") {
+      console.log(countyFeature);
+    }
+    twoWeekObj.map((feature: any, index: number) => {
+      if (feature.Admin2 === county) {
+        countyFeature.properties["TwoWeekTotal"] = feature.TwoWeekTotal;
+      }
+      // Alaska: Bristol Bay plus Lake and Peninsula
+      else if (feature.FIPS === "2164.0") {
+        if (fips === "02164") {
+          countyFeature.properties["TwoWeekTotal"] = feature.TwoWeekTotal;
+        }
+      }
+      // New Mexico: Dona Ana County
+      else if (feature.FIPS === "35013.0") {
+        if (fips === "35013") {
+          countyFeature.properties["TwoWeekTotal"] = feature.TwoWeekTotal;
+        }
+      }
+      // Alaska Kusilvak Census Area County
+      else if (feature.FIPS === "2158.0") {
+        if (county === "Wade Hampton") {
+          countyFeature.properties["TwoWeekTotal"] = feature.TwoWeekTotal;
+          countyFeature.properties.NAME = "Kusilvak Census Area";
+          console.log(countyFeature);
+        }
+      }
+    });
+  });
+  return CountyBoundaries;
 };
 
 export const filterData = (array: any, feature: any): any => {
@@ -261,3 +334,5 @@ export const filterData = (array: any, feature: any): any => {
   }
 };
 
+
+//Wade Hampton

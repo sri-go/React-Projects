@@ -19,12 +19,12 @@ const Legend = (props: LegendProps) => {
         borderRadius: "5px",
         width: "250px",
         background:
-          zoom > 5.49 ? "rgb(122 120 119 / 50%)" : "rgb(152 146 143 / 0.5)",
+          zoom > 4.5 ? "rgb(122 120 119 / 50%)" : "rgb(152 146 143 / 0.5)",
         padding: "10px",
         boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
       }}
     >
-      {zoom > 5.49 ? <CountyLegend /> : <StateLegend type={legendStyle} />}
+      {zoom > 4.5 ? <CountyLegend /> : <StateLegend type={legendStyle} />}
     </div>
   );
 };

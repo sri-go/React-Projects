@@ -35,7 +35,7 @@ export const StateDeathStyle = {
       0.8,
     ],
   },
-  maxzoom: 5.5,
+  maxzoom: 4.5,
 };
 
 //County Outlines
@@ -53,11 +53,11 @@ export const CountyOutlineStyle = {
 //County Deaths
 export const CountyDeathStyle = {
   id: "county-data",
-  type: "fill",
+      type: "fill",
   source: "CountyBoundaries",
   paint: {
     "fill-color": {
-      //paint colors 
+      //paint colors
       stops: [
         [0, "#fff5f0"],
         [50, "#fee0d2"],
@@ -69,25 +69,25 @@ export const CountyDeathStyle = {
         [5000, "#99000d"],
       ],
       property: "Confirmed",
-      type: 'interval',
-      colorSpace:'rgb'
+      type: "interval",
+      colorSpace: "rgb",
     },
     // change opacity on hover, default to 50% opacity
     "fill-opacity": [
       "case",
       ["boolean", ["feature-state", "hover"], false],
       1,
-      0.5,
+      0.8,
     ],
   },
   layout: {
     // make layer visible by default
     visibility: "visible",
   },
-  minzoom: 5.5,
+  minzoom: 4.5,
 };
 
-//Two-Week Confirmed Style
+//Two-Week State Confirmed Style
 export const StateTwoWeekConfirmedStyle = {
   id: "StateTwoWeek-ConfirmedData",
   type: "fill",
@@ -119,10 +119,48 @@ export const StateTwoWeekConfirmedStyle = {
       "case",
       ["boolean", ["feature-state", "hover"], false],
       1,
-      0.5,
+      0.8,
     ],
   },
-  maxzoom: 5.5,
+  maxzoom: 4.5,
+};
+
+//Two-Week County Confirmed Style
+export const CountyTwoWeekConfirmedStyle = {
+  id: "CountyTwoWeek-ConfirmedData",
+  type: "fill",
+  source: "CountyBoundaries",
+  layout: {
+    // make layer hidden by default
+    visibility: "none",
+  },
+  paint: {
+    "fill-color": {
+      //red colors
+      stops: [
+        [0, "#FCDDC0"],
+        [100, "#F2BB9E"],
+        [500, "#E29A80"],
+        [1000, "#CE7B64"],
+        [5000, "#B65F4C"],
+        [10000, "#9A4536"],
+        [25000, "#7C2E24"],
+        [50000, "#5D1A14"],
+        [100000, "#3D0903"],
+      ],
+      property: "TwoWeekTotal",
+      type: "interval",
+      colorSpace: "rgb",
+    },
+    //change opacity on hover, default to 50% opacity
+    "fill-opacity": [
+      "case",
+      ["boolean", ["feature-state", "hover"], false],
+      1,
+      0.8,
+    ],
+  },
+  minzoom: 4.5,
 };
 
 

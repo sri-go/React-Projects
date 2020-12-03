@@ -18,6 +18,7 @@ import {
   getTimeSeries,
   countryAnalysis,
   StateTwoWeekData,
+  CountyTwoWeekData,
 } from "../Data/FetchTimeSeries";
 
 import StateBoundaries from "../Data/StateBoundaries.json";
@@ -28,6 +29,7 @@ import {
   CountyDeathStyle,
   CountyOutlineStyle,
   StateTwoWeekConfirmedStyle,
+  CountyTwoWeekConfirmedStyle,
 } from "../Map Styles/MapStyles";
 
 import "../Styles/map.css";
@@ -101,9 +103,9 @@ const Map = () => {
 
     // Fetch counties Data
     const countyData = getCountiesData(createURL());
-    countyData.then(() => {
-      setCountiesData(CountyBoundaries);
-    });
+    // countyData.then(() => {
+    //   setCountiesData(CountyBoundaries);
+    // });
 
     // Fetch Time Series Confirmed Data
     const getConfirmedData = getTimeSeries(
@@ -113,9 +115,11 @@ const Map = () => {
       setTimeSeriesData(response); // set the timeseries data after feth
       countryAnalysis(response); // to do: analysis of us as a whole
       const dates = filterDates();
-      const withTimeSeries = StateTwoWeekData(response, dates);
-      console.log(withTimeSeries);
+      const stateTimeSeries = StateTwoWeekData(response, dates);
+      const countyTimeSeries = CountyTwoWeekData(response, dates);
+      console.log(countyTimeSeries);
       setStatesData(StateBoundaries);
+      setCountiesData(CountyBoundaries);
     });
 
     // Fetch Time Series Deaths Data
@@ -139,7 +143,12 @@ const Map = () => {
     if (null !== mapRef.current) {
       const map = mapRef.current.getMap();
       const featured = map.queryRenderedFeatures(point, {
-        layers: ["states-data", "county-data", "StateTwoWeek-ConfirmedData"],
+        layers: [
+          "states-data",
+          "county-data",
+          "StateTwoWeek-ConfirmedData",
+          "CountyTwoWeek-ConfirmedData",
+        ],
       })[0];
       setHoveredFeature({ featured, x: offsetX, y: offsetY });
       if (featured) {
@@ -277,24 +286,26 @@ const Map = () => {
             </div>
           </div>
         );
-        return countyTag;
-      }
-      const countyTwoWeekTag = (
-        <div
-          className="tooltip"
-          style={{
-            padding: "10px",
-            left: x,
-            top: y,
-          }}
-        >
-          <div>{featured.properties.name}</div>
-          <div style={{ marginTop: "5px" }}>
-            Cases over the last two weeks: {featured.properties.TwoWeekTotal}
+        const twoWeekTag = (
+          <div
+            className="tooltip"
+            style={{
+              padding: "10px",
+              left: x,
+              top: y,
+            }}
+          >
+            <div>{featured.properties.NAME} County</div>
+            <div style={{ marginTop: "5px" }}>
+              Cases over the last two weeks:{" "}
+              {featured.properties.TwoWeekTotal.toLocaleString()}
+            </div>
           </div>
-        </div>
-      );
-      console.log(featured);
+        );
+        const tag =
+          featured.layer.id === "county-data" ? countyTag : twoWeekTag;
+        return tag;
+      }
     }
   };
 
@@ -330,6 +341,8 @@ const Map = () => {
           <Source id="county-data" type="geojson" data={countiesData}>
             {/* @ts-ignore */}
             <Layer key={"county"} {...CountyDeathStyle} />
+            {/* @ts-ignore */}
+            <Layer key={"county-two-week"} {...CountyTwoWeekConfirmedStyle} />
             <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
           </Source>
           {!!hoveredFeature && renderTooltip()}

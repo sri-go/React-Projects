@@ -126,7 +126,7 @@ const combinedCounty = function (data: any) {
         county_feature.properties.Deaths = nyc_deaths_levels;
         county_feature.id = id;
       }
-      //for counties that have no prior data, assume 0
+      //for counties that have no prior data, assume 0 -> need to fix
       else {
         county_feature.properties.Confirmed = 0;
         county_feature.properties.Deaths = 0;

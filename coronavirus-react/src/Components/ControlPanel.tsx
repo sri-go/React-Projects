@@ -25,11 +25,22 @@ const ControlPanel = (props: ControlPanelProps) => {
           "StateTwoWeek-ConfirmedData",
           "visibility",
           "visible"
+        ) &&
+        map.setLayoutProperty(
+          "CountyTwoWeek-ConfirmedData",
+          "visibility",
+          "visible"
         )
       : map.setLayoutProperty("states-data", "visibility", "visible") &&
         map.setLayoutProperty("county-data", "visibility", "visible") &&
         map.setLayoutProperty(
           "StateTwoWeek-ConfirmedData",
+          "visibility",
+          "none"
+        ) &&
+       
+        map.setLayoutProperty(
+          "CountyTwoWeek-ConfirmedData",
           "visibility",
           "none"
         );

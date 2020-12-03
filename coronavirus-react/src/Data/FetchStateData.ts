@@ -17,7 +17,7 @@ export const getStatesData = async (
           err: any,
           data: any
         ) {
-          // console.log(err);
+          console.log(err);
           // to do: add data of state values w/o fips to correct state
           let us_subsect = filterUSData(data);
           // console.log(us_subsect);
