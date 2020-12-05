@@ -8,50 +8,66 @@ import {
   YAxis,
 } from "react-vis";
 
-import { filterData } from "../Data/FetchTimeSeries";
+import { filterData } from "../Data/AnalyzeTimeSeries";
 
 interface SidebarProps {
-  timeSeriesData: any;
+  confirmedData: any;
+  deathsData: any;
   feature: any;
-  totalData: { usConfirmedTotal: number; usDeathTotal: number };
+  usConfirmedTotal: number;
+  usDeathsTotal: number;
 }
 
 const Sidebar = (props: SidebarProps) => {
-  const { feature, totalData, timeSeriesData } = props;
+  const {
+    feature,
+    usConfirmedTotal,
+    usDeathsTotal,
+    confirmedData,
+    deathsData,
+  } = props;
 
-  const [pointsTotal, setPointsTotal] = useState<any>([]);
-  const [pointsTwoWeek, setPointsTwoWeek] = useState<any>([]);
+  const [confirmedPointsTotal, setConfirmedPointsTotal] = useState<any>([]);
+  const [confirmedPointsTwoWeek, setConfirmedPointsTwoWeek] = useState<any>([]);
 
-  const [TotalUSData, setTotalUSData] = useState<any>(null);
+  const [deathsPointsTotal, setDeathsPointsTotal] = useState<any>([]);
+  const [deathsPointsTwoWeek, setDeathsPointsTwoWeek] = useState<any>([]);
 
   const [filteredData, setFilteredData] = useState<any>(null);
+  const [filteredDeathData, setFilteredDeathData] = useState<any>(null);
 
   const [totalCases, setTotalCases] = useState<any>(null);
   const [totalNewCases, setTotalNewCases] = useState<any>(null);
 
-  // set TotalUSData after fetching timeseries data
-  useEffect(() => {
-    setTotalUSData(totalData);
-  }, [totalData]);
+  const [totalDeaths, setTotalDeaths] = useState<any>(null);
+  const [totalNewDeaths, setTotalNewDeaths] = useState<any>(null);
 
   // filter the fetched data once the state has been clicked
   // run everytime the feature changes
   // to do: distinguish between county clicks and state clicks
   useEffect(() => {
-    let result;
+    let confirmedResult;
+    let deathsResult;
     // do not filter unless there is a feature
     if (!!feature) {
-      result = filterData(timeSeriesData, feature);
-      console.log(result);
+      confirmedResult = filterData(confirmedData, undefined, feature);
+      deathsResult = filterData(undefined, deathsData, feature);
       setTotalCases(
-        result.filterCounty[feature.properties.name].TotalCasesOverTime
+        confirmedResult.filterCounty[feature.properties.name].TotalCasesOverTime
+      );
+      setTotalDeaths(
+        deathsResult.filterCounty[feature.properties.name].TotalDeathsOverTime
       );
       setTotalNewCases(
-        result.filterCounty[feature.properties.name].TotalNewCases
+        confirmedResult.filterCounty[feature.properties.name].TotalNewCases
+      );
+      setTotalNewDeaths(
+        deathsResult.filterCounty[feature.properties.name].TotalNewDeaths
       );
     }
-    return setFilteredData(result);
-  }, [feature, timeSeriesData]);
+    setFilteredData(confirmedResult);
+    setFilteredDeathData(deathsResult);
+  }, [feature, confirmedData]);
 
   const date = new Date();
 
@@ -105,7 +121,7 @@ const Sidebar = (props: SidebarProps) => {
           </div>
         </div>
       ) : (
-        !!TotalUSData && (
+        usConfirmedTotal & usDeathsTotal && (
           <div>
             <div>
               <h1
@@ -132,13 +148,13 @@ const Sidebar = (props: SidebarProps) => {
               <div style={{ border: "3px solid", borderRadius: "15px" }}>
                 <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
                   Total Confirmed Cases: <br />
-                  {TotalUSData.us_confirmed_total.toLocaleString()}
+                  {usConfirmedTotal.toLocaleString()}
                 </h5>
               </div>
               <div style={{ border: "3px solid", borderRadius: "15px" }}>
                 <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
                   Total Deaths: <br />
-                  {TotalUSData.us_death_total.toLocaleString()}
+                  {usDeathsTotal.toLocaleString()}
                 </h5>
               </div>
             </div>
@@ -155,7 +171,10 @@ const Sidebar = (props: SidebarProps) => {
               xType="time"
               height={300}
               margin={{ top: 20, right: 20, left: 65 }}
-              onMouseLeave={() => setPointsTotal([])}
+              onMouseLeave={(e) => {
+                setConfirmedPointsTotal([]);
+                setDeathsPointsTotal([]);
+              }}
             >
               <ChartLabel
                 text="Total Number of Cases"
@@ -173,17 +192,40 @@ const Sidebar = (props: SidebarProps) => {
               />
               <YAxis title="Number of Cases" />
               <LineSeries
+                className="first-series"
                 data={totalCases}
-                onNearestX={(v) => setPointsTotal([v])}
+                onNearestX={(v) => {
+                  setConfirmedPointsTotal([v]);
+                }}
               />
-              <Crosshair
-                values={pointsTotal}
-                itemsFormat={(d) => [{ title: "Total Cases", value: d[0].y }]}
-                titleFormat={(d) => ({
-                  title: "Date",
-                  value: new Date(d[0].x).toLocaleDateString(),
-                })}
+              <LineSeries
+                className="second-series"
+                data={totalDeaths}
+                onNearestX={(v) => {
+                  setDeathsPointsTotal([v]);
+                }}
               />
+              {deathsPointsTotal.length > 0 && (
+                <Crosshair values={deathsPointsTotal}>
+                  <div
+                    style={{
+                      width: "150px",
+                      padding: "10px",
+                      background: "black",
+                    }}
+                  >
+                    <h3 style={{ margin: "0 0 10px 0" }}>
+                      {deathsPointsTotal[0].x.toLocaleDateString("en-us")}
+                    </h3>
+                    <p style={{ margin: "0" }}>
+                      Total Cases: {confirmedPointsTotal[0].y}
+                    </p>
+                    <p style={{ margin: "10px 0 0 0" }}>
+                      Total Deaths: {deathsPointsTotal[0].y}
+                    </p>
+                  </div>
+                </Crosshair>
+              )}
             </FlexibleWidthXYPlot>
           </div>
           <div>
@@ -192,7 +234,10 @@ const Sidebar = (props: SidebarProps) => {
               xType="time"
               height={300}
               margin={{ top: 20, right: 20, left: 65 }}
-              onMouseLeave={() => setPointsTwoWeek([])}
+              onMouseLeave={() => {
+                setConfirmedPointsTwoWeek([]);
+                setDeathsPointsTwoWeek([]);
+              }}
             >
               <ChartLabel
                 text="New Cases per Day"
@@ -217,16 +262,38 @@ const Sidebar = (props: SidebarProps) => {
                   strokeLinejoin: "round",
                   strokeWidth: 2,
                 }}
-                onNearestX={(v) => setPointsTwoWeek([v])}
+                onNearestX={(v) => setConfirmedPointsTwoWeek([v])}
               />
-              <Crosshair
-                values={pointsTwoWeek}
-                itemsFormat={(d) => [{ title: "New Cases", value: d[0].y }]}
-                titleFormat={(d) => ({
-                  title: "Date",
-                  value: new Date(d[0].x).toLocaleDateString(),
-                })}
+              <LineSeries
+                data={totalNewDeaths}
+                curve={"curveMonotoneX"}
+                style={{
+                  strokeLinejoin: "round",
+                  strokeWidth: 2,
+                }}
+                onNearestX={(v) => setDeathsPointsTwoWeek([v])}
               />
+              {confirmedPointsTwoWeek.length > 0 && (
+                <Crosshair values={confirmedPointsTwoWeek}>
+                  <div
+                    style={{
+                      width: "150px",
+                      padding: "10px",
+                      background: "black",
+                    }}
+                  >
+                    <h3 style={{ margin: "0 0 10px 0" }}>
+                      {confirmedPointsTwoWeek[0].x.toLocaleDateString("en-us")}
+                    </h3>
+                    <p style={{ margin: "0" }}>
+                      Two Week Total Cases: {confirmedPointsTwoWeek[0].y}
+                    </p>
+                    <p style={{ margin: "10px 0 0 0" }}>
+                      Two Week Total Deaths: {deathsPointsTwoWeek[0].y}
+                    </p>
+                  </div>
+                </Crosshair>
+              )}
             </FlexibleWidthXYPlot>
           </div>
           <hr />

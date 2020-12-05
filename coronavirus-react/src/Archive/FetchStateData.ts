@@ -1,6 +1,6 @@
 // @ts-nocheck
 import csv2geojson from "csv2geojson";
-import StatesBoundaries from "./StateBoundaries.json";
+import StatesBoundaries from "../Data/StateBoundaries.json";
 
 //This function downloads the CSV File data, adds it to GEOJSON file, and then Filters it for the US State Subsect,
 export const getStatesData = async (
@@ -17,7 +17,7 @@ export const getStatesData = async (
           err: any,
           data: any
         ) {
-          console.log(err);
+          // console.log(err);
           // to do: add data of state values w/o fips to correct state
           let us_subsect = filterUSData(data);
           // console.log(us_subsect);
@@ -115,4 +115,3 @@ const combineFiles = function (data_totals: any) {
   };
   return us_totals;
 };
-

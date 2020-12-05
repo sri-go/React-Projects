@@ -11,15 +11,7 @@ import { bbox } from "@turf/turf";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-import { getStatesData } from "../Data/FetchStateData";
-import { getCountiesData } from "../Data/FetchCountyData";
-import {
-  filterDates,
-  getTimeSeries,
-  countryAnalysis,
-  StateTwoWeekData,
-  CountyTwoWeekData,
-} from "../Data/FetchTimeSeries";
+import { fetchData, filterData } from "../Data/FetchData"; //to do: rename file to something else
 
 import StateBoundaries from "../Data/StateBoundaries.json";
 import CountyBoundaries from "../Data/CountyBoundaries.json";
@@ -39,39 +31,11 @@ import ControlPanel from "./ControlPanel";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
-// URL function for data fetching
-const createURL = () => {
-  const today = new Date();
-  const priorDate = new Date().setDate(today.getDate() - 1);
-  const priorDateTs = new Date(priorDate);
-
-  let day = priorDateTs.getDate();
-  let month = priorDateTs.getMonth() + 1;
-  let year = priorDateTs.getFullYear();
-
-  let monthStr, dayStr;
-
-  if (month <= 9) {
-    monthStr = "0" + month.toString();
-  } else {
-    monthStr = month.toString();
-  }
-  if (day < 10) {
-    dayStr = "0" + day.toString();
-  } else {
-    dayStr = day.toString();
-  }
-
-  let url = `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${monthStr}-${dayStr}-${year}.csv`;
-
-  return url;
-};
-
 const Map = () => {
   const initialViewport = {
     latitude: 39.5,
     longitude: -98.35,
-    zoom: 4.5,
+    zoom: 3,
     bearing: 0,
     pitch: 0,
   };
@@ -87,46 +51,41 @@ const Map = () => {
 
   const [statesData, setStatesData] = useState<any>(null);
   const [countiesData, setCountiesData] = useState<any>(null);
-  const [usTotalData, setUSTotalData] = useState<any>();
-  const [timeSeriesData, setTimeSeriesData] = useState<any>();
+  const [usDeathsTotal, setUSDeathsTotal] = useState<any>();
+  const [usConfirmedTotal, setUSConfirmedTotal] = useState<any>();
+  const [confirmedData, setConfirmedData] = useState<any>();
+  const [deathsData, setDeathsData] = useState<any>();
 
   const [legendStyle, setLegendStyle] = useState("visible");
 
   const setUSTotals = (returnData: any) => {
-    setUSTotalData(returnData);
+    if (!!returnData.USConfirmedTotal) {
+      setUSConfirmedTotal(returnData.USConfirmedTotal);
+    }
+    if (!!returnData.USDeathsTotal) {
+      setUSDeathsTotal(returnData.USDeathsTotal);
+    }
   };
-
   // On Component Load
   useEffect(() => {
-    // Fetch States Data
-    const statesData = getStatesData(createURL(), setUSTotals);
-
-    // Fetch counties Data
-    const countyData = getCountiesData(createURL());
-    // countyData.then(() => {
-    //   setCountiesData(CountyBoundaries);
-    // });
-
-    // Fetch Time Series Confirmed Data
-    const getConfirmedData = getTimeSeries(
+    // Fetch Data
+    const getConfirmedData = fetchData(
       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
     );
     getConfirmedData.then((response) => {
-      setTimeSeriesData(response); // set the timeseries data after feth
-      countryAnalysis(response); // to do: analysis of us as a whole
-      const dates = filterDates();
-      const stateTimeSeries = StateTwoWeekData(response, dates);
-      const countyTimeSeries = CountyTwoWeekData(response, dates);
-      console.log(countyTimeSeries);
+      setConfirmedData(response);
+      filterData(response, undefined, setUSTotals);
       setStatesData(StateBoundaries);
       setCountiesData(CountyBoundaries);
     });
-
-    // Fetch Time Series Deaths Data
-    const getDeathsData = getTimeSeries(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
+    // // Fetch Time Series Deaths Data
+    const getDeathsData = fetchData(
+      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
     );
-    getDeathsData.then((reponse) => {});
+    getDeathsData.then((response) => {
+      setDeathsData(response);
+      filterData(undefined, response, setUSTotals);
+    });
   }, []);
 
   const onViewportChange = (nextViewport: ViewportProps) => {
@@ -210,28 +169,30 @@ const Map = () => {
       const featured = map.queryRenderedFeatures(point, {
         layers: ["states-data", "county-data", "StateTwoWeek-ConfirmedData"],
       })[0];
-      // @ts-ignore
-      const [minLng, minLat, maxLng, maxLat] = bbox(featured);
-      const newViewport = new WebMercatorViewport(viewport);
-      const { longitude, latitude, zoom } = newViewport.fitBounds(
-        [
-          [minLng, minLat],
-          [maxLng, maxLat],
-        ],
-        { padding: 40 }
-      );
-      setViewport({
-        ...viewport,
-        longitude,
-        latitude,
-        zoom,
-        transitionInterpolator: new LinearInterpolator({
-          around: [event.offsetCenter.x, event.offsetCenter.y],
-        }),
-        transitionDuration: 1000,
-      });
-      // @ts-ignore
-      setClickedFeature(featured);
+      if (!!featured) {
+        // @ts-ignore
+        const [minLng, minLat, maxLng, maxLat] = bbox(featured);
+        const newViewport = new WebMercatorViewport(viewport);
+        const { longitude, latitude, zoom } = newViewport.fitBounds(
+          [
+            [minLng, minLat],
+            [maxLng, maxLat],
+          ],
+          { padding: 40 }
+        );
+        setViewport({
+          ...viewport,
+          longitude,
+          latitude,
+          zoom,
+          transitionInterpolator: new LinearInterpolator({
+            around: [event.offsetCenter.x, event.offsetCenter.y],
+          }),
+          transitionDuration: 1000,
+        });
+        // @ts-ignore
+        setClickedFeature(featured);
+      }
     }
   };
 
@@ -248,6 +209,10 @@ const Map = () => {
               Total Confirmed Cases:{" "}
               {featured.properties.Confirmed.toLocaleString()}
             </div>
+            <div style={{ marginTop: "5px" }}>
+              Total Confirmed Deaths:{" "}
+              {featured.properties.Deaths.toLocaleString()}
+            </div>
           </div>
         );
         const twoWeekTag = (
@@ -263,6 +228,10 @@ const Map = () => {
             <div style={{ marginTop: "5px" }}>
               Cases over the last two weeks:{" "}
               {featured.properties.TwoWeekTotal.toLocaleString()}
+            </div>
+            <div style={{ marginTop: "5px" }}>
+              Deaths over the last two weeks:{" "}
+              {featured.properties.TwoWeekDeathTotal.toLocaleString()}
             </div>
           </div>
         );
@@ -284,6 +253,10 @@ const Map = () => {
               Total Number of Cases:{" "}
               {featured.properties.Confirmed.toLocaleString()}
             </div>
+            <div style={{ marginTop: "5px" }}>
+              Total Number of Deaths:{" "}
+              {featured.properties.Deaths.toLocaleString()}
+            </div>
           </div>
         );
         const twoWeekTag = (
@@ -299,6 +272,10 @@ const Map = () => {
             <div style={{ marginTop: "5px" }}>
               Cases over the last two weeks:{" "}
               {featured.properties.TwoWeekTotal.toLocaleString()}
+            </div>
+            <div style={{ marginTop: "5px" }}>
+              Cases over the last two weeks:{" "}
+              {featured.properties.TwoWeekDeathTotal.toLocaleString()}
             </div>
           </div>
         );
@@ -343,6 +320,7 @@ const Map = () => {
             <Layer key={"county"} {...CountyDeathStyle} />
             {/* @ts-ignore */}
             <Layer key={"county-two-week"} {...CountyTwoWeekConfirmedStyle} />
+            {/* @ts-ignore */}
             <Layer key={"county-boundaries"} {...CountyOutlineStyle} />
           </Source>
           {!!hoveredFeature && renderTooltip()}
@@ -363,8 +341,10 @@ const Map = () => {
       >
         <Sidebar
           feature={clickedFeature}
-          totalData={usTotalData}
-          timeSeriesData={timeSeriesData}
+          usConfirmedTotal={usConfirmedTotal}
+          usDeathsTotal={usDeathsTotal}
+          confirmedData={confirmedData}
+          deathsData={deathsData}
         />
       </div>
     </div>

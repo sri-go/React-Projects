@@ -1,6 +1,6 @@
 // @ts-nocheck
 import csv2geojson from "csv2geojson";
-import CountyBoundaries from "./CountyBoundaries.json";
+import CountyBoundaries from "../Data/CountyBoundaries.json";
 
 export const getCountiesData = async function (url: string): Promise<void> {
   const countyData = await fetch(url)
@@ -10,6 +10,7 @@ export const getCountiesData = async function (url: string): Promise<void> {
     .then((response: String) => {
       if (!!response) {
         csv2geojson.csv2geojson(response, function (err: any, data: any) {
+          // console.log(response);
           const us_only_counties = filterCounties(data);
           const calc_county_totals = countyTotals(us_only_counties);
           const combined_data = combinedCounty(calc_county_totals);
@@ -19,19 +20,8 @@ export const getCountiesData = async function (url: string): Promise<void> {
   return countyData;
 };
 
-//County Level Data
-/** 
-const usOnlyCounties = function (data: any) {
-  //filter out non-us data
-  const not_in = ["66", "78"];
-  if (not_in.indexOf(data.properties.FIPS) < 0 || data.properties.FIPS !== "") {
-    return data;
-  } else {
-    return;
-  }
-};
-*/
 const filterCounties = function (data: any) {
+  console.log(data);
   const filteredData = [];
   const usCounties = data.features.forEach(function (feature) {
     if (feature.properties.FIPS.length !== 0) {

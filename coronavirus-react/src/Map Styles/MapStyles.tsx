@@ -53,8 +53,12 @@ export const CountyOutlineStyle = {
 //County Deaths
 export const CountyDeathStyle = {
   id: "county-data",
-      type: "fill",
+  type: "fill",
   source: "CountyBoundaries",
+  layout: {
+    // make layer visible by default
+    visibility: "visible",
+  },
   paint: {
     "fill-color": {
       //paint colors
@@ -79,10 +83,12 @@ export const CountyDeathStyle = {
       1,
       0.8,
     ],
-  },
-  layout: {
-    // make layer visible by default
-    visibility: "visible",
+    // "fill-outline-color": [
+    //   "case",
+    //   ["boolean", ["feature-state", "hover"], false],
+    //   "#fffff",
+    //   "#00000",
+    // ],
   },
   minzoom: 4.5,
 };
