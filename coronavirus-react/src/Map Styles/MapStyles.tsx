@@ -12,16 +12,14 @@ export const StateDeathStyle = {
       //red colors
       stops: [
         [0, "#FFE3C5"],
-        [1000, "#F9C6A8"],
-        [5000, "#EFAA8E"],
-        [10000, "#E28F75"],
-        [25000, "#D0765F"],
-        [50000, "#BC5E4B"],
-        [100000, "#A64839"],
-        [250000, "#8E3429"],
-        [500000, "#74221B"],
-        [750000, "#59120F"],
-        [1000000, "#3F0501"],
+        [5000, "#F5BFA2"],
+        [10000, "#E59E82"],
+        [50000, "#D07E66"],
+        [100000, "#B8614D"],
+        [250000, "#9B4736"],
+        [500000, "#7D2F23"],
+        [750000, "#5C1A13"],
+        [1000000, "#3C0902"],
       ],
       property: "Confirmed",
       type: "interval",
@@ -63,14 +61,15 @@ export const CountyDeathStyle = {
     "fill-color": {
       //paint colors
       stops: [
-        [0, "#fff5f0"],
-        [50, "#fee0d2"],
-        [100, "#fcbba1"],
-        [500, "#fc9272"],
-        [1000, "#fb6a4a"],
-        [1500, "#ef3b2c"],
-        [2500, "#cb181d"],
-        [5000, "#99000d"],
+        [0, "#FFE3C5"],
+        [100, "#F5BFA2"],
+        [500, "#E59E82"],
+        [1000, "#D07E66"],
+        [5000, "#B8614D"],
+        [10000, "#9B4736"],
+        [50000, "#7D2F23"],
+        [75000, "#5C1A13"],
+        [100000, "#3C0902"],
       ],
       property: "Confirmed",
       type: "interval",
@@ -83,12 +82,6 @@ export const CountyDeathStyle = {
       1,
       0.8,
     ],
-    // "fill-outline-color": [
-    //   "case",
-    //   ["boolean", ["feature-state", "hover"], false],
-    //   "#fffff",
-    //   "#00000",
-    // ],
   },
   minzoom: 4.5,
 };
@@ -102,19 +95,31 @@ export const StateTwoWeekConfirmedStyle = {
     // make layer visible by default
     visibility: "none",
   },
+  /**
+    #004c6d
+    #21607e
+    #397490
+    #4f89a2
+    #669eb4
+    #7cb4c6
+    #94cad9
+    #ace0ec
+    #c5f7ff
+   */
+
   paint: {
     "fill-color": {
       //red colors
       stops: [
-        [0, "#FCDDC0"],
-        [1000, "#F2BB9E"],
-        [5000, "#E29A80"],
-        [10000, "#CE7B64"],
-        [25000, "#B65F4C"],
-        [50000, "#9A4536"],
-        [100000, "#7C2E24"],
-        [250000, "#5D1A14"],
-        [500000, "#3D0903"],
+        [500, "#c5f7ff"],
+        [1000, "#ace0ec"],
+        [5000, "#94cad9"],
+        [10000, "#7cb4c6"],
+        [25000, "#669eb4"],
+        [50000, "#4f89a2"],
+        [100000, "#397490"],
+        [250000, "#21607e"],
+        [500000, "#004c6d"],
       ],
       property: "TwoWeekTotal",
       type: "interval",
@@ -142,17 +147,39 @@ export const CountyTwoWeekConfirmedStyle = {
   },
   paint: {
     "fill-color": {
-      //red colors
+      //blue colors
+      /**
+       * Blue 10
+edf5ff
+Blue 20
+d0e2ff
+Blue 30
+a6c8ff
+Blue 40
+78a9ff
+Blue 50
+4589ff
+Blue 60
+0f62fe
+Blue 70
+0043ce
+Blue 80
+002d9c
+Blue 90
+001d6c
+Blue 100
+001141
+       */
       stops: [
-        [0, "#FCDDC0"],
-        [100, "#F2BB9E"],
-        [500, "#E29A80"],
-        [1000, "#CE7B64"],
-        [5000, "#B65F4C"],
-        [10000, "#9A4536"],
-        [25000, "#7C2E24"],
-        [50000, "#5D1A14"],
-        [100000, "#3D0903"],
+        [0, "#c5f7ff"],
+        [50, "#ace0ec"],
+        [100, "#94cad9"],
+        [500, "#7cb4c6"],
+        [1000, "#669eb4"],
+        [2500, "#4f89a2"],
+        [5000, "#397490"],
+        [10000, "#21607e"],
+        [15000, "#004c6d"],
       ],
       property: "TwoWeekTotal",
       type: "interval",

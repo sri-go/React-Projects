@@ -84,14 +84,14 @@ const Sidebar = (props: SidebarProps) => {
             zIndex: 5,
           }}
         >
-          <div>
+          <div style={{ margin: "0px auto", maxWidth: "350px", width: "100%" }}>
             <h1
               style={{
-                margin: 0,
                 color: "white",
                 textAlign: "center",
                 fontWeight: "normal",
                 fontSize: "30px",
+                marginTop: "0px",
               }}
             >
               Coronavirus Situation for {feature.properties.name} as of
@@ -123,14 +123,16 @@ const Sidebar = (props: SidebarProps) => {
       ) : (
         usConfirmedTotal & usDeathsTotal && (
           <div>
-            <div>
+            <div
+              style={{ margin: "0px auto", maxWidth: "350px", width: "100%" }}
+            >
               <h1
                 style={{
-                  margin: 0,
                   color: "white",
                   textAlign: "center",
                   fontWeight: "normal",
                   fontSize: "30px",
+                  marginTop: "0px",
                 }}
               >
                 USA Coronavirus Situation as of{" "}
@@ -310,7 +312,9 @@ const Sidebar = (props: SidebarProps) => {
             >
               Top 10 counties in {feature.properties.name}
             </h2>
-            {!!filteredData && <Table data={filteredData.top10} />}
+            {!!filteredData && (
+              <Table data={filteredData.top10} name={feature.properties.name} />
+            )}
           </div>
         </>
       )}
@@ -319,19 +323,40 @@ const Sidebar = (props: SidebarProps) => {
 };
 
 interface TableProps {
+  name?: string;
   data?: any;
 }
 
 // To Do: Add Deaths to Table (Top 10 Deaths for County, 2-Week Death Totals for County)
 const Table = (props: TableProps) => {
-  const { data } = props;
+  const { data, name } = props;
   const counties = Object.keys(data);
 
   return (
-    <div style={{ margin: "0 20px", display: "flex" }}>
-      <div>
-        <div>
-          <p>Top 10 Confirmed Count Total </p>
+    <div
+      style={{
+        marginBottom: "10px",
+        display: "flex",
+        justifyContent: "space-evenly",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "300px",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            margin: "0 auto",
+            width: "200px",
+            color: "white",
+          }}
+        >
+          <p>Cumulative Confirmed Case Totals</p>
         </div>
         {counties.map((county, index) => {
           let backgroundColor;
@@ -350,8 +375,7 @@ const Table = (props: TableProps) => {
                 padding: "5px",
                 backgroundColor: backgroundColor,
                 borderRadius: "10px",
-                width: "65%",
-                maxWidth: "600px",
+                maxWidth: "200px",
               }}
             >
               <p
@@ -359,7 +383,6 @@ const Table = (props: TableProps) => {
                   margin: "0",
                   width: "200px",
                   textAlign: "left",
-                  // borderRight: "2px solid",
                 }}
               >
                 {county}
@@ -371,9 +394,23 @@ const Table = (props: TableProps) => {
           );
         })}
       </div>
-      <div>
-        <div>
-          <p>Last Two Week Confirmed Count Totals </p>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "300px",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            margin: "0 auto",
+            width: "200px",
+            color: "white",
+          }}
+        >
+          <p>14 Day Confirmed Case Totals</p>
         </div>
         {counties.map((county, index) => {
           let backgroundColor;
@@ -392,8 +429,7 @@ const Table = (props: TableProps) => {
                 padding: "5px",
                 backgroundColor: backgroundColor,
                 borderRadius: "10px",
-                width: "65%",
-                maxWidth: "600px",
+                maxWidth: "200px",
               }}
             >
               <p

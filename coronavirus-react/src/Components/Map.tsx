@@ -49,14 +49,14 @@ const Map = () => {
   const [tempFeature, setTempFeature] = useState<any>();
   const [clickedFeature, setClickedFeature] = useState(null);
 
-  const [statesData, setStatesData] = useState<any>(null);
-  const [countiesData, setCountiesData] = useState<any>(null);
-  const [usDeathsTotal, setUSDeathsTotal] = useState<any>();
-  const [usConfirmedTotal, setUSConfirmedTotal] = useState<any>();
-  const [confirmedData, setConfirmedData] = useState<any>();
-  const [deathsData, setDeathsData] = useState<any>();
+  const [statesData, setStatesData] = useState<any>(null); //For State Map
+  const [countiesData, setCountiesData] = useState<any>(null); //For Counties Map
+  const [usDeathsTotal, setUSDeathsTotal] = useState<any>(); //For Sidebar Data Overview
+  const [usConfirmedTotal, setUSConfirmedTotal] = useState<any>(); //For Sidebar Data Overview
+  const [confirmedData, setConfirmedData] = useState<any>(); //For Sidebar Data
+  const [deathsData, setDeathsData] = useState<any>(); //For Sidebar Data
 
-  const [legendStyle, setLegendStyle] = useState("visible");
+  const [legendStyle, setLegendStyle] = useState("visible"); 
 
   const setUSTotals = (returnData: any) => {
     if (!!returnData.USConfirmedTotal) {
@@ -331,9 +331,10 @@ const Map = () => {
       <div
         style={{
           height: "100%",
+          width:'30%',
           background: "rgb(29 29 29)",
           position: "fixed",
-          left: "70%",
+          // left: "70%",
           top: "0",
           right: "0",
           overflowY: "scroll",
