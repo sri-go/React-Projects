@@ -2,6 +2,7 @@
 import { csv } from "csv2geojson";
 import StatesBoundaries from "./StateBoundaries.json";
 import CountyBoundaries from "./CountyBoundaries.json";
+import PopulationData from "./PopulationData.csv";
 
 // Fetch data from Github
 export const fetchData = async function (url: string) {
@@ -102,6 +103,11 @@ const fixFips = (array: Array[]) => {
     }
   });
   return array;
+};
+
+const addPopulation = (array?: Array[], populationData: any) => {
+  // console.log(typeof populationData);
+  
 };
 
 // Utility function that adds the state data to the State Boundaries GEOJSON file
@@ -270,5 +276,6 @@ export const filterData = (
     const fixedData = fixFips(filter);
     const stateData = cleanStateData(undefined, fixedData, callback);
     const countyData = cleanCountyData(undefined, fixedData);
+    const withPop = addPopulation(undefined, PopulationData);
   }
 };

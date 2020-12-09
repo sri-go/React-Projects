@@ -38,22 +38,29 @@ const ControlPanel = (props: ControlPanelProps) => {
           "visibility",
           "none"
         ) &&
-       
         map.setLayoutProperty(
           "CountyTwoWeek-ConfirmedData",
           "visibility",
           "none"
         );
   };
-
+  
   return (
-    <div style={{ position: "fixed", bottom: "30px", left: "10px" }}>
-      <button onClick={onClick}>
+    <div style={{ position: "fixed", bottom: "305px", right: "30.5%" }}>
+      <button
+        onClick={onClick}
+        style={{
+          padding: "5px 10px",
+          border: "none",
+          borderRadius: "5px",
+          color: "white",
+          fontSize: "15px",
+          outline: "none",
+          backgroundColor: "rgba(152, 146, 143, 0.5)",
+        }}
+      >
         Toggle Total Cases {layers["states-data"].visibility}
       </button>
-      {/* <button onClick={onClick}>
-        Toggle Last Two Weeks {layers["county-data"].visibility}
-      </button> */}
     </div>
   );
 };;

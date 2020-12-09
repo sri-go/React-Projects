@@ -271,7 +271,6 @@ const filterForCounty = (
       });
     });
     // Remove last value, "NaN" in Total New Cases for State
-    console.log(obj[state]["TotalNewDeaths"]);
     obj[state]["TotalNewDeaths"] = obj[state]["TotalNewDeaths"].slice(
       0,
       obj[state]["TotalNewDeaths"].length - 1
@@ -280,36 +279,92 @@ const filterForCounty = (
     delete obj[state]["DailyChangeKeys"];
     delete obj[state]["NewDeaths"];
   }
-  console.log(obj);
   return obj;
 };
 
-// @ts-ignore
 const filterTop10 = (obj: any, feature?: any) => {
+  console.log(obj);
   const state = feature.properties.name;
-  const excludeKeys = ["TotalCasesOverTime", "TotalNewCases"];
-  const top10 = []; //Temp arr to hold total case count
-  const countyNames = []; //Temp array to hold county names
-  let top10Counties = {};
+  const excludeKeys = [
+    "TotalCasesOverTime",
+    "TotalNewCases",
+    "Unassigned",
+    "TotalDeathsOverTime",
+    "TotalNewDeaths",
+  ];
+  const temp = [];
+  //Confirmed Cases
+  const TotalConfirmed = []; //Temp arr to hold total case count
+  const TwoWeekConfirmed = []; //Temp arr to hold two week case count
 
   // loop through all counties and add to county array
   for (const county in obj[state]) {
     if (excludeKeys.indexOf(county) < 0) {
-      top10.push(obj[state][county]["Total-Cases"]);
+      temp.push([county, obj[state][county]]);
     }
   }
+
+  temp
+    .sort(function (a, b) {
+      return b[1]["Total-Cases"] - a[1]["Total-Cases"];
+    })
+    .map((val, index) => {
+      if (index < 10) {
+        TotalConfirmed.push([val[0], val[1]["Total-Cases"]]);
+      }
+    });
+    
+  temp
+    .sort((a, b) => {
+      return b[1]["twoWeekTotal"] - a[1]["twoWeekTotal"];
+    })
+    .map((val, index) => {
+      if (index < 10) {
+        TwoWeekConfirmed.push([val[0], val[1]["twoWeekTotal"]]);
+      }
+    });
+
   // Returns top 10 vals in order
-  const topValues = top10.sort((a, b) => b - a).slice(0, 10);
+  return { TotalConfirmed: TotalConfirmed, TwoWeekConfirmed: TwoWeekConfirmed };
+
+};
+
+const filterTop10Deaths = (obj: any, feature?: any) => {
+  const state = feature.properties.name;
+  const excludeKeys = ["Unassigned", "TotalDeathsOverTime", "TotalNewDeaths"];
+  const temp = [];
+  //Total Deaths
+  const TotalDeaths = [];
+  //Two Week Deaths
+  const TwoWeekDeaths = [];
 
   for (const county in obj[state]) {
-    // check if value for that county is in top values array
-    if (topValues.indexOf(obj[state][county]["Total-Cases"]) >= 0) {
-      countyNames.push(county);
-      //@ts-ignore
-      top10Counties[county] = obj[state][county]["Total-Cases"];
+    if (excludeKeys.indexOf(county) < 0) {
+      temp.push([county, obj[state][county]]);
     }
   }
-  return top10Counties;
+
+  temp
+    .sort(function (a, b) {
+      return b[1]["Total-Deaths"] - a[1]["Total-Deaths"];
+    })
+    .map((val, index) => {
+      if (index < 10) {
+        TotalDeaths.push([val[0], val[1]["Total-Deaths"]]);
+      }
+    });
+
+  temp
+    .sort((a, b) => {
+      return b[1]["twoWeekDeathTotal"] - a[1]["twoWeekDeathTotal"];
+    })
+    .map((val, index) => {
+      if (index < 10) {
+        TwoWeekDeaths.push([val[0], val[1]["twoWeekDeathTotal"]]);
+      }
+    });
+
+  return { TotalDeaths: TotalDeaths, TwoWeekDeaths: TwoWeekDeaths };
 };
 
 export const filterData = (
@@ -327,7 +382,6 @@ export const filterData = (
       feature
     );
     const filterTop = filterTop10(filterCounty, feature);
-
     return {
       filterState: filterState,
       filterCounty: filterCounty,
@@ -342,9 +396,11 @@ export const filterData = (
       dates,
       feature
     );
+    const filterTop = filterTop10Deaths(filterCountyDeaths, feature);
     return {
       filterState: filterStateDeaths,
       filterCounty: filterCountyDeaths,
+      top10: filterTop,
     };
   }
 };

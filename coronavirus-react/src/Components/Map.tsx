@@ -334,7 +334,6 @@ const Map = () => {
           width:'30%',
           background: "rgb(29 29 29)",
           position: "fixed",
-          // left: "70%",
           top: "0",
           right: "0",
           overflowY: "scroll",

@@ -24,6 +24,19 @@ const Legend = (props: LegendProps) => {
         boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
       }}
     >
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <p
+          style={{
+            margin: "5px 0 10px 0",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          {legendStyle === "visible"
+            ? "Total Confirmed Coronavirus Cases"
+            : "Two Week Confirmd Coronavirus Cases"}
+        </p>
+      </div>
       {zoom > 4.5 ? (
         <CountyLegend type={legendStyle} />
       ) : (
@@ -110,10 +123,6 @@ const CountyLegend = (props: LegendStyleProps) => {
 
 const StateLegend = (props: LegendStyleProps) => {
   const { type } = props;
-  /**
-   * FFE3C5
-   *
-   */
   let colorsStateTotal = [
     { "0-5,000": "#FFE3C5" },
     { "5,000-10,000": "#F5BFA2" },

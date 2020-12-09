@@ -299,7 +299,7 @@ const Sidebar = (props: SidebarProps) => {
             </FlexibleWidthXYPlot>
           </div>
           <hr />
-          <div style={{ backgroundColor: "#202020", overflow: "scroll" }}>
+          <div style={{ backgroundColor: "#202020", overflow: "scroll", padding:'20px' }}>
             <h2
               style={{
                 fontFamily: "sans-serif",
@@ -308,12 +308,16 @@ const Sidebar = (props: SidebarProps) => {
                 margin: "10px 20px",
                 textAlign: "center",
                 color: "white",
+                width: "1000px",
               }}
             >
               Top 10 counties in {feature.properties.name}
             </h2>
             {!!filteredData && (
-              <Table data={filteredData.top10} name={feature.properties.name} />
+              <Table
+                confirmedData={filteredData}
+                deathsData={filteredDeathData}
+              />
             )}
           </div>
         </>
@@ -323,21 +327,25 @@ const Sidebar = (props: SidebarProps) => {
 };
 
 interface TableProps {
-  name?: string;
-  data?: any;
+  confirmedData?: any;
+  deathsData?: any;
 }
 
 // To Do: Add Deaths to Table (Top 10 Deaths for County, 2-Week Death Totals for County)
 const Table = (props: TableProps) => {
-  const { data, name } = props;
-  const counties = Object.keys(data);
+  const { confirmedData, deathsData } = props;
+  const countiesTotalConfirmed = confirmedData.top10["TotalConfirmed"];
+  const countiesTwoWeek = confirmedData.top10["TwoWeekConfirmed"];
+
+  const countiesTotalDeaths = deathsData.top10["TotalDeaths"];
+  const countiesTwoWeekDeaths = deathsData.top10["TwoWeekDeaths"];
 
   return (
     <div
       style={{
-        marginBottom: "10px",
+        margin: "10px auto",
         display: "flex",
-        justifyContent: "space-evenly",
+        width:'1000px'
       }}
     >
       <div
@@ -358,7 +366,7 @@ const Table = (props: TableProps) => {
         >
           <p>Cumulative Confirmed Case Totals</p>
         </div>
-        {counties.map((county, index) => {
+        {countiesTotalConfirmed.map((county:any, index:number) => {
           let backgroundColor;
           if (index % 2 === 0) {
             backgroundColor = "lightgrey";
@@ -380,15 +388,69 @@ const Table = (props: TableProps) => {
             >
               <p
                 style={{
-                  margin: "0",
-                  width: "200px",
+                  margin: "0 5px",
+                  width: "100px",
                   textAlign: "left",
                 }}
               >
-                {county}
+                {county[0]}
               </p>
-              <p style={{ margin: "0", width: "100px", textAlign: "center" }}>
-                {data[county]}
+              <p style={{ margin: "0", width: "75px", textAlign: "center" }}>
+                {county[1]}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "300px",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            margin: "0 auto",
+            width: "200px",
+            color: "white",
+          }}
+        >
+          <p>Cumulative Confirmed Deaths Total</p>
+        </div>
+        {countiesTotalDeaths.map((county: any, index:      number) => {
+          let backgroundColor;
+          if (index % 2 === 0) {
+            backgroundColor = "lightgrey";
+          } else {
+            backgroundColor = "white";
+          }
+          return (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-evenly",
+                margin: "5px auto",
+                padding: "5px",
+                backgroundColor: backgroundColor,
+                borderRadius: "10px",
+                maxWidth: "200px",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0 5px",
+                  width: "100px",
+                  textAlign: "left",
+                }}
+              >
+                {county[0]}
+              </p>
+              <p style={{ margin: "0", width: "75px", textAlign: "center" }}>
+                {county[1]}
               </p>
             </div>
           );
@@ -412,7 +474,7 @@ const Table = (props: TableProps) => {
         >
           <p>14 Day Confirmed Case Totals</p>
         </div>
-        {counties.map((county, index) => {
+        {countiesTwoWeek.map((county:any, index:number) => {
           let backgroundColor;
           if (index % 2 === 0) {
             backgroundColor = "lightgrey";
@@ -434,16 +496,69 @@ const Table = (props: TableProps) => {
             >
               <p
                 style={{
-                  margin: "0",
-                  width: "200px",
+                  margin: "0 5px",
+                  width: "100px",
                   textAlign: "left",
-                  // borderRight: "2px solid",
                 }}
               >
-                {county}
+                {county[0]}
               </p>
-              <p style={{ margin: "0", width: "100px", textAlign: "center" }}>
-                {data[county]}
+              <p style={{ margin: "0", width: "75px", textAlign: "center" }}>
+                {county[1]}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "300px",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            margin: "0 auto",
+            width: "200px",
+            color: "white",
+          }}
+        >
+          <p>14 Day Confirmed Deaths Total</p>
+        </div>
+        {countiesTwoWeekDeaths.map((county: any, index: number) => {
+          let backgroundColor;
+          if (index % 2 === 0) {
+            backgroundColor = "lightgrey";
+          } else {
+            backgroundColor = "white";
+          }
+          return (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-evenly",
+                margin: "5px auto",
+                padding: "5px",
+                backgroundColor: backgroundColor,
+                borderRadius: "10px",
+                maxWidth: "200px",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0 5px",
+                  width: "100px",
+                  textAlign: "left",
+                }}
+              >
+                {county[0]}
+              </p>
+              <p style={{ margin: "0", width: "75px", textAlign: "center" }}>
+                {county[1]}
               </p>
             </div>
           );
