@@ -14,8 +14,8 @@ export default function Map(props) {
     <DarkskyMap
       lat={props.location[0]}
       lng={props.location[1]}
-      zoom={10}
-      mapField="precip"
+      zoom={6}
+      mapField="temp"
     ></DarkskyMap>
   );
 }
