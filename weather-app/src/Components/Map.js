@@ -7,8 +7,8 @@ const styles = {
 };
 
 export default function Map(props) {
-  console.log('x', props.location[1]);
-  console.log('y', props.location[0]);
+  // console.log('x', props.location[1]);
+  // console.log('y', props.location[0]);
 
   return (
     <DarkskyMap
@@ -16,6 +16,6 @@ export default function Map(props) {
       lng={props.location[1]}
       zoom={6}
       mapField="temp"
-    ></DarkskyMap>
+    />
   );
 }

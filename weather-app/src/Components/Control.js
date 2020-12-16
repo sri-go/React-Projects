@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function Control(props) {
-  // console.log(props);
+  const [inputValue, setInputValue] = useState();
+  
   function handleChange(event) {
-    props.onChange(event);
+    props.sendLocation(event);
+    setInputValue(event.target.value);
   }
   function handleClick() {
     //1st function in array
@@ -25,11 +27,11 @@ export default function Control(props) {
       <input
         style={{ width: '50%' }}
         className="input"
-        placeholder="Enter Location"
-        value={props.location}
+        placeholder='Enter Location'
+        value={inputValue}
         onChange={handleChange}
         name="location"
-      ></input>
+      />
       <button className="button" onClick={handleClick}>
         <FontAwesomeIcon icon={['fas', 'search']} />
       </button>

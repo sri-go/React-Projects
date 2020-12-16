@@ -28,7 +28,6 @@ export default function App() {
   useEffect(() => {
     let lat, long;
     //default to NYC to get data
-    console.log(coordinates);
     lat = coordinates[0];
     long = coordinates[1];
 
@@ -80,7 +79,6 @@ export default function App() {
   function handleClick() {
     setDone(false);
     setLoading(false);
-    // setLoading(true);
     //Gets location inputted and fetches geocoded location data
     //Sends geocode to getWeather function to return weather data and then sets it to state
     fetch(
@@ -104,8 +102,6 @@ export default function App() {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
       setCoordinates([latitude, longitude]);
-      // console.log(latitude, longitude);
-      // console.log(`loading: ${loading} done: ${done}`);
     });
   }
 
@@ -130,8 +126,7 @@ export default function App() {
   return (
     <div className="App">
       <Control
-        location={location}
-        onChange={handleChange}
+        sendLocation={handleChange}
         onClick={[handleClick, getLocation]}
       />
       {!done ? (
