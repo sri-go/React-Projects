@@ -10,6 +10,9 @@
   background-color: #eee;
   border: 1px solid transparent;
 }
+.mapboxgl-ctrl-geocoder {
+  min-width: 100%;
+}
 .detailsWrapper {
   width: 100%;
   line-height: 40px;

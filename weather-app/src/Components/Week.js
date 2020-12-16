@@ -23,7 +23,7 @@ export default function Week(props) {
     }
   });
 
-  const week_details = weather.map((day, index) => {
+  const weekDetails = weather.map((day, index) => {
     return (
       <WeekDetails
         max={max}
@@ -34,9 +34,6 @@ export default function Week(props) {
       />
     );
   });
-  return typeof props.weather === undefined ? (
-    <div>1</div>
-  ) : (
-    week_details
-  );
+  return weekDetails;
+
 }
