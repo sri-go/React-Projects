@@ -95,18 +95,6 @@ export const StateTwoWeekConfirmedStyle = {
     // make layer visible by default
     visibility: "none",
   },
-  /**
-    #004c6d
-    #21607e
-    #397490
-    #4f89a2
-    #669eb4
-    #7cb4c6
-    #94cad9
-    #ace0ec
-    #c5f7ff
-   */
-
   paint: {
     "fill-color": {
       //red colors
@@ -148,28 +136,6 @@ export const CountyTwoWeekConfirmedStyle = {
   paint: {
     "fill-color": {
       //blue colors
-      /**
-       * Blue 10
-edf5ff
-Blue 20
-d0e2ff
-Blue 30
-a6c8ff
-Blue 40
-78a9ff
-Blue 50
-4589ff
-Blue 60
-0f62fe
-Blue 70
-0043ce
-Blue 80
-002d9c
-Blue 90
-001d6c
-Blue 100
-001141
-       */
       stops: [
         [0, "#c5f7ff"],
         [50, "#ace0ec"],

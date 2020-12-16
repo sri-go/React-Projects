@@ -11,7 +11,7 @@ import { bbox } from "@turf/turf";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-import { fetchData, filterData } from "../Data/FetchData"; //to do: rename file to something else
+import { fetchData, filterData, countryTotals } from "../Data/FetchData"; //to do: rename file to something else
 
 import StateBoundaries from "../Data/StateBoundaries.json";
 import CountyBoundaries from "../Data/CountyBoundaries.json";
@@ -55,8 +55,7 @@ const Map = () => {
   const [usConfirmedTotal, setUSConfirmedTotal] = useState<any>(); //For Sidebar Data Overview
   const [confirmedData, setConfirmedData] = useState<any>(); //For Sidebar Data
   const [deathsData, setDeathsData] = useState<any>(); //For Sidebar Data
-
-  const [legendStyle, setLegendStyle] = useState("visible"); 
+  const [legendStyle, setLegendStyle] = useState("visible");
 
   const setUSTotals = (returnData: any) => {
     if (!!returnData.USConfirmedTotal) {
@@ -74,7 +73,8 @@ const Map = () => {
     );
     getConfirmedData.then((response) => {
       setConfirmedData(response);
-      filterData(response, undefined, setUSTotals);
+      const t = filterData(response, undefined, setUSTotals);
+      console.log(t);
       setStatesData(StateBoundaries);
       setCountiesData(CountyBoundaries);
     });
@@ -331,7 +331,7 @@ const Map = () => {
       <div
         style={{
           height: "100%",
-          width:'30%',
+          width: "30%",
           background: "rgb(29 29 29)",
           position: "fixed",
           top: "0",

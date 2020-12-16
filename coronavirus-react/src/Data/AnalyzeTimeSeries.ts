@@ -283,7 +283,6 @@ const filterForCounty = (
 };
 
 const filterTop10 = (obj: any, feature?: any) => {
-  console.log(obj);
   const state = feature.properties.name;
   const excludeKeys = [
     "TotalCasesOverTime",

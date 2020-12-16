@@ -3,6 +3,7 @@ import { csv } from "csv2geojson";
 import StatesBoundaries from "./StateBoundaries.json";
 import CountyBoundaries from "./CountyBoundaries.json";
 import PopulationData from "./PopulationData.csv";
+import { StateDeathStyle } from "../Map Styles/MapStyles";
 
 // Fetch data from Github
 export const fetchData = async function (url: string) {
@@ -107,7 +108,6 @@ const fixFips = (array: Array[]) => {
 
 const addPopulation = (array?: Array[], populationData: any) => {
   // console.log(typeof populationData);
-  
 };
 
 // Utility function that adds the state data to the State Boundaries GEOJSON file
@@ -119,6 +119,7 @@ const cleanStateData = (
   const featuresArr = StatesBoundaries.features;
   if (!!confirmedArray) {
     let USConfirmedTotal = 0;
+    let stateTotals = [];
     featuresArr.map((feature: any, index: number) => {
       const state = feature.properties.name;
       let stateTotal = 0;
@@ -140,9 +141,21 @@ const cleanStateData = (
     callback({
       USConfirmedTotal: USConfirmedTotal,
     });
+    featuresArr.map((feature: any, index: any) => {
+      const confirmedTotal = feature.properties.Confirmed;
+      stateTotals.push([feature.properties.name, confirmedTotal]);
+    });
+    const stateConfirmedSorted = stateTotals.sort((a, b) => {
+      return b[1] - a[1];
+    });
+    console.log(stateConfirmedSorted);
+
+    return stateConfirmedSorted;
   }
   if (!!deathsArray) {
     let USDeathsTotal = 0;
+    let stateTotals = [];
+
     featuresArr.map((feature: any, index: number) => {
       const state = feature.properties.name;
       let stateTotal = 0;
@@ -160,15 +173,28 @@ const cleanStateData = (
       feature.properties["TwoWeekDeathTotal"] = stateTwoWeekDeathTotal;
       USDeathsTotal += stateTotal;
     });
+
     StatesBoundaries["USDeathsTotal"] = USDeathsTotal;
     callback({
       USDeathsTotal: USDeathsTotal,
     });
+    
+    featuresArr.map((feature: any, index: any) => {
+      const deathsTotal = feature.properties.Deaths;
+      stateTotals.push([feature.properties.name, deathsTotal]);
+    });
+    
+    const stateDeathsSorted = stateTotals.sort((a, b) => {
+      return b[1] - a[1];
+    });
+    console.log(stateDeathsSorted);
+
+    return stateDeathsSorted;
   }
   // Add US Total into State Boundaries GEOJSON data
 };
 
-// Utility function that adds the state data to the State Boundaries GEOJSON file
+// Utility function that adds the county data to the County Boundaries GEOJSON file
 const cleanCountyData = (
   confirmedArray?: Array[],
   deathsArray?: Array[]
@@ -176,7 +202,6 @@ const cleanCountyData = (
   const featuresArr = CountyBoundaries.features;
   if (!!confirmedArray) {
     featuresArr.map((countyFeature: any, index: number) => {
-      const countyName = countyFeature.properties.NAME;
       const stateCode = countyFeature.properties.STATE;
       const countyCode = countyFeature.properties.COUNTY;
       const FIPS = stateCode + countyCode;
@@ -187,35 +212,13 @@ const cleanCountyData = (
           countyFeature.properties["Confirmed"] = parseInt(feature.Confirmed); //Cumulative total
           countyFeature.properties["TwoWeekTotal"] = parseInt(
             feature.TwoWeekTotal
-          ); //Previous two weeks total
-        }
-        // Alaska Kusilvak Census Area County
-        else if (feature.FIPS === "02158") {
-          if (countyName === "Wade Hampton") {
-            countyFeature.properties.Confirmed = parseInt(feature.Confirmed);
-            countyFeature.properties["TwoWeekTotal"] = parseInt(
-              feature.TwoWeekTotal
-            );
-            countyFeature.properties.NAME = "Kusilvak Census Area";
-          }
-        }
-        // Shannon County, SD is now Oglala Lakota County
-        else if (feature.Admin2 === "Oglala Lakota") {
-          if (countyName === "Shannon") {
-            countyFeature.properties.Confirmed = parseInt(feature.Confirmed);
-            countyFeature.properties["TwoWeekTotal"] = parseInt(
-              feature.TwoWeekTotal
-            );
-            countyFeature.properties.NAME = "Oglala Lakota";
-            countyFeature.properties.FIPS = feature.FIPS;
-          }
+          );
         }
       });
     });
   }
   if (!!deathsArray) {
     featuresArr.map((countyFeature: any, index: number) => {
-      const countyName = countyFeature.properties.NAME;
       const stateCode = countyFeature.properties.STATE;
       const countyCode = countyFeature.properties.COUNTY;
       const FIPS = stateCode + countyCode;
@@ -226,37 +229,111 @@ const cleanCountyData = (
           countyFeature.properties.Deaths = parseInt(feature.Deaths); //Cumulative total
           countyFeature.properties["TwoWeekDeathTotal"] = parseInt(
             feature.TwoWeekDeathTotal
-          ); //Previous two weeks total
+          );
         }
-        // Alaska Kusilvak Census Area County
-        else if (feature.FIPS === "02158") {
-          if (countyName === "Wade Hampton") {
-            countyFeature.properties.Deaths = parseInt(feature.Deaths);
-            countyFeature.properties["TwoWeekDeathTotal"] = parseInt(
-              feature.TwoWeekDeathTotal
-            );
-            countyFeature.properties.NAME = "Kusilvak Census Area";
-          }
-        }
-        // Shannon County, SD is now Oglala Lakota County
-        // else if (feature.Admin2 === "Oglala Lakota") {
-        //   if (countyName === "Shannon") {
-        //     countyFeature.properties.Deaths = parseInt(feature.Confirmed);
-        //     countyFeature.properties["TwoWeekDeathTotal"] = parseInt(
-        //       feature.TwoWeekDeathTotal
-        //     );
-        //     countyFeature.properties.NAME = "Oglala Lakota";
-        //     countyFeature.properties.FIPS = feature.FIPS;
-        //   }
-        // }
       });
     });
   }
   return CountyBoundaries;
 };
 
-export const countryAnalysis = (array: any) => {
-  // console.log(array);
+export const countryAnalysis = (confirmedArray?: any, deathsArray?: any) => {
+  let finalObj = [];
+  //Things we don't need to parse
+  const excludeKeys = [
+    "UID",
+    "iso2",
+    "iso3",
+    "code3",
+    "FIPS",
+    "Admin2",
+    "Province_State",
+    "Country_Region",
+    "Lat",
+    "Long_",
+    "Combined_Key",
+    "Population",
+  ];
+  if (!!confirmedArray) {
+    // Intialize all key/value pairs to 0
+    const firstElement = confirmedArray[0];
+    const keys = Object.keys(firstElement);
+    keys.map((key: string, index: number) => {
+      const val = {}; //Return obj
+      if (excludeKeys.indexOf(key) < 0) {
+        val.x = new Date(key);
+        val.y = 0;
+      }
+      finalObj.push(val);
+    });
+    // Loop over each feature in array and add the count to final obj
+    confirmedArray.map((feature: any, index: number) => {
+      if (feature.Country_Region === "US") {
+        const keys = Object.keys(feature);
+        keys.map((key: any, keyIndex: number) => {
+          if (excludeKeys.indexOf(key) < 0) {
+            finalObj[keyIndex].y += parseInt(feature[key]);
+          }
+        });
+      }
+    });
+    // Remove first 11 objs -> empty
+    finalObj = finalObj.slice(11);
+    return finalObj;
+  }
+  if (!!deathsArray) {
+    // Intialize all key/value pairs to 0
+    const firstElement = deathsArray[0];
+    const keys = Object.keys(firstElement);
+    keys.map((key: string, index: number) => {
+      const val = {}; //Return obj
+      if (excludeKeys.indexOf(key) < 0) {
+        val.x = new Date(key);
+        val.y = 0;
+      }
+      finalObj.push(val);
+    });
+    // Loop over each feature in array and add the count to final obj
+    deathsArray.map((feature: any, index: number) => {
+      if (feature.Country_Region === "US") {
+        const keys = Object.keys(feature);
+        keys.map((key: any, keyIndex: number) => {
+          if (excludeKeys.indexOf(key) < 0) {
+            finalObj[keyIndex].y += parseInt(feature[key]);
+          }
+        });
+      }
+    });
+    // Remove first 11 objs -> empty
+    finalObj = finalObj.slice(12);
+    return finalObj;
+  }
+};
+
+export const countryTotals = (data: any) => {
+  let stateTotals = [];
+  data.features.map((feature: any, index: number) => {
+    const confirmedTotal = feature.properties.Confirmed;
+    const deathsTotal = feature.properties.Deaths;
+    stateTotals.push([feature.properties.name, confirmedTotal, deathsTotal]);
+  });
+
+  const stateConfirmedSorted = stateTotals.sort((a, b) => {
+    return b[1] - a[1];
+  });
+
+  console.log(stateConfirmedSorted);
+
+  const stateDeathsSorted = stateTotals.sort((a, b) => {
+    return b[2] - a[2];
+  });
+
+  console.log(stateDeathsSorted);
+
+  return {
+    confirmedSorted: stateConfirmedSorted,
+    deathsSorted: stateDeathsSorted,
+  };
 };
 
 export const filterData = (
@@ -270,6 +347,7 @@ export const filterData = (
     const fixedData = fixFips(filter);
     const stateData = cleanStateData(fixedData, undefined, callback);
     const countyData = cleanCountyData(fixedData, undefined);
+    return stateData;
   }
   if (!!deathsArray) {
     const filter = reduceData(undefined, deathsArray, dates);

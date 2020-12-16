@@ -6,10 +6,13 @@ import {
   LineSeries,
   XAxis,
   YAxis,
+  DiscreteColorLegend,
 } from "react-vis";
 
-import { filterData } from "../Data/AnalyzeTimeSeries";
+import StateBoundaries from "../Data/StateBoundaries.json";
 
+import { countryAnalysis } from "../Data/FetchData";
+import { filterData } from "../Data/AnalyzeTimeSeries";
 interface SidebarProps {
   confirmedData: any;
   deathsData: any;
@@ -42,6 +45,9 @@ const Sidebar = (props: SidebarProps) => {
   const [totalDeaths, setTotalDeaths] = useState<any>(null);
   const [totalNewDeaths, setTotalNewDeaths] = useState<any>(null);
 
+  const [countryConfirmed, setCountryConfirmed] = useState<any>(null);
+  const [countryDeaths, setCountryDeaths] = useState<any>(null);
+
   // filter the fetched data once the state has been clicked
   // run everytime the feature changes
   // to do: distinguish between county clicks and state clicks
@@ -69,7 +75,22 @@ const Sidebar = (props: SidebarProps) => {
     setFilteredDeathData(deathsResult);
   }, [feature, confirmedData]);
 
-  const date = new Date();
+  useEffect(() => {
+    const confirmed = countryAnalysis(confirmedData, undefined);
+    setCountryConfirmed(confirmed);
+    const deaths = countryAnalysis(undefined, deathsData);
+    setCountryDeaths(deaths);
+  }, [deathsData, confirmedData]);
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const scaleData = (data?: any) => {
+    if (!!data) {
+      const finalVal = data.slice(-1);
+      return [0, finalVal[0].y];
+    }
+  };
 
   return (
     <>
@@ -95,7 +116,7 @@ const Sidebar = (props: SidebarProps) => {
               }}
             >
               Coronavirus Situation for {feature.properties.name} as of
-              {" " + date.toLocaleDateString("default")}
+              {" " + yesterday.toLocaleDateString("default")}
             </h1>
           </div>
           <div
@@ -121,46 +142,123 @@ const Sidebar = (props: SidebarProps) => {
           </div>
         </div>
       ) : (
-        usConfirmedTotal & usDeathsTotal && (
-          <div>
-            <div
-              style={{ margin: "0px auto", maxWidth: "350px", width: "100%" }}
-            >
-              <h1
+        usConfirmedTotal &&
+        usDeathsTotal &&
+        countryConfirmed &&
+        countryDeaths && (
+          <>
+            <div>
+              <div
+                style={{ margin: "0px auto", maxWidth: "350px", width: "100%" }}
+              >
+                <h1
+                  style={{
+                    color: "white",
+                    textAlign: "center",
+                    fontWeight: "normal",
+                    fontSize: "30px",
+                    marginTop: "0px",
+                  }}
+                >
+                  USA Coronavirus Situation as of{" "}
+                  {yesterday.toLocaleDateString("default")}
+                </h1>
+              </div>
+              <div
                 style={{
-                  color: "white",
+                  display: "flex",
+                  justifyContent: "space-evenly",
                   textAlign: "center",
-                  fontWeight: "normal",
-                  fontSize: "30px",
-                  marginTop: "0px",
+                  margin: "10px 0 0 0",
                 }}
               >
-                USA Coronavirus Situation as of{" "}
-                {date.toLocaleDateString("default")}
-              </h1>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-evenly",
-                textAlign: "center",
-                margin: "10px 0 0 0",
-              }}
-            >
-              <div style={{ border: "3px solid", borderRadius: "15px" }}>
-                <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
-                  Total Confirmed Cases: <br />
-                  {usConfirmedTotal.toLocaleString()}
-                </h5>
-              </div>
-              <div style={{ border: "3px solid", borderRadius: "15px" }}>
-                <h5 style={{ padding: "10px", margin: "0px", color: "white" }}>
-                  Total Deaths: <br />
-                  {usDeathsTotal.toLocaleString()}
-                </h5>
+                <div style={{ border: "3px solid", borderRadius: "15px" }}>
+                  <h5
+                    style={{ padding: "10px", margin: "0px", color: "white" }}
+                  >
+                    Total Confirmed Cases: <br />
+                    {usConfirmedTotal.toLocaleString()}
+                  </h5>
+                </div>
+                <div style={{ border: "3px solid", borderRadius: "15px" }}>
+                  <h5
+                    style={{ padding: "10px", margin: "0px", color: "white" }}
+                  >
+                    Total Deaths: <br />
+                    {usDeathsTotal.toLocaleString()}
+                  </h5>
+                </div>
               </div>
             </div>
-          </div>
+            <hr />
+            <div>
+              <FlexibleWidthXYPlot
+                height={300}
+                margin={{ top: 20, right: 20, left: 100 }}
+                onMouseLeave={(e) => {
+                  setConfirmedPointsTotal([]);
+                  setDeathsPointsTotal([]);
+                }}
+              >
+                <ChartLabel
+                  text="Total Number of Cases in USA"
+                  includeMargin={false}
+                  xPercent={0.4}
+                  yPercent={0.1}
+                  style={{ fontSize: "30px" }}
+                />
+                <LineSeries
+                  className="first-series"
+                  data={countryConfirmed}
+                  onNearestX={(v) => {
+                    setConfirmedPointsTotal([v]);
+                  }}
+                  yDomain={scaleData(countryConfirmed)}
+                />
+                <LineSeries
+                  className="second-series"
+                  data={countryDeaths}
+                  onNearestX={(v) => {
+                    setDeathsPointsTotal([v]);
+                  }}
+                  yDomain={scaleData(countryDeaths)}
+                />
+                <XAxis
+                  tickFormat={(t) => {
+                    const d = new Date(t);
+                    return d.toLocaleString("default", { month: "short" });
+                  }}
+                />
+                <YAxis
+                  orientation="left"
+                  title="Number of Cases"
+                  tickPadding={10}
+                />
+                {deathsPointsTotal.length > 0 && (
+                  <Crosshair values={deathsPointsTotal}>
+                    <div
+                      style={{
+                        width: "150px",
+                        padding: "10px",
+                        background: "black",
+                      }}
+                    >
+                      <h3 style={{ margin: "0 0 10px 0" }}>
+                        {deathsPointsTotal[0].x.toLocaleDateString("en-us")}
+                      </h3>
+                      <p style={{ margin: "0" }}>
+                        Total Cases:{" "}
+                        {confirmedPointsTotal[0].y.toLocaleString()}
+                      </p>
+                      <p style={{ margin: "10px 0 0 0" }}>
+                        Total Deaths: {deathsPointsTotal[0].y.toLocaleString()}
+                      </p>
+                    </div>
+                  </Crosshair>
+                )}
+              </FlexibleWidthXYPlot>
+            </div>
+          </>
         )
       )}
       {/* Per State Clicked */}
@@ -199,6 +297,7 @@ const Sidebar = (props: SidebarProps) => {
                 onNearestX={(v) => {
                   setConfirmedPointsTotal([v]);
                 }}
+                yDomain={scaleData(totalCases)}
               />
               <LineSeries
                 className="second-series"
@@ -206,6 +305,7 @@ const Sidebar = (props: SidebarProps) => {
                 onNearestX={(v) => {
                   setDeathsPointsTotal([v]);
                 }}
+                yDomain={scaleData(totalDeaths)}
               />
               {deathsPointsTotal.length > 0 && (
                 <Crosshair values={deathsPointsTotal}>
@@ -250,7 +350,6 @@ const Sidebar = (props: SidebarProps) => {
               />
               <XAxis
                 on0
-                // @ts-ignore
                 tickFormat={(t) => {
                   const d = new Date(t);
                   return d.toLocaleString("default", { month: "short" });
@@ -265,6 +364,7 @@ const Sidebar = (props: SidebarProps) => {
                   strokeWidth: 2,
                 }}
                 onNearestX={(v) => setConfirmedPointsTwoWeek([v])}
+                // yDomain={scaleData(totalNewCases)}
               />
               <LineSeries
                 data={totalNewDeaths}
@@ -274,6 +374,7 @@ const Sidebar = (props: SidebarProps) => {
                   strokeWidth: 2,
                 }}
                 onNearestX={(v) => setDeathsPointsTwoWeek([v])}
+                // yDomain={[0, 100]}
               />
               {confirmedPointsTwoWeek.length > 0 && (
                 <Crosshair values={confirmedPointsTwoWeek}>
@@ -299,7 +400,13 @@ const Sidebar = (props: SidebarProps) => {
             </FlexibleWidthXYPlot>
           </div>
           <hr />
-          <div style={{ backgroundColor: "#202020", overflow: "scroll", padding:'20px' }}>
+          <div
+            style={{
+              backgroundColor: "#202020",
+              overflow: "scroll",
+              padding: "20px",
+            }}
+          >
             <h2
               style={{
                 fontFamily: "sans-serif",
@@ -331,7 +438,6 @@ interface TableProps {
   deathsData?: any;
 }
 
-// To Do: Add Deaths to Table (Top 10 Deaths for County, 2-Week Death Totals for County)
 const Table = (props: TableProps) => {
   const { confirmedData, deathsData } = props;
   const countiesTotalConfirmed = confirmedData.top10["TotalConfirmed"];
@@ -345,7 +451,7 @@ const Table = (props: TableProps) => {
       style={{
         margin: "10px auto",
         display: "flex",
-        width:'1000px'
+        width: "1000px",
       }}
     >
       <div
@@ -366,7 +472,7 @@ const Table = (props: TableProps) => {
         >
           <p>Cumulative Confirmed Case Totals</p>
         </div>
-        {countiesTotalConfirmed.map((county:any, index:number) => {
+        {countiesTotalConfirmed.map((county: any, index: number) => {
           let backgroundColor;
           if (index % 2 === 0) {
             backgroundColor = "lightgrey";
@@ -420,7 +526,7 @@ const Table = (props: TableProps) => {
         >
           <p>Cumulative Confirmed Deaths Total</p>
         </div>
-        {countiesTotalDeaths.map((county: any, index:      number) => {
+        {countiesTotalDeaths.map((county: any, index: number) => {
           let backgroundColor;
           if (index % 2 === 0) {
             backgroundColor = "lightgrey";
@@ -474,7 +580,7 @@ const Table = (props: TableProps) => {
         >
           <p>14 Day Confirmed Case Totals</p>
         </div>
-        {countiesTwoWeek.map((county:any, index:number) => {
+        {countiesTwoWeek.map((county: any, index: number) => {
           let backgroundColor;
           if (index % 2 === 0) {
             backgroundColor = "lightgrey";
