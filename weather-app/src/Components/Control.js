@@ -28,8 +28,9 @@ export default function Control(props) {
   return (
     <div className="control">
       <a
-        // className="button"
+        className="button"
         onClick={props.onClick()}
+        style={{ boxShadow: '0 0 10px 2px rgba(0,0,0,.1)' }}
       >
         <img
           src="./Assets/cbimage.jpg"
