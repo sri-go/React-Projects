@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import { us } from '@mapbox/mapbox-gl-geocoder/lib/exceptions';
 
 export default function Control(props) {
   const geocoder = useRef();
