@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-import FadeIn from 'react-fade-in';
-
 import Control from './Control';
 import Details from './Details';
 import Main from './Main';
@@ -50,7 +48,6 @@ export default function App() {
 
     Promise.all([day_weather, hourly_weather, week_weather]).then(
       (values) => {
-        console.log(values);
         setWeather({
           day: values[0],
           hourly: values[1],
@@ -88,35 +85,27 @@ export default function App() {
         sendLocation={getSelectedLocation}
         onClick={getCurrentLocation}
       />
-      {done && (
+      {!!done && (
         <div>
-          <FadeIn>
-            <div className="main-info">
-              <Details weather={weather.day} />
-              <Main
-                weather={weather.day}
-                date={date}
-                hourly_weather={weather.hourly}
-              />
-            </div>
-          </FadeIn>
-          <FadeIn>
-            <div className="map">
-              <Map location={coordinates} />
-            </div>
-          </FadeIn>
-          <FadeIn>
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '830px',
-                margin: '0 auto',
-              }}
-              className="week-info"
-            >
-              <Week weather={weather.week} />
-            </div>
-          </FadeIn>
+          <div className="main-info">
+            <Details weather={weather.day} />
+            <Main
+              weather={weather.day}
+              date={date}
+              hourly_weather={weather.hourly}
+            />
+          </div>
+         <Map location={coordinates} />
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '830px',
+              margin: '0 auto',
+            }}
+            className="week-info"
+          >
+            <Week weather={weather.week} />
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import { us } from '@mapbox/mapbox-gl-geocoder/lib/exceptions';
 
 export default function Control(props) {
   const geocoder = useRef();
@@ -18,10 +19,12 @@ export default function Control(props) {
     mapboxGeocoder.addTo(geocoder.current);
   }, []);
 
-  mapboxGeocoder.on('result', (Object) => {
-    console.log(Object);
-    props.sendLocation(Object.result.center);
-  })
+  useEffect(() => {
+    mapboxGeocoder.on('result', (Object) => {
+      console.log(Object);
+      props.sendLocation(Object.result.center);
+    });
+  });
 
   return (
     <div className="control">

@@ -5,15 +5,18 @@ const styles = {
   width: '100vw',
   height: '50vh',
 };
+
 export default function Map(props) {
   const { location } = props;
-  
+  const lat = location[0];
+  const lng = location[1];
+  console.log(location);
   return (
     <DarkskyMap
-      lat={location[0]}
-      lng={location[1]}
-      zoom={6}
+      lat={lat}
+      lng={lng}
+      zoom={10}
       mapField="temp"
-    />
+    ></DarkskyMap>
   );
 }
