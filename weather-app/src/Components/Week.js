@@ -25,13 +25,22 @@ export default function Week(props) {
 
   const weekDetails = weather.map((day, index) => {
     return (
-      <WeekDetails
-        max={max}
-        min={min}
-        data={day}
-        key={index}
-        id={index}
-      />
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '830px',
+          margin: '0 auto',
+        }}
+        className="week-info"
+      >
+        <WeekDetails
+          max={max}
+          min={min}
+          data={day}
+          key={index}
+          id={index}
+        />
+      </div>
     );
   });
   return weekDetails;

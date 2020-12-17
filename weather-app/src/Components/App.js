@@ -86,27 +86,16 @@ export default function App() {
         onClick={getCurrentLocation}
       />
       {!!done && (
-        <div>
-          <div className="main-info">
-            <Details weather={weather.day} />
-            <Main
-              weather={weather.day}
-              date={date}
-              hourly_weather={weather.hourly}
-            />
-          </div>
-         <Map location={coordinates} />
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '830px',
-              margin: '0 auto',
-            }}
-            className="week-info"
-          >
-            <Week weather={weather.week} />
-          </div>
-        </div>
+        <>
+          <Details weather={weather.day} />
+          <Main
+            weather={weather.day}
+            date={date}
+            hourly_weather={weather.hourly}
+          />
+          <Map location={coordinates} />
+          <Week weather={weather.week} />
+        </>
       )}
     </div>
   );
