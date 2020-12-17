@@ -60,7 +60,7 @@ export default function App() {
 
   useEffect(() => {
     let lat, long;
-    //default to NYC to get data
+    //default to NYC on load
     lat = coordinates[0];
     long = coordinates[1];
     fetchData(lat, long);
