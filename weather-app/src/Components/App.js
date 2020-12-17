@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import FadeIn from 'react-fade-in';
+
 import Control from './Control';
 import Details from './Details';
 import Main from './Main';
@@ -10,7 +12,7 @@ import '../Styles/App.css';
 import 'bulma/css/bulma.css';
 
 export default function App() {
-  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [weather, setWeather] = useState();
   const [coordinates, setCoordinates] = useState([
     40.741621,
@@ -53,7 +55,7 @@ export default function App() {
           hourly: values[1],
           week: values[2],
         });
-        setDone(true);
+        setLoading(false);
       },
     );
   };
@@ -63,6 +65,7 @@ export default function App() {
     //default to NYC on load
     lat = coordinates[0];
     long = coordinates[1];
+    setLoading(true);
     fetchData(lat, long);
   }, [coordinates]);
 
@@ -85,8 +88,8 @@ export default function App() {
         sendLocation={getSelectedLocation}
         onClick={getCurrentLocation}
       />
-      {!!done && (
-        <>
+      {!loading && (
+        <FadeIn>
           <Details weather={weather.day} />
           <Main
             weather={weather.day}
@@ -95,7 +98,7 @@ export default function App() {
           />
           <Map location={coordinates} />
           <Week weather={weather.week} />
-        </>
+        </FadeIn>
       )}
     </div>
   );

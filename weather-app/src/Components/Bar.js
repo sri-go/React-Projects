@@ -1,7 +1,6 @@
 import React from 'react';
 
 export default function Bar(props) {
-  //   console.log(props);
   const max = props.max;
   const min = props.min;
   const numSteps = max - min;

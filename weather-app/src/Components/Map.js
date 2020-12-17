@@ -10,8 +10,6 @@ export default function Map(props) {
   const { location } = props;
   const lat = location[0];
   const lng = location[1];
-  console.log(location);
-  debugger;
   return (
     <DarkskyMap
       lat={lat}

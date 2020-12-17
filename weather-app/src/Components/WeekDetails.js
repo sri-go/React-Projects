@@ -2,7 +2,6 @@ import React from 'react';
 import Bar from './Bar';
 
 export default function WeekDetails(props) {
-  //   console.log(props);
   const { max, min, data } = props;
   const weather_array = ['partly_cloudy', 'mostly_clear', 'clear'];
   let img_src;

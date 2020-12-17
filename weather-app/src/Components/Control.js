@@ -21,7 +21,6 @@ export default function Control(props) {
 
   useEffect(() => {
     mapboxGeocoder.on('result', (Object) => {
-      console.log(Object);
       props.sendLocation(Object.result.center);
     });
   });
