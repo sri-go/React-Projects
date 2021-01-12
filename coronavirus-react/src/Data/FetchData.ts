@@ -3,7 +3,6 @@ import { csv } from "csv2geojson";
 import StatesBoundaries from "./StateBoundaries.json";
 import CountyBoundaries from "./CountyBoundaries.json";
 import PopulationData from "./PopulationData.csv";
-import { StateDeathStyle } from "../Map Styles/MapStyles";
 
 // Fetch data from Github
 export const fetchData = async function (url: string) {
@@ -28,7 +27,7 @@ const getDates = () => {
     date.setDate(date.getDate() + 1);
     newDates.push(
       date.toLocaleDateString("en-us", {
-        month: "2-digit",
+        month: "numeric",
         day: "numeric",
         year: "2-digit",
       })
@@ -106,6 +105,7 @@ const fixFips = (array: Array[]) => {
   return array;
 };
 
+// Utility function that adds Population to State Boundaries GEOJSON file
 const addPopulation = (array?: Array[], populationData: any) => {
   // console.log(typeof populationData);
 };

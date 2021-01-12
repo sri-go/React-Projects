@@ -73,8 +73,7 @@ const Map = () => {
     );
     getConfirmedData.then((response) => {
       setConfirmedData(response);
-      const t = filterData(response, undefined, setUSTotals);
-      console.log(t);
+      filterData(response, undefined, setUSTotals);
       setStatesData(StateBoundaries);
       setCountiesData(CountyBoundaries);
     });

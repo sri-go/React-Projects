@@ -9,7 +9,7 @@ export const filterDates = () => {
     date.setDate(date.getDate() + 1);
     newDates.push(
       date.toLocaleDateString("en-us", {
-        month: "2-digit",
+        month: "numeric",
         day: "numeric",
         year: "2-digit",
       })
@@ -362,7 +362,7 @@ const filterTop10Deaths = (obj: any, feature?: any) => {
         TwoWeekDeaths.push([val[0], val[1]["twoWeekDeathTotal"]]);
       }
     });
-
+  
   return { TotalDeaths: TotalDeaths, TwoWeekDeaths: TwoWeekDeaths };
 };
 
