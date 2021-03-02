@@ -28,6 +28,7 @@ import "../Styles/map.css";
 import Sidebar from "./Sidebar";
 import Legend from "./Legend";
 import ControlPanel from "./ControlPanel";
+import SidebarCountry from "./SidebarCountry";
 
 const ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_KEY;
 
@@ -338,13 +339,17 @@ const Map = () => {
           overflowY: "scroll",
         }}
       >
-        <Sidebar
+        {clickedFeature ? <Sidebar
           feature={clickedFeature}
           usConfirmedTotal={usConfirmedTotal}
           usDeathsTotal={usDeathsTotal}
           confirmedData={confirmedData}
           deathsData={deathsData}
-        />
+        /> : <SidebarCountry usConfirmedTotal={usConfirmedTotal}
+          usDeathsTotal={usDeathsTotal}
+          confirmedData={confirmedData}
+          deathsData={deathsData}
+        />}
       </div>
     </div>
   );
