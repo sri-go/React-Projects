@@ -46,7 +46,7 @@ const SidebarCountry = (props: SidebarCountryProps) => {
     const hasAllRequiredData = usConfirmedTotal &&
         usDeathsTotal &&
         countryConfirmed &&
-        countryDeaths
+        countryDeaths;
 
     return (
         !hasAllRequiredData ? null :
