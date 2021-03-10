@@ -1,6 +1,5 @@
-/*
 Done:
-1. Fetch covid-19 times-series files (Deaths, Confirmed) -> Done
+1. Fetch covid-19 times-series files (Deaths, Confirmed)
 
 2. Go through data sort data for each state
 
@@ -26,5 +25,3 @@ To Do
 7 day average plot of deaths for state
 
 new cases at day = sum new cases of each county 
-
-*/
