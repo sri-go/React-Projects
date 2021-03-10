@@ -366,7 +366,7 @@ const filterTop10Deaths = (obj: any, feature?: any) => {
   return { TotalDeaths: TotalDeaths, TwoWeekDeaths: TwoWeekDeaths };
 };
 
-export const filterData = (
+export const filterTimeSeriesData = (
   confirmedArray?: any,
   deathsArray?: Array[],
   feature: any
