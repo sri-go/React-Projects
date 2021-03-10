@@ -7,8 +7,7 @@ interface LegendStyleProps {
   type?: string; //to do: change to required, once county style is figured out
 } 
 
-const Legend = (props: LegendProps) => {
-  const { zoom, legendStyle } = props;
+const Legend = ({ zoom, legendStyle }: LegendProps) => {
 
   return (
     <div
@@ -46,9 +45,7 @@ const Legend = (props: LegendProps) => {
   );
 };
 
-const CountyLegend = (props: LegendStyleProps) => {
-  const { type } = props;
- 
+const CountyLegend = ({ type }: LegendStyleProps) => {
   const colorsCounty = [
     { "0-100": "#FFE3C5" },
     { "100-500": "#F5BFA2" },
@@ -119,10 +116,9 @@ const CountyLegend = (props: LegendStyleProps) => {
         });
 
   return <>{legend}</>;
-};;
+};
 
-const StateLegend = (props: LegendStyleProps) => {
-  const { type } = props;
+const StateLegend = ({ type }: LegendStyleProps) => {
   let colorsStateTotal = [
     { "0-5,000": "#FFE3C5" },
     { "5,000-10,000": "#F5BFA2" },

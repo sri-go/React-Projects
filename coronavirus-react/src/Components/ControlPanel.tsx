@@ -1,16 +1,14 @@
 import React from "react";
-
 interface ControlPanelProps {
   mapRef: any;
   updateLegendStyle: any;
 }
 
-const ControlPanel = (props: ControlPanelProps) => {
+const ControlPanel = ({ mapRef, updateLegendStyle }:ControlPanelProps) => {
   const layers = {
     "states-data": { visibility: "visible" },
     "county-data": { visibility: "visible" },
   };
-  const { mapRef, updateLegendStyle } = props;
 
   const onClick = (e: React.SyntheticEvent) => {
     updateLegendStyle(); //update map legend style callback
