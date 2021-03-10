@@ -148,7 +148,7 @@ const cleanStateData = (
     const stateConfirmedSorted = stateTotals.sort((a, b) => {
       return b[1] - a[1];
     });
-    console.log(stateConfirmedSorted);
+    // console.log(stateConfirmedSorted);
 
     return stateConfirmedSorted;
   }
@@ -187,7 +187,7 @@ const cleanStateData = (
     const stateDeathsSorted = stateTotals.sort((a, b) => {
       return b[1] - a[1];
     });
-    console.log(stateDeathsSorted);
+    // console.log(stateDeathsSorted);
 
     return stateDeathsSorted;
   }
@@ -322,13 +322,13 @@ export const countryTotals = (data: any) => {
     return b[1] - a[1];
   });
 
-  console.log(stateConfirmedSorted);
+  // console.log(stateConfirmedSorted);
 
   const stateDeathsSorted = stateTotals.sort((a, b) => {
     return b[2] - a[2];
   });
 
-  console.log(stateDeathsSorted);
+  // console.log(stateDeathsSorted);
 
   return {
     confirmedSorted: stateConfirmedSorted,
