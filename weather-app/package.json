@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "homepage": ".",
   "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -11,9 +10,10 @@
     "react": "^16.13.1",
     "react-darksky-map": "^0.1.0",
     "react-dom": "^16.13.1",
+    "react-fade-in": "1.1.0",
+    "react-icons": "^4.2.0",
     "react-lottie": "^1.2.3",
-    "react-scripts": "3.4.1",
-    "react-fade-in": "1.1.0"
+    "react-scripts": "3.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

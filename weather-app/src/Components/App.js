@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Lottie from 'react-lottie';
 import FadeIn from 'react-fade-in';
+
 import Control from './Control';
 import Details from './Details';
 import Main from './Main';
 import Week from './Week';
 import Map from './Map';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
+
 import '../Styles/App.css';
 import 'bulma/css/bulma.css';
 import animationData from '../lotties/9825-loading-screen-loader-spinning-circle.json';
 import animationData2 from '../lotties/24847-confirmation.json';
-library.add(fas);
 
 export default function App() {
   const [done, setDone] = useState(undefined);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FaLocationArrow, FaSearch } from 'react-icons/fa';
 
 export default function Control(props) {
   // console.log(props);
@@ -20,7 +20,7 @@ export default function Control(props) {
           props.onClick[1]();
         }}
       >
-        <FontAwesomeIcon icon={['fas', 'location-arrow']} />
+        <FaLocationArrow />
       </button>
       <input
         style={{ width: '50%' }}
@@ -31,7 +31,7 @@ export default function Control(props) {
         name="location"
       ></input>
       <button className="button" onClick={handleClick}>
-        <FontAwesomeIcon icon={['fas', 'search']} />
+        <FaSearch />
       </button>
     </div>
   );
