@@ -10,11 +10,10 @@ import Map from './Map';
 
 import '../Styles/App.css';
 import 'bulma/css/bulma.css';
-import animationData from '../lotties/9825-loading-screen-loader-spinning-circle.json';
 import animationData2 from '../lotties/24847-confirmation.json';
 
 export default function App() {
-  const [done, setDone] = useState(undefined);
+  const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState('');
   const [weather, setWeather] = useState(undefined);
@@ -25,97 +24,103 @@ export default function App() {
   const [date, setDate] = useState();
 
   useEffect(() => {
+    setDone(false);
+
     let lat, long;
+
     //default to NYC to get data
-    console.log(coordinates);
     lat = coordinates[0];
     long = coordinates[1];
 
-    const fetchData = async function () {
-      let date = new Date();
-      setDate(date);
-      let hourly_date = date.setDate(date.getDate() + 1);
-      hourly_date = date.toISOString();
-      let weekly_date = date.setDate(date.getDate() + 7);
-      weekly_date = date.toISOString();
+    const data = fetchData(lat, long);
+    data.then((res) => {
+      setWeather(res);
+    });
+  }, [coordinates]);
 
+  const fetchData = async function (lat, long) {
+    let date = new Date();
+    setDate(date);
+
+    let hourly_date = date.setDate(date.getDate() + 1);
+    hourly_date = date.toISOString();
+    let weekly_date = date.setDate(date.getDate() + 7);
+    weekly_date = date.toISOString();
+
+    try {
       const day_weather = await fetch(
         `https://api.climacell.co/v3/weather/realtime?lat=${lat}&lon=${long}&unit_system=us&fields%5B%5D=temp&fields%5B%5D=feels_like&fields%5B%5D=baro_pressure&fields%5B%5D=wind_speed&fields%5B%5D=dewpoint&fields%5B%5D=humidity&fields%5B%5D=weather_code&apikey=GT9RlI6sr2OjyLvlGOdOF4RX0qLgkFxH`,
-      )
-        .then((response) => response.json())
-        .catch((error) => console.log(error));
+      );
 
       const hourly_weather = await fetch(
         `https://api.climacell.co/v3/weather/forecast/hourly?unit_system=us&start_time=now&end_time=${hourly_date}&lat=${lat}&lon=${long}&apikey=GT9RlI6sr2OjyLvlGOdOF4RX0qLgkFxH`,
-      )
-        .then((response) => response.json())
-        .catch((error) => console.log(error));
+      );
 
       const week_weather = await fetch(
         `https://api.climacell.co/v3/weather/forecast/daily?lat=${lat}&lon=${long}&end_time=${weekly_date}&fields%5B%5D=temp&fields%5B%5D=weather_code&unit_system=us&apikey=GT9RlI6sr2OjyLvlGOdOF4RX0qLgkFxH`,
-      )
-        .then((response) => response.json())
-        .catch((error) => console.log(error));
+      );
 
-      const combined = {
-        day: day_weather,
-        hourly: hourly_weather,
-        week: week_weather,
+      var combined = {
+        day: await day_weather.json(),
+        hourly: await hourly_weather.json(),
+        week: await week_weather.json(),
       };
-      setWeather(combined);
-      setLoading(true);
-      setTimeout(() => {
-        setDone(true);
-      }, 1500);
-    };
-
-    fetchData();
-  }, [coordinates]);
+      // setWeather(combined);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      return combined;
+    }
+  };
 
   function handleChange(event) {
     setLocation(event.target.value);
   }
 
-  function handleClick() {
+  async function handleClick() {
     setDone(false);
-    setLoading(false);
-    // setLoading(true);
-    //Gets location inputted and fetches geocoded location data
-    //Sends geocode to getWeather function to return weather data and then sets it to state
-    fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${location}.json?access_token=pk.eyJ1Ijoic3JpLWdvIiwiYSI6ImNrODUyeHp1YjAyb2wzZXA4b21veGhqdjgifQ.wprAUOeXWkoWy1-nbUd1NQ`,
-    )
-      .then((response) => response.json())
-      .then((response) => {
-        //returns promise of weather-data
-        let lat = response.features[0].center[1];
-        let long = response.features[0].center[0];
-        setCoordinates([lat, long]);
-      })
-      .catch((error) => console.log(error));
+
+    try {
+      //Gets location inputted and fetches geocoded location data
+      //Sends geocode to getWeather function to return weather data and then sets it to state
+      const res = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${location}.json?access_token=pk.eyJ1Ijoic3JpLWdvIiwiYSI6ImNrODUyeHp1YjAyb2wzZXA4b21veGhqdjgifQ.wprAUOeXWkoWy1-nbUd1NQ`,
+      );
+      const data = await res.json();
+
+      let lat = data.features[0].center[1];
+      let long = data.features[0].center[0];
+      setCoordinates([lat, long]);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  function getLocation() {
+  function getLocation(e) {
     setDone(false);
-    setLoading(false);
-    const geo = navigator.geolocation;
-    geo.getCurrentPosition((position) => {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      setCoordinates([latitude, longitude]);
-      // console.log(latitude, longitude);
-      // console.log(`loading: ${loading} done: ${done}`);
-    });
-  }
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0,
+    };
 
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
-    },
-  };
+    const geo = window.navigator.geolocation;
+    if(geo) {
+      return geo.getCurrentPosition(
+        (position) => {
+          console.log(position);
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          console.log(latitude, longitude);
+          setCoordinates([latitude, longitude]);
+        },
+        undefined,
+        options,
+      );
+    } 
+
+    console.log('geolocation not available');
+  }
 
   const defaultOptions2 = {
     loop: true,
@@ -133,61 +138,47 @@ export default function App() {
         onChange={handleChange}
         onClick={[handleClick, getLocation]}
       />
-      {!done ? (
+      {done ? (
+        <div>
+          <div className="main-info">
+            <Details weather={weather.day} />
+            <Main
+              weather={weather.day}
+              date={date}
+              hourly_weather={weather.hourly}
+            />
+          </div>
+          <div className="columns is-justify-content-center">
+            <Map location={coordinates} />
+            <Week weather={weather.week} />
+          </div>
+        </div>
+      ) : (
         <FadeIn>
           <div
+            className="is-flex is-justify-content-center is-align-items-center"
             style={{
-              height: '90vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              height: '90vh'
             }}
           >
-            {!loading ? (
-              <Lottie
-                options={defaultOptions}
-                height={400}
-                width={400}
-              ></Lottie>
-            ) : (
-              <Lottie
-                options={defaultOptions2}
-                height={400}
-                width={400}
-              ></Lottie>
-            )}
+            <Lottie
+              options={defaultOptions2}
+              height={400}
+              width={400}
+              speed={1}
+              eventListeners={[
+                {
+                  eventName: 'loopComplete',
+                  callback: () => {
+                    setDone(true);
+                    console.log(weather);
+                    console.log('the animation completed:');
+                  },
+                },
+              ]}
+            ></Lottie>
           </div>
         </FadeIn>
-      ) : (
-        <div>
-          <FadeIn>
-            <div className="main-info">
-              <Details weather={weather.day} />
-              <Main
-                weather={weather.day}
-                date={date}
-                hourly_weather={weather.hourly}
-              />
-            </div>
-          </FadeIn>
-          <FadeIn>
-            <div className="map">
-              <Map location={coordinates} />
-            </div>
-          </FadeIn>
-          <FadeIn>
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '830px',
-                margin: '0 auto',
-              }}
-              className="week-info"
-            >
-              <Week weather={weather.week} />
-            </div>
-          </FadeIn>
-        </div>
       )}
     </div>
   );

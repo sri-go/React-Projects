@@ -1,8 +1,8 @@
 import React from 'react';
+import FadeIn from 'react-fade-in';
 import WeekDetails from './WeekDetails';
 
-export default function Week(props) {
-  const { weather } = props;
+export default function Week({ weather }) {
 
   let max, min;
   const findMaxMin = weather.map((day, index) => {
@@ -34,9 +34,19 @@ export default function Week(props) {
       />
     );
   });
-  return typeof props.weather === undefined ? (
-    <div>1</div>
+  return typeof weather === undefined ? (
+    <div>loading</div>
   ) : (
-    week_details
+    <div
+        style={{
+          width: '100%',
+          minWidth: '300px',
+          maxWidth: '500px',
+          // margin: '0 auto',
+        }}
+        className="week-info column"
+      >
+        {week_details}
+      </div>
   );
 }

@@ -16,15 +16,12 @@ const Table = ({ clickedFeature, confirmedCaseData, deathsCaseData }: TableProps
     let confirmedResult;
     let deathsResult;
 
-    console.log(clickedFeature)
     confirmedResult = filterTimeSeriesData(confirmedCaseData, undefined, clickedFeature);
     deathsResult = filterTimeSeriesData(undefined, deathsCaseData, clickedFeature);
 
     setFilteredData(confirmedResult);
     setFilteredDeathData(deathsResult);
   }, [clickedFeature, confirmedCaseData, deathsCaseData]);
-
-  console.log(filteredDeathData)
 
   return (
     <div

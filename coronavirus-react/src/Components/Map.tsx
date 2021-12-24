@@ -69,23 +69,28 @@ const Map = () => {
   // On Component Load
   useEffect(() => {
     // Fetch Data
-    const getConfirmedData = fetchData(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
-    );
-    getConfirmedData.then((response) => {
-      setConfirmedData(response);
-      filterData(response, undefined, setUSTotals);
-      setStatesData(StateBoundaries);
-      setCountiesData(CountyBoundaries);
+    const data = fetchData();
+    const dataNames = ['Confirmed', 'Deaths']
+    // @ts-ignore
+    data.then((response: Array<Array<Object>>) => {
+      response.map((data, index) => {
+        return filterData(data, dataNames[index])
+      })
     });
+    // getConfirmedData.then((response) => {
+    //   setConfirmedData(response);
+    //   filterData(response, 'Confirmed', setUSTotals);
+    //   setStatesData(StateBoundaries);
+    //   setCountiesData(CountyBoundaries);
+    // });
     // // Fetch Time Series Deaths Data
-    const getDeathsData = fetchData(
-      "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
-    );
-    getDeathsData.then((response) => {
-      setDeathsData(response);
-      filterData(undefined, response, setUSTotals);
-    });
+    // const getDeathsData = fetchData(
+    //   "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
+    // );
+    // getDeathsData.then((response) => {
+    //   setDeathsData(response);
+    //   filterData(response, 'Deaths', setUSTotals);
+    // });
   }, []);
 
   const onViewportChange = (nextViewport: ViewportProps) => {
@@ -294,6 +299,7 @@ const Map = () => {
   };
 
   return (
+
     <div style={{ display: "flex" }}>
       <div style={{ width: "70%" }}>
         <MapGL
@@ -339,17 +345,20 @@ const Map = () => {
           overflowY: "scroll",
         }}
       >
-        {clickedFeature ? <Sidebar
-          feature={clickedFeature}
-          usConfirmedTotal={usConfirmedTotal}
-          usDeathsTotal={usDeathsTotal}
-          confirmedData={confirmedData}
-          deathsData={deathsData}
-        /> : <SidebarCountry usConfirmedTotal={usConfirmedTotal}
-          usDeathsTotal={usDeathsTotal}
-          confirmedData={confirmedData}
-          deathsData={deathsData}
-        />}
+        {clickedFeature
+          ? <Sidebar
+            feature={clickedFeature}
+            usConfirmedTotal={usConfirmedTotal}
+            usDeathsTotal={usDeathsTotal}
+            confirmedData={confirmedData}
+            deathsData={deathsData}
+          />
+          : <SidebarCountry
+            usConfirmedTotal={usConfirmedTotal}
+            usDeathsTotal={usDeathsTotal}
+            confirmedData={confirmedData}
+            deathsData={deathsData}
+          />}
       </div>
     </div>
   );

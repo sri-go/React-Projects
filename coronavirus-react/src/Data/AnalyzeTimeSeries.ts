@@ -1,23 +1,5 @@
 //@ts-nocheck
-export const filterDates = () => {
-  //Filtering by date, I want to only get the data for the past 2 weeks
-  const date = new Date();
-  date.setDate(date.getDate() - 16);
-  //creating a new array of keys that I want to select in the objs
-  let newDates = [];
-  for (let i = 0; i < 15; i++) {
-    date.setDate(date.getDate() + 1);
-    newDates.push(
-      date.toLocaleDateString("en-us", {
-        month: "numeric",
-        day: "numeric",
-        year: "2-digit",
-      })
-    );
-  }
-  return newDates;
-};
-
+import { getDates } from "./FetchData";
 const filterForState = (
   confirmedArray?: Array[],
   deathsArray?: Array[],
@@ -367,11 +349,11 @@ const filterTop10Deaths = (obj: any, feature?: any) => {
 };
 
 export const filterTimeSeriesData = (
+  feature: any,
   confirmedArray?: any,
-  deathsArray?: Array[],
-  feature: any
+  deathsArray?: Array<Object>,
 ): any => {
-  const dates = filterDates();
+  const dates = getDates();
   if (!!confirmedArray) {
     const filterState = filterForState(confirmedArray, undefined, feature);
     const filterCounty = filterForCounty(

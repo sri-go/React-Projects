@@ -1,24 +1,15 @@
 import React from 'react';
 import { FaLocationArrow, FaSearch } from 'react-icons/fa';
 
-export default function Control(props) {
-  // console.log(props);
-  function handleChange(event) {
-    props.onChange(event);
-  }
-  function handleClick() {
-    //1st function in array
-    props.onClick[0]();
-  }
+export default function Control({ location, onChange, onClick }) {
+  console.log(onClick);
+  const [handleClick, getLocation] = onClick;
 
   return (
     <div className="control">
       <button
         className="button"
-        onClick={() => {
-          //2nd function in array
-          props.onClick[1]();
-        }}
+        onClick={(e) => getLocation(e)}
       >
         <FaLocationArrow />
       </button>
@@ -26,11 +17,11 @@ export default function Control(props) {
         style={{ width: '50%' }}
         className="input"
         placeholder="Enter Location"
-        value={props.location}
-        onChange={handleChange}
+        value={location}
+        onChange={(e) => onChange(e)}
         name="location"
-      ></input>
-      <button className="button" onClick={handleClick}>
+      />
+      <button className="button" onClick={(e) => handleClick(e)}>
         <FaSearch />
       </button>
     </div>

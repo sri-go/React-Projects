@@ -18,7 +18,6 @@ const SidebarCountry = ({ usConfirmedTotal,
   const [countryDeaths, setCountryDeaths] = useState<any>(null);
 
   const [confirmedPointsTotal, setConfirmedPointsTotal] = useState<any>([]);
-
   const [deathsPointsTotal, setDeathsPointsTotal] = useState<any>([]);
 
   useEffect(() => {
@@ -118,7 +117,6 @@ const SidebarCountry = ({ usConfirmedTotal,
           </div>
         </>
       )
-
   )
 }
 

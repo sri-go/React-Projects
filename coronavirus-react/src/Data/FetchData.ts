@@ -1,23 +1,42 @@
 // @ts-nocheck
-import { csv } from "csv2geojson";
 import StatesBoundaries from "./StateBoundaries.json";
 import CountyBoundaries from "./CountyBoundaries.json";
-import PopulationData from "./PopulationData.csv";
+// @ts-ignore
+import { csv } from "csv2geojson";
 
 // Fetch data from Github
-export const fetchData = async function (url: string) {
-  const timeSeries = await fetch(url)
-    .then((response) => {
-      return response.text();
-    })
-    .then((response) => {
-      return csv(response);
-    });
-  return timeSeries;
+export const fetchData = async () => {
+   const rawData = await Promise.all([
+     fetch(
+       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
+     ),
+     fetch(
+       "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
+     ),
+   ]);
+  try {
+    const parsedData = await Promise.all(
+      rawData.map((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const convertedData = response.text();
+        return convertedData;
+      })
+    );
+    const cleanedData = await Promise.all(
+      parsedData.map((string) => {
+        return csv(string);
+      })
+    );
+    return cleanedData;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // Utility function that returns the last two weeks of dates;
-const getDates = () => {
+export const getDates = () => {
   //Filtering by date, I want to only get the data for the past 2 weeks
   const date = new Date();
   date.setDate(date.getDate() - 16);
@@ -36,209 +55,8 @@ const getDates = () => {
   return newDates;
 };
 
-// Utility function that filters data for the latest date (Current date - 1)
-const reduceData = (
-  confirmedArray?: Array[],
-  deathsArray?: Array[],
-  datesArray?: any
-): Array[] => {
-  const includeKeys = [
-    "Admin2",
-    "Combined_Key",
-    "Country_Region",
-    "FIPS",
-    "Lat",
-    "Long_",
-    "Province_State",
-    "UID",
-    "code3",
-    "iso2",
-    "iso3",
-  ];
-  const finalDataObj: any = [];
-
-  const firstDate = datesArray[0];
-  const lastDate = datesArray[datesArray.length - 1];
-  if (!!confirmedArray) {
-    confirmedArray.map((feature: any, index: number) => {
-      const tempObj: any = {};
-      const twoWeekTotal = feature[lastDate] - feature[firstDate];
-      const currentTotal = feature[lastDate];
-      tempObj["Confirmed"] = currentTotal;
-      tempObj["TwoWeekTotal"] = twoWeekTotal;
-      includeKeys.map((key, index) => {
-        tempObj[key] = feature[key];
-      });
-      finalDataObj.push(tempObj);
-    });
-  }
-  if (!!deathsArray) {
-    deathsArray.map((feature: any, index: number) => {
-      const tempObj: any = {};
-      const twoWeekTotal = feature[lastDate] - feature[firstDate];
-      const currentTotal = feature[lastDate];
-      tempObj["Deaths"] = currentTotal;
-      tempObj["TwoWeekDeathTotal"] = twoWeekTotal;
-      includeKeys.map((key, index) => {
-        tempObj[key] = feature[key];
-      });
-      finalDataObj.push(tempObj);
-    });
-  }
-  return finalDataObj;
-};
-
-// Utility function to fix the FIPS on the data
-const fixFips = (array: Array[]) => {
-  array.map((feature: any, index: number) => {
-    const FIPS = feature.FIPS.split(".")[0];
-    if (FIPS.length === 2) {
-      feature.FIPS = "000" + FIPS;
-    } else if (FIPS.length === 3) {
-      feature.FIPS = "00" + FIPS;
-    } else if (FIPS.length === 4) {
-      feature.FIPS = "0" + FIPS;
-    } else {
-      feature.FIPS = FIPS;
-    }
-  });
-  return array;
-};
-
-// Utility function that adds Population to State Boundaries GEOJSON file
-const addPopulation = (array?: Array[], populationData: any) => {
-  // console.log(typeof populationData);
-};
-
-// Utility function that adds the state data to the State Boundaries GEOJSON file
-const cleanStateData = (
-  confirmedArray?: Array[],
-  deathsArray?: Array[],
-  callback: any
-) => {
-  const featuresArr = StatesBoundaries.features;
-  if (!!confirmedArray) {
-    let USConfirmedTotal = 0;
-    let stateTotals = [];
-    featuresArr.map((feature: any, index: number) => {
-      const state = feature.properties.name;
-      let stateTotal = 0;
-      let stateTwoWeekTotal = 0;
-      // loop over response data and check for the current STATE
-      // if matches then add to total;
-      confirmedArray.map((feature: any, index: number) => {
-        if (feature.Province_State === state) {
-          stateTotal += parseInt(feature.Confirmed); //Cumulative total
-          stateTwoWeekTotal += parseInt(feature.TwoWeekTotal); //Previous two weeks total
-        }
-      });
-      //finally add back to States Boundaries GeoJSON data
-      feature.properties["Confirmed"] = stateTotal;
-      feature.properties["TwoWeekTotal"] = stateTwoWeekTotal;
-      USConfirmedTotal += stateTotal;
-    });
-    StatesBoundaries["USConfirmedTotal"] = USConfirmedTotal;
-    callback({
-      USConfirmedTotal: USConfirmedTotal,
-    });
-    featuresArr.map((feature: any, index: any) => {
-      const confirmedTotal = feature.properties.Confirmed;
-      stateTotals.push([feature.properties.name, confirmedTotal]);
-    });
-    const stateConfirmedSorted = stateTotals.sort((a, b) => {
-      return b[1] - a[1];
-    });
-    // console.log(stateConfirmedSorted);
-
-    return stateConfirmedSorted;
-  }
-  if (!!deathsArray) {
-    let USDeathsTotal = 0;
-    let stateTotals = [];
-
-    featuresArr.map((feature: any, index: number) => {
-      const state = feature.properties.name;
-      let stateTotal = 0;
-      let stateTwoWeekDeathTotal = 0;
-      // loop over response data and check for the current STATE
-      // if matches then add to total;
-      deathsArray.map((feature: any, index: number) => {
-        if (feature.Province_State === state) {
-          stateTotal += parseInt(feature.Deaths); //Cumulative total
-          stateTwoWeekDeathTotal += parseInt(feature.TwoWeekDeathTotal); //Previous two weeks total
-        }
-      });
-      //finally add back to States Boundaries GeoJSON data
-      feature.properties["Deaths"] = stateTotal;
-      feature.properties["TwoWeekDeathTotal"] = stateTwoWeekDeathTotal;
-      USDeathsTotal += stateTotal;
-    });
-
-    StatesBoundaries["USDeathsTotal"] = USDeathsTotal;
-    callback({
-      USDeathsTotal: USDeathsTotal,
-    });
-    
-    featuresArr.map((feature: any, index: any) => {
-      const deathsTotal = feature.properties.Deaths;
-      stateTotals.push([feature.properties.name, deathsTotal]);
-    });
-    
-    const stateDeathsSorted = stateTotals.sort((a, b) => {
-      return b[1] - a[1];
-    });
-    // console.log(stateDeathsSorted);
-
-    return stateDeathsSorted;
-  }
-  // Add US Total into State Boundaries GEOJSON data
-};
-
-// Utility function that adds the county data to the County Boundaries GEOJSON file
-const cleanCountyData = (
-  confirmedArray?: Array[],
-  deathsArray?: Array[]
-): void => {
-  const featuresArr = CountyBoundaries.features;
-  if (!!confirmedArray) {
-    featuresArr.map((countyFeature: any, index: number) => {
-      const stateCode = countyFeature.properties.STATE;
-      const countyCode = countyFeature.properties.COUNTY;
-      const FIPS = stateCode + countyCode;
-      countyFeature.properties.FIPS = FIPS;
-      countyFeature.id = index;
-      confirmedArray.map((feature: any, index: number) => {
-        if (feature.FIPS === FIPS) {
-          countyFeature.properties["Confirmed"] = parseInt(feature.Confirmed); //Cumulative total
-          countyFeature.properties["TwoWeekTotal"] = parseInt(
-            feature.TwoWeekTotal
-          );
-        }
-      });
-    });
-  }
-  if (!!deathsArray) {
-    featuresArr.map((countyFeature: any, index: number) => {
-      const stateCode = countyFeature.properties.STATE;
-      const countyCode = countyFeature.properties.COUNTY;
-      const FIPS = stateCode + countyCode;
-      countyFeature.properties.FIPS = FIPS;
-      countyFeature.id = index;
-      deathsArray.map((feature: any, index: number) => {
-        if (feature.FIPS === FIPS) {
-          countyFeature.properties.Deaths = parseInt(feature.Deaths); //Cumulative total
-          countyFeature.properties["TwoWeekDeathTotal"] = parseInt(
-            feature.TwoWeekDeathTotal
-          );
-        }
-      });
-    });
-  }
-  return CountyBoundaries;
-};
-
 export const countryAnalysis = (confirmedArray?: any, deathsArray?: any) => {
-  let finalObj = [];
+  let finalObj: any = [];
   //Things we don't need to parse
   const excludeKeys = [
     "UID",
@@ -258,14 +76,16 @@ export const countryAnalysis = (confirmedArray?: any, deathsArray?: any) => {
     // Intialize all key/value pairs to 0
     const firstElement = confirmedArray[0];
     const keys = Object.keys(firstElement);
+
     keys.map((key: string, index: number) => {
-      const val = {}; //Return obj
+      const val: any = {}; //Return obj
       if (excludeKeys.indexOf(key) < 0) {
         val.x = new Date(key);
         val.y = 0;
       }
       finalObj.push(val);
     });
+
     // Loop over each feature in array and add the count to final obj
     confirmedArray.map((feature: any, index: number) => {
       if (feature.Country_Region === "US") {
@@ -285,14 +105,16 @@ export const countryAnalysis = (confirmedArray?: any, deathsArray?: any) => {
     // Intialize all key/value pairs to 0
     const firstElement = deathsArray[0];
     const keys = Object.keys(firstElement);
+
     keys.map((key: string, index: number) => {
-      const val = {}; //Return obj
+      const val: any = {}; //Return obj
       if (excludeKeys.indexOf(key) < 0) {
         val.x = new Date(key);
         val.y = 0;
       }
       finalObj.push(val);
     });
+
     // Loop over each feature in array and add the count to final obj
     deathsArray.map((feature: any, index: number) => {
       if (feature.Country_Region === "US") {
@@ -310,7 +132,7 @@ export const countryAnalysis = (confirmedArray?: any, deathsArray?: any) => {
   }
 };
 
-export const countryTotals = (data: any) => {
+export const countryTotals = (feature: Object) => {
   let stateTotals = [];
   data.features.map((feature: any, index: number) => {
     const confirmedTotal = feature.properties.Confirmed;
@@ -337,23 +159,165 @@ export const countryTotals = (data: any) => {
 };
 
 export const filterData = (
-  confirmedArray?: Array[],
-  deathsArray?: Array[],
+  fetchedData: Array<Object>,
+  dataName: string,
   callback?: any
 ): void => {
   const dates = getDates();
-  if (!!confirmedArray) {
-    const filter = reduceData(confirmedArray, undefined, dates);
-    const fixedData = fixFips(filter);
-    const stateData = cleanStateData(fixedData, undefined, callback);
-    const countyData = cleanCountyData(fixedData, undefined);
-    return stateData;
-  }
-  if (!!deathsArray) {
-    const filter = reduceData(undefined, deathsArray, dates);
-    const fixedData = fixFips(filter);
-    const stateData = cleanStateData(undefined, fixedData, callback);
-    const countyData = cleanCountyData(undefined, fixedData);
-    const withPop = addPopulation(undefined, PopulationData);
-  }
+  // @ts-ignore
+  const cleanedData = cleanData(fetchedData, dataName, dates);
+  const stateData = cleanStateData(cleanedData, dataName, callback);
+  // const countyData = cleanCountyData(cleanedData, dataName[index]);
+};
+
+// Utility function that removes unnecessary keys in raw data
+const cleanData = (
+  rawData: Array<Object>,
+  dataName: string,
+  datesArray: Array<string>
+): Array<Object> => {
+  const includeKeys = [
+    "Admin2",
+    "Combined_Key",
+    "Country_Region",
+    "FIPS",
+    "Lat",
+    "Long_",
+    "Province_State",
+    "UID",
+    "code3",
+    "iso2",
+    "iso3",
+  ];
+
+  const cleanedData = [];
+  const firstDate = datesArray[0];
+  const lastDate = datesArray[datesArray.length - 1];
+  rawData.map((feature, index) => {
+    // for each Key in the Feature remove anything that isn't in this list and return the rest
+    const tempObj = {};
+
+    const twoWeekTotal = parseInt(feature[lastDate] - feature[firstDate]);
+    const currentTotal = parseInt(feature[lastDate]);
+
+    if (dataName === "Confirmed") {
+      tempObj["Confirmed_Cases"] = currentTotal;
+      tempObj["TwoWeekConfirmedTotal"] = twoWeekTotal;
+    } else {
+      tempObj["Confirmed_Deaths"] = currentTotal;
+      tempObj["TwoWeekDeathTotal"] = twoWeekTotal;
+    }
+
+    includeKeys.map((key, index) => {
+      return (tempObj[key] = feature[key]);
+    });
+
+    // Fix FIPS Codes
+    const FIPS_CODE = tempObj.FIPS.split(".")[0];
+    if (FIPS_CODE.length === 2) {
+      tempObj.FIPS = "000" + FIPS_CODE;
+    } else if (FIPS_CODE.length === 3) {
+      tempObj.FIPS = "00" + FIPS_CODE;
+    } else if (FIPS_CODE.length === 4) {
+      tempObj.FIPS = "0" + FIPS_CODE;
+    } else {
+      tempObj.FIPS = FIPS_CODE;
+    }
+
+    return cleanedData.push(tempObj);
+  });
+  // console.log(cleanedData)
+  return cleanedData;
+};
+
+// WIP adding population data
+// Function that adds Population to State Boundaries GEOJSON file
+const addPopulation = (array: Array<any>, populationData: any) => {};
+
+// Function that adds the state data to the State Boundaries GEOJSON file
+const cleanStateData = (
+  data: Array<Object>,
+  dataName: string,
+  callback?: (Total: Object) => void
+): void => {
+  const featuresArr = StatesBoundaries.features;
+
+  let USConfirmedTotal = 0;
+  let USDeathsTotal = 0;
+  let stateTotals = [];
+
+  featuresArr.map((feature: Object) => {
+    // initally check if the property exists in the feature
+    if (!(feature.properties["Confirmed_Cases"] in feature)) {
+      feature.properties["Confirmed_Cases"] = 0;
+    }
+    if (!(feature.properties["TwoWeekConfirmedTotal"] in feature)) {
+      feature.properties["TwoWeekConfirmedTotal"] = 0;
+    }
+    if (!(feature.properties["Confirmed_Deaths"] in feature)) {
+      feature.properties["Confirmed_Deaths"] = 0;
+    }
+    if (!(feature.properties["TwoWeekDeathTotal"] in feature)) {
+      feature.properties["TwoWeekDeathTotal"] = 0;
+    }
+
+    data.map((dataFeature: any, index: number) => {
+      // check if the state is in the state boundaries array
+      if (feature.properties.name === dataFeature.Province_State) {
+        if (dataName === "Confirmed") {
+          USConfirmedTotal += dataFeature["Confirmed_Cases"];
+          feature.properties.Confirmed_Cases += dataFeature["Confirmed_Cases"];
+          feature.properties["TwoWeekConfirmedTotal"] +=
+            dataFeature["TwoWeekConfirmedTotal"];
+        }
+        if (dataName === "Deaths") {
+          USDeathsTotal += dataFeature["Confirmed_Deaths"];
+          feature.properties.Confirmed_Deaths +=
+            dataFeature["Confirmed_Deaths"];
+          feature.properties["TwoWeekDeathTotal"] +=
+            dataFeature["TwoWeekDeathTotal"];
+        }
+      }
+    });
+
+    const confirmedTotal = feature.properties.Confirmed_Cases;
+    const deathsTotal = feature.properties.Confirmed_Deaths;
+    stateTotals.push([feature.properties.name, confirmedTotal, deathsTotal]);
+  });
+  console.log(featuresArr)
+};
+
+// Function that adds the county data to the County Boundaries GEOJSON file
+const cleanCountyData = (data: Array<Object>, dataName: string) => {
+  // @ts-ignore
+  const featuresArr = CountyBoundaries.features;
+
+  featuresArr.map((countyFeature: any, index: number) => {
+    const stateCode = countyFeature.properties.STATE;
+    const countyCode = countyFeature.properties.COUNTY;
+    const FIPS = stateCode + countyCode;
+    countyFeature.properties.FIPS = FIPS; //creating FIPS column since no FIPS is included
+    countyFeature.id = index; //creating ID value since no ID is included in data
+
+    data.map((feature: any, index: number) => {
+      if (feature.FIPS === FIPS) {
+        if (dataName === "Confirmed") {
+          countyFeature.properties["Confirmed_Cases"] = parseInt(
+            feature.Confirmed
+          ); //Cumulative total
+          countyFeature.properties["TwoWeekConfirmedTotal"] = parseInt(
+            feature.TwoWeekTotal
+          );
+        } else {
+          countyFeature.properties["Confirmed_Deaths"] = parseInt(
+            feature.Confirmed
+          ); //Cumulative total
+          countyFeature.properties["TwoWeekDeathTotal"] = parseInt(
+            feature.TwoWeekTotal
+          );
+        }
+      }
+    });
+  });
+  return CountyBoundaries;
 };
